@@ -1,13 +1,7 @@
 import 'package:april/data/pagination.dart';
 import 'package:flutter/material.dart';
 
-import 'select_listenable_builder.dart';
-
-typedef ItemBuilder<T> = Widget Function(
-  BuildContext context,
-  List<T> valueList,
-  int index,
-);
+import 'transform_listenable_builder.dart';
 
 ///自动触发加载更多操作的占位布局
 class LoadMoreWidget extends StatefulWidget {
@@ -49,7 +43,7 @@ class PaginationListView<T> extends StatelessWidget {
     required this.itemBuilder,
     this.padding,
     this.shrinkWrap = false,
-    this.physics = const AlwaysScrollableScrollPhysics(),
+    this.physics,
     this.scrollDirection = Axis.vertical,
     this.scrollController,
     this.placeholderScrollController,
@@ -63,7 +57,11 @@ class PaginationListView<T> extends StatelessWidget {
   }) : super(key: key);
 
   final Pagination<T> controller;
-  final ItemBuilder<T> itemBuilder;
+  final Widget Function(
+    BuildContext context,
+    List<T> valueList,
+    int index,
+  ) itemBuilder;
   final EdgeInsetsGeometry? padding;
   final bool shrinkWrap;
   final ScrollPhysics? physics;
@@ -93,9 +91,10 @@ class PaginationListView<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (context, constraints) => SelectListenableBuilder<List<T>, bool>(
-        valueListenable: controller.data,
-        selector: (value) => value.isEmpty && placeholderWidget != null,
+      builder: (context, constraints) =>
+          TransformListenableBuilder<List<T>, bool>(
+        listenable: controller.data,
+        transformer: (value) => value.isEmpty && placeholderWidget != null,
         builder: (context, value, child) {
           Widget result = value
               ? ListView(
@@ -164,7 +163,7 @@ class PaginationGridView<T> extends StatelessWidget {
     required this.gridDelegate,
     required this.itemBuilder,
     this.padding,
-    this.physics = const AlwaysScrollableScrollPhysics(),
+    this.physics,
     this.shrinkWrap = false,
     this.scrollDirection = Axis.vertical,
     this.scrollController,
@@ -175,7 +174,13 @@ class PaginationGridView<T> extends StatelessWidget {
 
   final Pagination<T> controller;
   final SliverGridDelegate gridDelegate;
-  final ItemBuilder<T> itemBuilder;
+
+  final Widget Function(
+    BuildContext context,
+    List<T> valueList,
+    int index,
+  ) itemBuilder;
+
   final EdgeInsetsGeometry? padding;
   final bool shrinkWrap;
   final ScrollPhysics? physics;
@@ -190,9 +195,10 @@ class PaginationGridView<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (context, constraints) => SelectListenableBuilder<List<T>, bool>(
-        valueListenable: controller.data,
-        selector: (value) => value.isEmpty && placeholderWidget != null,
+      builder: (context, constraints) =>
+          TransformListenableBuilder<List<T>, bool>(
+        listenable: controller.data,
+        transformer: (value) => value.isEmpty && placeholderWidget != null,
         builder: (context, value, child) {
           Widget result = value
               ? ListView(
@@ -253,7 +259,13 @@ class PaginationPageView<T> extends StatelessWidget {
   }) : super(key: key);
 
   final Pagination<T> controller;
-  final ItemBuilder<T> itemBuilder;
+
+  final Widget Function(
+    BuildContext context,
+    List<T> valueList,
+    int index,
+  ) itemBuilder;
+
   final ScrollPhysics? physics;
   final Axis scrollDirection;
   final PageController? pageController;
