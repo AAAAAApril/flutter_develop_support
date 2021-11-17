@@ -2,6 +2,9 @@ package com.april.april
 
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Process
 import androidx.annotation.NonNull
 
@@ -18,10 +21,16 @@ import kotlin.system.exitProcess
 class AprilPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
     private var activity: Activity? = null
     private lateinit var channel: MethodChannel
+    private lateinit var infoChannel: MethodChannel
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "april_method_channel_name")
         channel.setMethodCallHandler(this)
+        infoChannel = MethodChannel(
+            flutterPluginBinding.binaryMessenger,
+            "april_application_info_method_channel_name"
+        )
+        infoChannel.setMethodCallHandler(this)
     }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
@@ -55,6 +64,26 @@ class AprilPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
                     exitProcess(0)
                 }
             }
+            //获取应用的一些信息
+            "applicationInfo" -> {
+                if (activity == null) {
+                    result.error("001", "The host Activity is destroyed !", "")
+                    return
+                }
+                val packageName: String = activity!!.applicationContext.packageName;
+                val manager: PackageManager = activity!!.applicationContext.packageManager
+                val info: PackageInfo = manager.getPackageInfo(packageName, 0)
+                result.success(
+                    mapOf(
+                        "packageName" to packageName,
+                        "appName" to info.applicationInfo.loadLabel(manager).toString(),
+                        "appVersion" to info.versionName,
+                        "appBuildNumber" to getBuildNumber(info),
+                        "supportAbis" to Build.SUPPORTED_ABIS.map { return@map it },
+                        "support64Abis" to Build.SUPPORTED_64_BIT_ABIS.map { return@map it },
+                    )
+                )
+            }
             else -> {
                 result.notImplemented()
             }
@@ -63,6 +92,7 @@ class AprilPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
+        infoChannel.setMethodCallHandler(null)
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
@@ -79,5 +109,13 @@ class AprilPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
 
     override fun onDetachedFromActivity() {
         activity = null
+    }
+}
+
+private fun getBuildNumber(info: PackageInfo): Long {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        info.longVersionCode
+    } else {
+        info.versionCode.toLong()
     }
 }
