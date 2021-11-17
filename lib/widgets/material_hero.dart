@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 ///用 [Material] 包裹 [Hero] child，避免样式丢失
 class MaterialHero extends StatelessWidget {
-  const MaterialHero({
+  const MaterialHero(
+    this.tag, {
     Key? key,
-    required this.tag,
     required this.child,
     this.createRectTween,
     this.flightShuttleBuilder,
@@ -12,7 +12,7 @@ class MaterialHero extends StatelessWidget {
     this.transitionOnUserGestures = true,
   }) : super(key: key);
 
-  final String tag;
+  final Object tag;
   final Widget child;
 
   final CreateRectTween? createRectTween;
@@ -28,7 +28,7 @@ class MaterialHero extends StatelessWidget {
       flightShuttleBuilder: flightShuttleBuilder,
       placeholderBuilder: placeholderBuilder,
       transitionOnUserGestures: transitionOnUserGestures,
-      //如果这里不用 Material 包裹，在遇到内部显示文字时，可能会出现在动画过程中出现样式丢失的情况
+      //如果这里不用 Material 包裹，在遇到内部显示文字时，可能会出现在动画过程中样式丢失的情况
       child: Material(child: child, color: Colors.transparent),
     );
   }

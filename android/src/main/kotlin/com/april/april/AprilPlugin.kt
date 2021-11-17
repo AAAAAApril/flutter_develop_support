@@ -40,14 +40,14 @@ class AprilPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
             "restartApplication" -> {
                 result.success(activity != null)
                 activity?.let { activity ->
-                    activity.baseContext.packageManager.getLaunchIntentForPackage(activity.baseContext.packageName)
-                        .also {
-                            it?.addFlags(
+                    activity.baseContext.packageManager
+                        .getLaunchIntentForPackage(activity.baseContext.packageName)
+                        ?.let {
+                            it.addFlags(
                                 Intent.FLAG_ACTIVITY_NEW_TASK
                                         or Intent.FLAG_ACTIVITY_CLEAR_TOP
                                         or Intent.FLAG_ACTIVITY_CLEAR_TASK
                             )
-                        }?.let {
                             activity.baseContext.startActivity(it)
                         }
                     activity.overridePendingTransition(0, 0)

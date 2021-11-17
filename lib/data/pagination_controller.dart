@@ -149,9 +149,11 @@ abstract class PaginationController<T, W extends PaginationDataWrapper<T>>
   @protected
   @mustCallSuper
   Future<void> onRefreshSucceed(final W wrapper) async {
-    final List<T> interceptedData = await onInterceptNewData(wrapper.data);
-    final List<T> finalData = await onInterceptAllData(interceptedData);
-    setData(finalData);
+    setData(
+      await onInterceptAllData(
+        await onInterceptNewData(wrapper.data),
+      ),
+    );
   }
 
   ///刷新失败
@@ -165,11 +167,14 @@ abstract class PaginationController<T, W extends PaginationDataWrapper<T>>
   @protected
   @mustCallSuper
   Future<void> onLoadMoreSucceed(final W wrapper) async {
-    final List<T> interceptedData = await onInterceptNewData(wrapper.data);
-    final List<T> dataList = List<T>.of(dataValue);
-    dataList.addAll(interceptedData);
-    final List<T> finalData = await onInterceptAllData(dataList);
-    setData(finalData);
+    setData(
+      await onInterceptAllData(
+        List.of(dataValue)
+          ..addAll(
+            await onInterceptNewData(wrapper.data),
+          ),
+      ),
+    );
   }
 
   ///加载更多失败
@@ -179,13 +184,13 @@ abstract class PaginationController<T, W extends PaginationDataWrapper<T>>
     //do something
   }
 
-  ///拦截数据（可以做筛选、排序等操作，但如果数据量过大，排序操作可能导致界面卡顿）
+  ///拦截数据（可以做筛选、排序等操作，但如果数据量过大，排序操作可能导致界面卡顿。可以新开个线程处理）
   ///[data] 是新获取到的值，不包含缓存的数据
   Future<List<T>> onInterceptNewData(final List<T> data) async {
     return data;
   }
 
-  ///拦截数据（可以做筛选、排序等操作，但如果数据量过大，排序操作可能导致界面卡顿）
+  ///拦截数据（可以做筛选、排序等操作，但如果数据量过大，排序操作可能导致界面卡顿。可以新开个线程处理）
   ///[data] 是包含了本地缓存的所有数据（刷新操作时，本地数据缓存不会参与进来）
   Future<List<T>> onInterceptAllData(final List<T> data) async {
     return data;

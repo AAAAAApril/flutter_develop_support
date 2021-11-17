@@ -7,12 +7,12 @@ class HeaderFooterListView extends StatelessWidget {
     required this.itemCount,
     required this.itemBuilder,
     this.header = const SizedBox.shrink(),
+    this.headerSeparator = const SizedBox.shrink(),
     this.footer = const SizedBox.shrink(),
-    this.separator = const SizedBox.shrink(),
-    this.needSeparatorBetweenHeader = false,
-    this.needSeparatorBetweenFooter = false,
+    this.footerSeparator = const SizedBox.shrink(),
+    this.separatorBuilder,
     this.direction = Axis.horizontal,
-    this.physics = const BouncingScrollPhysics(),
+    this.physics,
     this.padding,
     this.shrinkWrap = false,
   }) : super(key: key);
@@ -26,14 +26,11 @@ class HeaderFooterListView extends StatelessWidget {
   ///头、尾
   final Widget header, footer;
 
-  ///分割组件（会在头和第一个item，以及最后一个item和尾之间 也添加）
-  final Widget separator;
+  ///头、尾 和正常 item 之间的分割 组件
+  final Widget headerSeparator, footerSeparator;
 
-  ///是否需要在
-  ///头和第一个 item
-  ///最后一个 item 和尾
-  ///之间添加 分割组件
-  final bool needSeparatorBetweenHeader, needSeparatorBetweenFooter;
+  ///分割组件（会在头和第一个item，以及最后一个item和尾之间 也添加）
+  final IndexedWidgetBuilder? separatorBuilder;
 
   ///滚动方向
   final Axis direction;
@@ -60,19 +57,12 @@ class HeaderFooterListView extends StatelessWidget {
       },
       separatorBuilder: (context, index) {
         if (index == 0) {
-          if (needSeparatorBetweenHeader) {
-            return separator;
-          } else {
-            return const SizedBox.shrink();
-          }
+          return headerSeparator;
         } else if (index == itemCount) {
-          if (needSeparatorBetweenFooter) {
-            return separator;
-          } else {
-            return const SizedBox.shrink();
-          }
+          return footerSeparator;
         } else {
-          return separator;
+          return separatorBuilder?.call(context, index - 1) ??
+              const SizedBox.shrink();
         }
       },
     );

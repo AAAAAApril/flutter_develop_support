@@ -95,19 +95,24 @@ class _SelectListenableBuilder2State<A, B, S>
   @override
   void initState() {
     super.initState();
-    result = widget.selector.call(
-      widget.valueListenableA.value,
-      widget.valueListenableB.value,
-    );
+    _init();
+  }
+
+  void _init() {
+    result = _calculate();
     widget.valueListenableA.addListener(onValueChanged);
     widget.valueListenableB.addListener(onValueChanged);
   }
 
-  void onValueChanged() {
-    final result = widget.selector.call(
+  S _calculate() {
+    return widget.selector.call(
       widget.valueListenableA.value,
       widget.valueListenableB.value,
     );
+  }
+
+  void onValueChanged() {
+    final result = _calculate();
     if (result != this.result) {
       this.result = result;
       setState(() {});
@@ -118,22 +123,20 @@ class _SelectListenableBuilder2State<A, B, S>
   void didUpdateWidget(covariant SelectListenableBuilder2<A, B, S> oldWidget) {
     if (oldWidget.valueListenableA != widget.valueListenableA ||
         oldWidget.valueListenableB != widget.valueListenableB) {
-      oldWidget.valueListenableA.removeListener(onValueChanged);
-      oldWidget.valueListenableB.removeListener(onValueChanged);
-      result = widget.selector.call(
-        widget.valueListenableA.value,
-        widget.valueListenableB.value,
-      );
-      widget.valueListenableA.addListener(onValueChanged);
-      widget.valueListenableB.addListener(onValueChanged);
+      _release(oldWidget);
+      _init();
     }
     super.didUpdateWidget(oldWidget);
   }
 
-  @override
-  void dispose() {
+  void _release(SelectListenableBuilder2<A, B, S> widget) {
     widget.valueListenableA.removeListener(onValueChanged);
     widget.valueListenableB.removeListener(onValueChanged);
+  }
+
+  @override
+  void dispose() {
+    _release(widget);
     super.dispose();
   }
 

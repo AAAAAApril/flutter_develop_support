@@ -1,6 +1,24 @@
 import 'package:flutter/widgets.dart';
 
 extension ListExt<T> on List<T> {
+  ///查找第一个满足要求的项，找不到则返回 null
+  T? findFirst(bool Function(T element) test) {
+    try {
+      return firstWhere(test);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  ///查找最后一个满足要求的项，找不到则返回 null
+  T? findLast(bool Function(T element) test) {
+    try {
+      return lastWhere(test);
+    } catch (_) {
+      return null;
+    }
+  }
+
   ///将一个列表进行拆分成组的操作
   ///[groupLength] 每一组的个数
   List<List<T>> asGroup(int groupLength) {
@@ -34,6 +52,13 @@ extension ListExt<T> on List<T> {
       times -= 1;
     } while (times > 0);
     return result;
+  }
+}
+
+extension NullableListExt<T> on List<T?> {
+  ///移除所有的 null 项
+  List<T> removeNull({bool growable = true}) {
+    return List<T>.from(this, growable: growable);
   }
 }
 
@@ -100,6 +125,12 @@ extension WidgetListExt on List<Widget> {
 extension ColorListExt on List<Color> {
   List<Color> withOpacity(double opacity) {
     return map<Color>((e) => e.withOpacity(opacity)).toList();
+  }
+}
+
+extension NullableMapExt<T, D> on Map<T, D?> {
+  Map<T, D> removeNullValue() {
+    return Map<T, D>.from(this);
   }
 }
 

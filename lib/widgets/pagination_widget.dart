@@ -5,7 +5,7 @@ import 'select_listenable_builder.dart';
 
 typedef ItemBuilder<T> = Widget Function(
   BuildContext context,
-  List<T> value,
+  List<T> valueList,
   int index,
 );
 
@@ -56,9 +56,9 @@ class PaginationListView<T> extends StatelessWidget {
     this.needRefresh = true,
     this.header = const SizedBox.shrink(),
     this.footer,
-    this.separator = const SizedBox.shrink(),
-    this.needSeparatorBetweenHeader = false,
-    this.needSeparatorBetweenFooter = false,
+    this.headerSeparator = const SizedBox.shrink(),
+    this.footerSeparator = const SizedBox.shrink(),
+    this.separatorBuilder,
     this.placeholderWidget,
   }) : super(key: key);
 
@@ -75,17 +75,17 @@ class PaginationListView<T> extends StatelessWidget {
   ///头
   final Widget header;
 
+  ///头部与真实 item 之间的分割布局
+  final Widget headerSeparator;
+
   ///尾 即使这个值为 null，也会自动添加一个 [LoadMoreWidget]
   final Widget? footer;
 
-  ///分割组件（会在头和第一个item，以及最后一个item和尾之间 也添加）
-  final Widget separator;
+  ///尾部与真实 item 之间的分割布局
+  final Widget footerSeparator;
 
-  ///是否需要在
-  ///头和第一个 item
-  ///最后一个 item 和尾
-  ///之间添加 分割组件
-  final bool needSeparatorBetweenHeader, needSeparatorBetweenFooter;
+  ///分割组件（会在头和第一个item，以及最后一个item和尾之间 也添加）
+  final IndexedWidgetBuilder? separatorBuilder;
 
   ///空列表时的占位布局
   final Widget? placeholderWidget;
@@ -141,19 +141,12 @@ class PaginationListView<T> extends StatelessWidget {
             },
             separatorBuilder: (context, index) {
               if (index == 0) {
-                if (needSeparatorBetweenHeader) {
-                  return separator;
-                } else {
-                  return const SizedBox.shrink();
-                }
+                return headerSeparator;
               } else if (index == value.length) {
-                if (needSeparatorBetweenFooter) {
-                  return separator;
-                } else {
-                  return const SizedBox.shrink();
-                }
+                return footerSeparator;
               } else {
-                return separator;
+                return separatorBuilder?.call(context, index - 1) ??
+                    const SizedBox.shrink();
               }
             },
           ),
