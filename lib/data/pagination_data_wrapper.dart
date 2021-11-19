@@ -1,5 +1,5 @@
 ///分页数据结构包装
-abstract class PaginationDataWrapper<T> {
+abstract class AbsPaginationDataWrapper<T> {
   ///列表数据
   List<T> get data;
 
