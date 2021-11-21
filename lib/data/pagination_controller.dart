@@ -148,7 +148,7 @@ abstract class AbsPaginationController<T, W extends AbsPaginationDataWrapper<T>>
   ///刷新成功
   @protected
   @mustCallSuper
-  Future<void> onRefreshSucceed(final W wrapper) async {
+  Future<void> onRefreshSucceed(covariant W wrapper) async {
     setData(
       await onInterceptAllData(
         await onInterceptNewData(wrapper.data),
@@ -159,14 +159,14 @@ abstract class AbsPaginationController<T, W extends AbsPaginationDataWrapper<T>>
   ///刷新失败
   @protected
   @mustCallSuper
-  Future<void> onRefreshFailed(final W wrapper) async {
+  Future<void> onRefreshFailed(covariant W wrapper) async {
     //do something
   }
 
   ///加载更多成功
   @protected
   @mustCallSuper
-  Future<void> onLoadMoreSucceed(final W wrapper) async {
+  Future<void> onLoadMoreSucceed(covariant W wrapper) async {
     setData(
       await onInterceptAllData(
         List.of(dataValue)
@@ -180,7 +180,7 @@ abstract class AbsPaginationController<T, W extends AbsPaginationDataWrapper<T>>
   ///加载更多失败
   @protected
   @mustCallSuper
-  Future<void> onLoadMoreFailed(final W wrapper) async {
+  Future<void> onLoadMoreFailed(covariant W wrapper) async {
     //do something
   }
 
