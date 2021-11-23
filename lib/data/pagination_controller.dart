@@ -1,3 +1,4 @@
+import 'package:april/data/refreshable.dart';
 import 'package:flutter/foundation.dart';
 
 import 'Pagination.dart';
@@ -7,7 +8,7 @@ import 'pagination_data_wrapper.dart';
 ///所有的分页列表的刷新以及加载更多逻辑都应该继承此类处理
 ///[T] 绑定的数据类型
 abstract class AbsPaginationController<T, W extends AbsPaginationDataWrapper<T>>
-    with Pagination<T> {
+    with Refreshable<T>, Pagination<T> {
   AbsPaginationController({
     //默认的数据
     List<T>? data,
@@ -62,6 +63,7 @@ abstract class AbsPaginationController<T, W extends AbsPaginationDataWrapper<T>>
   ///分页时每一页的数据量
   final int pageSize;
 
+  @protected
   @override
   void onGetDataListenable(List<T> oldData) {
     if (!_firstRefreshed && _autoRefresh && _lazyRefresh) {
