@@ -176,4 +176,9 @@ extension ObjectExt<T extends Object> on T {
   D let<D>(D Function(T it) let) {
     return let.call(this);
   }
+
+  T apply(void Function(T it) apply) {
+    apply.call(this);
+    return this;
+  }
 }
