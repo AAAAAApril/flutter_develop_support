@@ -8,7 +8,7 @@ import 'pagination_data_wrapper.dart';
 ///所有的分页列表的刷新以及加载更多逻辑都应该继承此类处理
 ///[T] 绑定的数据类型
 abstract class AbsPaginationController<T, W extends AbsPaginationDataWrapper<T>>
-    extends AbsRefreshableController<T, W> with Pagination<T> {
+    extends AbsRefreshableController<T, W> implements Pagination<T> {
   AbsPaginationController({
     //默认的数据
     List<T>? data,
