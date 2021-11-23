@@ -1,17 +1,14 @@
-import 'package:april/data/refreshable_controller.dart';
 import 'package:flutter/foundation.dart';
 
-import 'Pagination.dart';
+import 'pagination.dart';
 import 'pagination_data_wrapper.dart';
+import 'refreshable_controller.dart';
 
 ///分页列表控制器
 ///所有的分页列表的刷新以及加载更多逻辑都应该继承此类处理
 ///[T] 绑定的数据类型
-///
-/// Tips：写下层实现的时候，记得 with Pagination<T> 否则不会被认为是 Pagination<T> 的子类型
-///
 abstract class AbsPaginationController<T, W extends AbsPaginationDataWrapper<T>>
-    extends AbsRefreshableController<T, W> implements Pagination<T> {
+    extends _PaginationControllerInternal<T, W> with Pagination<T> {
   AbsPaginationController({
     //默认的数据
     List<T>? data,
@@ -22,9 +19,29 @@ abstract class AbsPaginationController<T, W extends AbsPaginationDataWrapper<T>>
     //获取数据监听器其时，发现数据量为空，是否触发刷新
     bool autoRefreshOnEmptyList = true,
     //分页起始页码
-    this.startPageNum = 1,
+    int startPageNum = 1,
     //每一页的数据量
-    this.pageSize = 20,
+    int pageSize = 20,
+  })  : assert(pageSize > 0),
+        super(
+          data: data,
+          autoRefresh: autoRefresh,
+          lazyRefresh: lazyRefresh,
+          autoRefreshOnEmptyList: autoRefreshOnEmptyList,
+          startPageNum: startPageNum,
+          pageSize: pageSize,
+        );
+}
+
+abstract class _PaginationControllerInternal<T, W extends AbsPaginationDataWrapper<T>>
+    extends AbsRefreshableController<T, W> implements Pagination<T> {
+  _PaginationControllerInternal({
+    required List<T>? data,
+    required bool autoRefresh,
+    required bool lazyRefresh,
+    required bool autoRefreshOnEmptyList,
+    required this.startPageNum,
+    required this.pageSize,
   })  : assert(pageSize > 0),
         _currentPageNum = startPageNum,
         super(
