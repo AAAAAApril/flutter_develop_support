@@ -1,4 +1,4 @@
-import 'package:april/data/refreshable.dart';
+import 'package:april/data/refreshable_controller.dart';
 import 'package:flutter/foundation.dart';
 
 import 'Pagination.dart';
@@ -8,7 +8,7 @@ import 'pagination_data_wrapper.dart';
 ///所有的分页列表的刷新以及加载更多逻辑都应该继承此类处理
 ///[T] 绑定的数据类型
 abstract class AbsPaginationController<T, W extends AbsPaginationDataWrapper<T>>
-    with Refreshable<T>, Pagination<T> {
+    extends AbsRefreshableController<T, W> with Pagination<T> {
   AbsPaginationController({
     //默认的数据
     List<T>? data,
@@ -23,31 +23,13 @@ abstract class AbsPaginationController<T, W extends AbsPaginationDataWrapper<T>>
     //每一页的数据量
     this.pageSize = 20,
   })  : assert(pageSize > 0),
-        _autoRefreshOnEmptyList = autoRefreshOnEmptyList,
         _currentPageNum = startPageNum,
-        _autoRefresh = autoRefresh,
-        _lazyRefresh = lazyRefresh {
-    if (data != null) {
-      setData(data);
-    }
-    if (!_firstRefreshed && _autoRefresh && !_lazyRefresh) {
-      refresh();
-    }
-  }
-
-  ///是否自动触发一次刷新
-  final bool _autoRefresh;
-
-  ///是否懒刷新，如果是，则在第一次获取数据监听器的时候刷新
-  ///否则，则在构造函数内刷新。
-  ///当 [_autoRefresh] 为 true 时生效
-  final bool _lazyRefresh;
-
-  ///获取数据监听器其时，发现数据量为空，是否触发刷新
-  final bool _autoRefreshOnEmptyList;
-
-  ///是否已经刷新过一次了
-  bool _firstRefreshed = false;
+        super(
+          data: data,
+          autoRefresh: autoRefresh,
+          lazyRefresh: lazyRefresh,
+          autoRefreshOnEmptyList: autoRefreshOnEmptyList,
+        );
 
   ///起始页码数
   final int startPageNum;
@@ -63,35 +45,12 @@ abstract class AbsPaginationController<T, W extends AbsPaginationDataWrapper<T>>
   ///分页时每一页的数据量
   final int pageSize;
 
-  @protected
-  @override
-  void onGetDataListenable(List<T> oldData) {
-    if (!_firstRefreshed && _autoRefresh && _lazyRefresh) {
-      refresh();
-    }
-    //如果已经刷新过了，但是列表为空，触发一次刷新操作
-    else if (_firstRefreshed && oldData.isEmpty && _autoRefreshOnEmptyList) {
-      refresh();
-    }
-  }
-
-  ///刷新操作
-  @override
-  @mustCallSuper
-  Future<void> refresh() async {
-    //正在刷新时不允许触发刷新操作
-    if (isRefreshing.value) {
-      return;
-    }
-    await _paginationRefresh();
-  }
-
   ///加载更多操作
   @override
   @mustCallSuper
   Future<void> loadMore() async {
     //如果第一次刷新都还没执行过，则直接转接到刷新操作
-    if (!_firstRefreshed) {
+    if (!firstRefreshed) {
       return refresh();
     }
     //没有更多数据时不允许触发加载更多操作
@@ -103,29 +62,6 @@ abstract class AbsPaginationController<T, W extends AbsPaginationDataWrapper<T>>
       return;
     }
     await _paginationLoadMore();
-  }
-
-  ///刷新操作真实执行函数
-  Future<void> _paginationRefresh() async {
-    setRefreshing(true);
-    if (!_firstRefreshed) {
-      _firstRefreshed = true;
-    }
-    //加载数据
-    await refreshInternal().then<void>((wrapper) async {
-      if (wrapper.succeed) {
-        //当前页码赋值为初始值
-        _currentPageNum = startPageNum;
-        setHasMoreData(wrapper.hasMore);
-        await onRefreshSucceed(wrapper);
-      } else {
-        await onRefreshFailed(wrapper);
-      }
-    }).catchError((e, trace) {
-      //do something
-    }).whenComplete(() {
-      setRefreshing(false);
-    });
   }
 
   ///加载更多真实执行函数
@@ -148,21 +84,14 @@ abstract class AbsPaginationController<T, W extends AbsPaginationDataWrapper<T>>
   }
 
   ///刷新成功
+  @override
   @protected
   @mustCallSuper
   Future<void> onRefreshSucceed(covariant W wrapper) async {
-    setData(
-      await onInterceptAllData(
-        await onInterceptNewData(wrapper.data),
-      ),
-    );
-  }
-
-  ///刷新失败
-  @protected
-  @mustCallSuper
-  Future<void> onRefreshFailed(covariant W wrapper) async {
-    //do something
+    //当前页码赋值为初始值
+    _currentPageNum = startPageNum;
+    setHasMoreData(wrapper.hasMore);
+    return super.onRefreshSucceed(wrapper);
   }
 
   ///加载更多成功
@@ -185,22 +114,6 @@ abstract class AbsPaginationController<T, W extends AbsPaginationDataWrapper<T>>
   Future<void> onLoadMoreFailed(covariant W wrapper) async {
     //do something
   }
-
-  ///拦截数据（可以做筛选、排序等操作，但如果数据量过大，排序操作可能导致界面卡顿。可以新开个线程处理）
-  ///[data] 是新获取到的值，不包含缓存的数据
-  Future<List<T>> onInterceptNewData(final List<T> data) async {
-    return data;
-  }
-
-  ///拦截数据（可以做筛选、排序等操作，但如果数据量过大，排序操作可能导致界面卡顿。可以新开个线程处理）
-  ///[data] 是包含了本地缓存的所有数据（刷新操作时，本地数据缓存不会参与进来）
-  Future<List<T>> onInterceptAllData(final List<T> data) async {
-    return data;
-  }
-
-  ///刷新操作的具体执行方法
-  @protected
-  Future<W> refreshInternal();
 
   ///加载更多操作的具体执行方法
   @protected
