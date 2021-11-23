@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'refreshable.dart';
 
 ///分页基础功能超类
-mixin Pagination<T> on Refreshable<T> {
+abstract class Pagination<T> extends Refreshable<T> {
   ///是否正在加载更多
   final ValueNotifier<bool> _isLoadingMore = ValueNotifier<bool>(false);
 

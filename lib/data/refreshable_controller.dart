@@ -5,7 +5,7 @@ import 'refreshable_data_wrapper.dart';
 
 ///刷新列表控制器
 abstract class AbsRefreshableController<T,
-    W extends AbsRefreshableDataWrapper<T>> implements Refreshable<T> {
+    W extends AbsRefreshableDataWrapper<T>> extends Refreshable<T> {
   AbsRefreshableController({
     //默认的数据
     List<T>? data,
