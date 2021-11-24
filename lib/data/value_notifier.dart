@@ -15,6 +15,7 @@ class NoNotifyValueNotifier<T> extends ChangeNotifier
       //可以避免在重复设置值 a ，但是却需要更新时，各个观察者无法收到通知的问题
       return;
     }
+    _needNotify = false;
     _value = newValue;
     notifyListeners();
   }
