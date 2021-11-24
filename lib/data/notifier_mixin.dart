@@ -1,3 +1,4 @@
+import 'package:april/data/value_notifier.dart';
 import 'package:flutter/foundation.dart';
 
 ///集中处理各个监听器的销毁，避免每次都手动写一堆无用代码
@@ -35,5 +36,17 @@ extension MixinValueNotifierExt<T extends ChangeNotifier> on T {
   ///从队列中移除自己
   void escapeMixin(ChangeNotifierMixin notifierMixin) {
     notifierMixin._removeNotifier(this);
+  }
+}
+
+extension MixinValueListenableExt<T> on ValueListenable<T> {
+  ///有时候为了避免外部修改数据，需要只对外暴露 ValueListenable<T>
+  ///这样一来就要多写一个 get 函数，为了省事，就可以直接使用这个扩展。
+  void setValue(T newValue) {
+    if (this is ValueNotifier<T>) {
+      (this as ValueNotifier<T>).value = newValue;
+    } else if (this is NoNotifyValueNotifier<T>) {
+      (this as NoNotifyValueNotifier<T>).value = newValue;
+    }
   }
 }
