@@ -1,18 +1,18 @@
 import 'package:flutter/foundation.dart';
 
 ///支持 更新值但不通知 的功能
-class NoNotifyValueNotifier<T> extends ChangeNotifier
+class NotifiableValueNotifier<T> extends ChangeNotifier
     implements ValueListenable<T> {
-  NoNotifyValueNotifier(this._value);
+  NotifiableValueNotifier(this._value);
 
   @override
   T get value => _value;
   T _value;
 
   set value(T newValue) {
-    if (_value == newValue && !_needNotify) {
+    if (!_needNotify && _value == newValue) {
       //这里需要在  _needNotify = true  时放行
-      //可以避免在重复设置值 a ，但是却需要更新时，各个观察者无法收到通知的问题
+      //可以避免在重复设置值 a ，但是却需要更新时，通知无法顺利执行的问题
       return;
     }
     _needNotify = false;

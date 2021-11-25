@@ -24,6 +24,14 @@ abstract class ChangeNotifierMixin {
       ..forEach((element) => element.dispose())
       ..clear();
   }
+
+  ///这个函数是为了配合 [MixinValueListenableExt.setValue]
+  void notifierSetValue<T>(
+    ValueListenable<T> listenable,
+    T newValue,
+  ) {
+    listenable.setValue(newValue);
+  }
 }
 
 extension MixinValueNotifierExt<T extends ChangeNotifier> on T {
@@ -39,14 +47,14 @@ extension MixinValueNotifierExt<T extends ChangeNotifier> on T {
   }
 }
 
-extension MixinValueListenableExt<T> on ValueListenable<T> {
+extension _MixinValueListenableExt<T> on ValueListenable<T> {
   ///有时候为了避免外部修改数据，需要只对外暴露 ValueListenable<T>
   ///这样一来就要多写一个 get 函数，为了省事，就可以直接使用这个扩展。
   void setValue(T newValue) {
     if (this is ValueNotifier<T>) {
       (this as ValueNotifier<T>).value = newValue;
-    } else if (this is NoNotifyValueNotifier<T>) {
-      (this as NoNotifyValueNotifier<T>).value = newValue;
+    } else if (this is NotifiableValueNotifier<T>) {
+      (this as NotifiableValueNotifier<T>).value = newValue;
     }
   }
 }
