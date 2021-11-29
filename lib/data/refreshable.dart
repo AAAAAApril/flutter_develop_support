@@ -24,7 +24,6 @@ abstract class Refreshable<T> {
   }
 
   ///设置新数据
-  @protected
   void setData(List<T> newData) {
     _data.value = newData;
   }
