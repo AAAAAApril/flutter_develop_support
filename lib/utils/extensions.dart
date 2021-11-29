@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/widgets.dart';
 
 extension ListExt<T> on List<T> {
@@ -168,6 +170,11 @@ extension StringExt on String {
   ///从文件路径中获取文件名
   String fileNameFromPath() {
     return substring(lastIndexOf('/') + 1, length);
+  }
+
+  ///对 字符串做 md5
+  String toMD5() {
+    return md5.convert(utf8.encode(this)).toString();
   }
 }
 
