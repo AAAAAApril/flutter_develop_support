@@ -1,5 +1,6 @@
 import 'package:april/data/pagination.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import 'transform_listenable_builder.dart';
 
@@ -303,5 +304,99 @@ class PaginationPageView<T> extends StatelessWidget {
       );
     }
     return child;
+  }
+}
+
+///自带刷新和加载更多功能的 瀑布流 式布局
+class PaginationStaggeredGridView<T> extends StatelessWidget {
+  const PaginationStaggeredGridView({
+    Key? key,
+    required this.controller,
+    required this.itemBuilder,
+    this.padding,
+    this.physics,
+    this.shrinkWrap = false,
+    this.scrollDirection = Axis.vertical,
+    this.scrollController,
+    this.placeholderScrollController,
+    this.needRefresh = true,
+    this.placeholderWidget,
+    this.crossAxisCount = 2,
+    this.mainAxisSpacing = 0,
+    this.crossAxisSpacing = 0,
+  }) : super(key: key);
+
+  final Pagination<T> controller;
+
+  final Widget Function(
+    BuildContext context,
+    List<T> valueList,
+    int index,
+  ) itemBuilder;
+
+  final int crossAxisCount;
+  final double mainAxisSpacing, crossAxisSpacing;
+
+  final EdgeInsetsGeometry? padding;
+  final bool shrinkWrap;
+  final ScrollPhysics? physics;
+  final Axis scrollDirection;
+  final ScrollController? scrollController;
+  final ScrollController? placeholderScrollController;
+  final bool needRefresh;
+
+  ///空列表时的占位布局
+  final Widget? placeholderWidget;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) =>
+          TransformListenableBuilder<List<T>, bool>(
+        listenable: controller.data,
+        transformer: (value) => value.isEmpty && placeholderWidget != null,
+        builder: (context, value, child) {
+          Widget result = value
+              ? ListView(
+                  controller: placeholderScrollController,
+                  physics: physics,
+                  padding: padding,
+                  scrollDirection: scrollDirection,
+                  shrinkWrap: shrinkWrap,
+                  children: [
+                    SizedBox(
+                      height: constraints.maxHeight,
+                      child: placeholderWidget!,
+                    ),
+                  ],
+                )
+              : child!;
+          if (needRefresh) {
+            result = RefreshIndicator(
+              onRefresh: controller.refresh,
+              child: result,
+            );
+          }
+          return result;
+        },
+        child: ValueListenableBuilder<List<T>>(
+          valueListenable: controller.data,
+          builder: (context, value, child) => StaggeredGridView.countBuilder(
+            controller: scrollController,
+            itemCount: value.length,
+            crossAxisCount: crossAxisCount,
+            padding: padding,
+            mainAxisSpacing: mainAxisSpacing,
+            crossAxisSpacing: crossAxisSpacing,
+            shrinkWrap: shrinkWrap,
+            physics: physics,
+            scrollDirection: scrollDirection,
+            itemBuilder: (context, index) =>
+                itemBuilder.call(context, value, index),
+            staggeredTileBuilder: (index) => const StaggeredTile.fit(1),
+          ),
+        ),
+      ),
+    );
   }
 }
