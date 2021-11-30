@@ -324,6 +324,7 @@ class PaginationStaggeredGridView<T> extends StatelessWidget {
     this.crossAxisCount = 2,
     this.mainAxisSpacing = 0,
     this.crossAxisSpacing = 0,
+    this.addAutomaticKeepAlives = true,
   }) : super(key: key);
 
   final Pagination<T> controller;
@@ -336,6 +337,7 @@ class PaginationStaggeredGridView<T> extends StatelessWidget {
 
   final int crossAxisCount;
   final double mainAxisSpacing, crossAxisSpacing;
+  final bool addAutomaticKeepAlives;
 
   final EdgeInsetsGeometry? padding;
   final bool shrinkWrap;
@@ -391,6 +393,7 @@ class PaginationStaggeredGridView<T> extends StatelessWidget {
             shrinkWrap: shrinkWrap,
             physics: physics,
             scrollDirection: scrollDirection,
+            addAutomaticKeepAlives: addAutomaticKeepAlives,
             itemBuilder: (context, index) =>
                 itemBuilder.call(context, value, index),
             staggeredTileBuilder: (index) => const StaggeredTile.fit(1),
