@@ -66,12 +66,18 @@ class _TaskDialogState<T> extends State<TaskDialog<T>> {
   }
 
   ///执行任务
-  void _runTask() async {
-    final T value = await widget.task.call();
-    //关闭弹窗
-    Navigator.removeRoute(context, ModalRoute.of(context)!);
-    //回调结果
-    widget.resultCompleter.complete(value);
+  void _runTask() {
+    widget.task.call().then((value) {
+      //关闭弹窗
+      Navigator.removeRoute(context, ModalRoute.of(context)!);
+      //回调结果
+      widget.resultCompleter.complete(value);
+    }).catchError((Object e, StackTrace trace) {
+      //关闭弹窗
+      Navigator.removeRoute(context, ModalRoute.of(context)!);
+      //回调异常
+      widget.resultCompleter.completeError(e, trace);
+    });
   }
 
   @override
