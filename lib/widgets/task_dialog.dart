@@ -5,16 +5,15 @@ import 'package:flutter/material.dart';
 ///任务弹窗
 class TaskDialog<T> extends StatefulWidget {
   ///把需要执行的任务包裹到弹窗弹出期间，任务执行结束 或者抛出异常，弹窗自动关闭
-  ///[task] 执行的任务抛出异常时，会返回 null
-  static Future<T?> show<T>(
+  static Future<T> show<T>(
     BuildContext context, {
     required Future<T> Function() task,
-    void Function(Object e, StackTrace trace)? onError,
     Color? barrierColor = Colors.black54,
     bool useRootNavigator = true,
     WidgetBuilder? contentBuilder,
-  }) {
-    return showDialog<T>(
+  }) async {
+    final Completer<T> completer = Completer<T>();
+    showDialog<void>(
       context: context,
       barrierDismissible: false,
       barrierColor: barrierColor,
@@ -23,35 +22,29 @@ class TaskDialog<T> extends StatefulWidget {
         onWillPop: () async => false,
         child: TaskDialog<T>._(
           task: task,
+          resultCompleter: completer,
           contentBuilder: contentBuilder,
-          onError: onError,
         ),
       ),
-    ).catchError((Object e, StackTrace trace) {
-      debugPrint(e.toString());
-      debugPrint(trace.toString());
-      return null;
-    });
+    );
+    return completer.future;
   }
 
   ///弹窗内容布局构造器
   static WidgetBuilder? dialogContentBuilder;
 
-  ///任务抛出异常时回调
-  static void Function(Object e, StackTrace trace)? callbackOnError;
-
   const TaskDialog._({
     Key? key,
     required this.task,
+    required this.resultCompleter,
     this.contentBuilder,
-    this.onError,
   }) : super(key: key);
 
   ///需要执行的任务
   final Future<T> Function() task;
 
-  ///任务抛出异常时回调
-  final void Function(Object e, StackTrace trace)? onError;
+  ///结果回调函数
+  final Completer<T> resultCompleter;
 
   ///内容构造器
   final WidgetBuilder? contentBuilder;
@@ -73,19 +66,12 @@ class _TaskDialogState<T> extends State<TaskDialog<T>> {
   }
 
   ///执行任务
-  void _runTask() {
-    widget.task.call().then<void>((value) {
-      Navigator.pop<T>(context, value);
-    }).catchError((Object e, StackTrace trace) {
-      debugPrint(e.toString());
-      debugPrint(trace.toString());
-      if (widget.onError != null) {
-        widget.onError?.call(e, trace);
-      } else if (TaskDialog.callbackOnError != null) {
-        TaskDialog.callbackOnError?.call(e, trace);
-      }
-      Navigator.pop<T>(context, null);
-    });
+  void _runTask() async {
+    final T value = await widget.task.call();
+    //关闭弹窗
+    Navigator.removeRoute(context, ModalRoute.of(context)!);
+    //回调结果
+    widget.resultCompleter.complete(value);
   }
 
   @override
