@@ -9,6 +9,7 @@ class TaskDialog<T> extends StatefulWidget {
   static Future<T?> show<T>(
     BuildContext context, {
     required Future<T> Function() task,
+    void Function(Object e, StackTrace trace)? onError,
     Color? barrierColor = Colors.black54,
     bool useRootNavigator = true,
     WidgetBuilder? contentBuilder,
@@ -20,9 +21,10 @@ class TaskDialog<T> extends StatefulWidget {
       useRootNavigator: useRootNavigator,
       builder: (context) => WillPopScope(
         onWillPop: () async => false,
-        child: TaskDialog._(
+        child: TaskDialog<T>._(
           task: task,
           contentBuilder: contentBuilder,
+          onError: onError,
         ),
       ),
     ).catchError((Object e, StackTrace trace) {
@@ -35,14 +37,21 @@ class TaskDialog<T> extends StatefulWidget {
   ///弹窗内容布局构造器
   static WidgetBuilder? dialogContentBuilder;
 
+  ///任务抛出异常时回调
+  static void Function(Object e, StackTrace trace)? callbackOnError;
+
   const TaskDialog._({
     Key? key,
     required this.task,
     this.contentBuilder,
+    this.onError,
   }) : super(key: key);
 
   ///需要执行的任务
   final Future<T> Function() task;
+
+  ///任务抛出异常时回调
+  final void Function(Object e, StackTrace trace)? onError;
 
   ///内容构造器
   final WidgetBuilder? contentBuilder;
@@ -70,6 +79,11 @@ class _TaskDialogState<T> extends State<TaskDialog<T>> {
     }).catchError((Object e, StackTrace trace) {
       debugPrint(e.toString());
       debugPrint(trace.toString());
+      if (widget.onError != null) {
+        widget.onError?.call(e, trace);
+      } else if (TaskDialog.callbackOnError != null) {
+        TaskDialog.callbackOnError?.call(e, trace);
+      }
       Navigator.pop<T>(context, null);
     });
   }
