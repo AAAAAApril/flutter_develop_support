@@ -20,7 +20,10 @@ class AprilPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
     private lateinit var channel: MethodChannel
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        channel = MethodChannel(flutterPluginBinding.binaryMessenger, "april_method_channel_name")
+        channel = MethodChannel(
+                flutterPluginBinding.binaryMessenger,
+                "April.FlutterDevelopSupport.MethodChannelName",
+        )
         channel.setMethodCallHandler(this)
     }
 

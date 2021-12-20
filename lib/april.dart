@@ -6,7 +6,7 @@ class April {
   April._();
 
   static const MethodChannel _channel = MethodChannel(
-    'april_method_channel_name',
+    'April.FlutterDevelopSupport.MethodChannelName',
   );
 
   ///回退到桌面

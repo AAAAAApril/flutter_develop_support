@@ -2,39 +2,8 @@ import 'package:april/data/pagination.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
+import 'loadmore_widget.dart';
 import 'transform_listenable_builder.dart';
-
-///自动触发加载更多操作的占位布局
-class LoadMoreWidget extends StatefulWidget {
-  const LoadMoreWidget({
-    Key? key,
-    this.controller,
-    this.sliver = false,
-    this.child = const SizedBox.shrink(),
-  }) : super(key: key);
-
-  final Pagination? controller;
-  final bool sliver;
-  final Widget child;
-
-  @override
-  _LoadMoreWidgetState createState() => _LoadMoreWidgetState();
-}
-
-class _LoadMoreWidgetState extends State<LoadMoreWidget> {
-  @override
-  void initState() {
-    super.initState();
-    widget.controller?.loadMore();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return widget.sliver
-        ? SliverToBoxAdapter(child: widget.child)
-        : widget.child;
-  }
-}
 
 ///自带刷新以及加载更多功能的 ListView
 class PaginationListView<T> extends StatelessWidget {

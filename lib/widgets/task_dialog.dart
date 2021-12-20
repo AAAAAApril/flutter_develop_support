@@ -54,12 +54,15 @@ class TaskDialog<T> extends StatefulWidget {
 }
 
 class _TaskDialogState<T> extends State<TaskDialog<T>> {
+  late ModalRoute route;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       //延迟一会儿再执行任务
       Future.delayed(const Duration(milliseconds: 100), () {
+        route = ModalRoute.of(context)!;
         _runTask();
       });
     });
@@ -68,13 +71,15 @@ class _TaskDialogState<T> extends State<TaskDialog<T>> {
   ///执行任务
   void _runTask() {
     widget.task.call().then((value) {
+      route.isActive;
+      route.isCurrent;
       //关闭弹窗
-      Navigator.removeRoute(context, ModalRoute.of(context)!);
+      Navigator.removeRoute(context, route);
       //回调结果
       widget.resultCompleter.complete(value);
     }).catchError((Object e, StackTrace trace) {
       //关闭弹窗
-      Navigator.removeRoute(context, ModalRoute.of(context)!);
+      Navigator.removeRoute(context, route);
       //回调异常
       widget.resultCompleter.completeError(e, trace);
     });

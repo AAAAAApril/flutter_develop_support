@@ -5,9 +5,11 @@ class KeepAliveWidget extends StatefulWidget {
   const KeepAliveWidget({
     Key? key,
     required this.child,
+    this.wantKeepAlive = true,
   }) : super(key: key);
 
   final Widget child;
+  final bool wantKeepAlive;
 
   @override
   _KeepAliveWidgetState createState() => _KeepAliveWidgetState();
@@ -22,5 +24,5 @@ class _KeepAliveWidgetState extends State<KeepAliveWidget>
   }
 
   @override
-  bool get wantKeepAlive => true;
+  bool get wantKeepAlive => widget.wantKeepAlive;
 }

@@ -52,7 +52,7 @@ class _TransformListenableBuilderState<T, D>
     D newData = widget.transformer.call(widget.listenable.value);
     if (newData != value) {
       value = newData;
-      setState(() {});
+      if (mounted) setState(() {});
     }
   }
 
@@ -111,7 +111,7 @@ class _TransformListenableBuilder2State<A, B, S>
     final result = _calculate();
     if (result != this.result) {
       this.result = result;
-      setState(() {});
+      if (mounted) setState(() {});
     }
   }
 
@@ -196,7 +196,7 @@ class _TransformListenableBuilder3State<A, B, C, S>
     final result = _calculate();
     if (result != this.result) {
       this.result = result;
-      setState(() {});
+      if (mounted) setState(() {});
     }
   }
 
@@ -264,11 +264,12 @@ class _ValueListenableBuilder2State<A, B>
   @override
   void initState() {
     super.initState();
-    _onValueChanged();
     _init();
   }
 
   void _init() {
+    valueA = widget.listenableA.value;
+    valueB = widget.listenableB.value;
     widget.listenableA.addListener(_onValueChanged);
     widget.listenableB.addListener(_onValueChanged);
   }
@@ -276,6 +277,7 @@ class _ValueListenableBuilder2State<A, B>
   void _onValueChanged() {
     valueA = widget.listenableA.value;
     valueB = widget.listenableB.value;
+    if (mounted) setState(() {});
   }
 
   @override
@@ -283,7 +285,6 @@ class _ValueListenableBuilder2State<A, B>
     if (oldWidget.listenableA != widget.listenableA ||
         oldWidget.listenableB != widget.listenableB) {
       _release(oldWidget);
-      _onValueChanged();
       _init();
     }
     super.didUpdateWidget(oldWidget);
@@ -348,11 +349,13 @@ class _ValueListenableBuildere3State<A, B, C>
   @override
   void initState() {
     super.initState();
-    _onValueChanged();
     _init();
   }
 
   void _init() {
+    valueA = widget.listenableA.value;
+    valueB = widget.listenableB.value;
+    valueC = widget.listenableC.value;
     widget.listenableA.addListener(_onValueChanged);
     widget.listenableB.addListener(_onValueChanged);
     widget.listenableC.addListener(_onValueChanged);
@@ -362,6 +365,7 @@ class _ValueListenableBuildere3State<A, B, C>
     valueA = widget.listenableA.value;
     valueB = widget.listenableB.value;
     valueC = widget.listenableC.value;
+    if (mounted) setState(() {});
   }
 
   @override
@@ -370,7 +374,6 @@ class _ValueListenableBuildere3State<A, B, C>
         oldWidget.listenableB != widget.listenableB ||
         oldWidget.listenableC != widget.listenableC) {
       _release(oldWidget);
-      _onValueChanged();
       _init();
     }
     super.didUpdateWidget(oldWidget);
