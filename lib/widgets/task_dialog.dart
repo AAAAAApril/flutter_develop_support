@@ -71,8 +71,6 @@ class _TaskDialogState<T> extends State<TaskDialog<T>> {
   ///执行任务
   void _runTask() {
     widget.task.call().then((value) {
-      route.isActive;
-      route.isCurrent;
       //关闭弹窗
       Navigator.removeRoute(context, route);
       //回调结果

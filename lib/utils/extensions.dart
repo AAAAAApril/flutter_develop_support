@@ -189,3 +189,44 @@ extension ObjectExt<T extends Object> on T {
     return this;
   }
 }
+
+///[BuildContext] 的扩展
+extension BuildContextExt on BuildContext {
+  ///安全返回
+  ///
+  ///当调用 pop 的 context 所属的页面不在最顶层的时候，
+  ///直接调用  Navigator.pop() 会导致最顶层的页面被 pop 掉，
+  ///而不是这个 context 所属的页面
+  ///
+  /// 所以有此 扩展
+  void safetyPop<T extends Object?>({
+    //如果当前页面没在最顶层，则先退回到当前页面
+    bool pop2CurrentWhenNotOnTop = true,
+    //需要回传给上一级路由的数据
+    T? result,
+  }) {
+    final ModalRoute? route = ModalRoute.of(this);
+    if (route == null) {
+      return;
+    }
+    //在最顶层（正常走 pop）
+    if (route.isCurrent) {
+      Navigator.pop<T>(this, result);
+    }
+    //没在最顶层
+    else {
+      //退回到自己
+      if (pop2CurrentWhenNotOnTop) {
+        //先退回
+        Navigator.popUntil(this, (value) => route == value);
+        //再 pop 自己
+        Navigator.pop<T>(this, result);
+      }
+      //不需要退回
+      else {
+        //移除自己
+        Navigator.removeRoute(this, route);
+      }
+    }
+  }
+}
