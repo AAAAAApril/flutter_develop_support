@@ -55,6 +55,15 @@ extension ListExt<T> on List<T> {
     } while (times > 0);
     return result;
   }
+
+  ///传回 下标 和 项 的循环，并返回列表
+  List<D> forIndexedEach<D>(D Function(T element, int index) test) {
+    final List<D> result = <D>[];
+    for (int index = 0; index < length; index++) {
+      result.add(test.call(this[index], index));
+    }
+    return result;
+  }
 }
 
 extension NullableListExt<T> on List<T?> {
@@ -127,6 +136,29 @@ extension WidgetListExt on List<Widget> {
 extension ColorListExt on List<Color> {
   List<Color> withOpacity(double opacity) {
     return map<Color>((e) => e.withOpacity(opacity)).toList();
+  }
+}
+
+extension DurationListExt on List<Duration> {
+  ///总时长
+  Duration total() {
+    Duration result = Duration.zero;
+    if (isNotEmpty) {
+      forEach((element) {
+        result += element;
+      });
+    }
+    return result;
+  }
+
+  ///每一个时长占总时长的权重
+  List<double> weights() {
+    final int totalDurationInMicroseconds = total().inMicroseconds;
+    final List<double> result = <double>[];
+    forEach((element) {
+      result.add(element.inMicroseconds / totalDurationInMicroseconds);
+    });
+    return result;
   }
 }
 
