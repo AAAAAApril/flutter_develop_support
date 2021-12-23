@@ -208,6 +208,14 @@ extension StringExt on String {
   String toMD5() {
     return md5.convert(utf8.encode(this)).toString();
   }
+
+  ///把首字母大写
+  String firstWord2UpperCase() {
+    if (isEmpty) {
+      return this;
+    }
+    return '${this[0].toUpperCase()}${substring(1)}';
+  }
 }
 
 ///仿 Kotlin 高阶函数 扩展函数
