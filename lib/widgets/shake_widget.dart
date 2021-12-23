@@ -9,7 +9,7 @@ class ShakeWidget extends StatefulWidget {
   const ShakeWidget({
     Key? key,
     required this.child,
-    this.angleValues = const <double>[0, 45, 45, 0],
+    this.angleValues = const <double>[0, -45, 45, 0],
     this.durations = const <Duration>[
       Duration(milliseconds: 150),
       Duration(milliseconds: 300),
