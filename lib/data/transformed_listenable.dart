@@ -1,15 +1,17 @@
 import 'package:flutter/foundation.dart';
 
 ///监听一个监听器，得到另一个值
-class TransformValueNotifier<T, D> extends ValueNotifier<D> {
-  TransformValueNotifier(
-    D value, {
-    required ValueListenable<T> targetListenable,
+class TransformedValueNotifier<T, D> extends ValueNotifier<D> {
+  TransformedValueNotifier({
+    required ValueListenable<T> listenable,
     required D Function(T value) transformer,
-  })  : _listenable = targetListenable,
+  })  : _listenable = listenable,
         _transformer = transformer,
-        super(value) {
-    _onNewValue();
+        super(
+          transformer(
+            listenable.value,
+          ),
+        ) {
     _listenable.addListener(_onNewValue);
   }
 
@@ -34,15 +36,18 @@ class TransformValueNotifier<T, D> extends ValueNotifier<D> {
 }
 
 ///同时监听两个监听器，并转换其值
-class TransformValueNotifier2<A, B, R> extends ValueNotifier<R> {
-  TransformValueNotifier2(
-    R value, {
+class TransformedValueNotifier2<A, B, R> extends ValueNotifier<R> {
+  TransformedValueNotifier2({
     required this.listenableA,
     required this.listenableB,
     required R Function(A valueA, B valueB) transformer,
   })  : _transformer = transformer,
-        super(value) {
-    _onNewValue();
+        super(
+          transformer(
+            listenableA.value,
+            listenableB.value,
+          ),
+        ) {
     listenableA.addListener(_onNewValue);
     listenableB.addListener(_onNewValue);
   }
@@ -72,16 +77,20 @@ class TransformValueNotifier2<A, B, R> extends ValueNotifier<R> {
 }
 
 ///同时监听三个监听器，并转换其值
-class TransformValueNotifier3<A, B, C, R> extends ValueNotifier<R> {
-  TransformValueNotifier3(
-    R value, {
+class TransformedValueNotifier3<A, B, C, R> extends ValueNotifier<R> {
+  TransformedValueNotifier3({
     required this.listenableA,
     required this.listenableB,
     required this.listenableC,
     required R Function(A valueA, B valueB, C valueC) transformer,
   })  : _transformer = transformer,
-        super(value) {
-    _onNewValue();
+        super(
+          transformer(
+            listenableA.value,
+            listenableB.value,
+            listenableC.value,
+          ),
+        ) {
     listenableA.addListener(_onNewValue);
     listenableB.addListener(_onNewValue);
     listenableC.addListener(_onNewValue);

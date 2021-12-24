@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import 'loadmore_widget.dart';
-import 'transform_listenable_builder.dart';
+import 'value_listenable_builder.dart';
 
 ///自带刷新以及加载更多功能的 ListView
 class PaginationListView<T> extends StatelessWidget {
@@ -62,7 +62,7 @@ class PaginationListView<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) =>
-          TransformListenableBuilder<List<T>, bool>(
+          TransformedValueListenableBuilder<List<T>, bool>(
         listenable: controller.data,
         transformer: (value) => value.isEmpty && placeholderWidget != null,
         builder: (context, value, child) {
@@ -166,7 +166,7 @@ class PaginationGridView<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) =>
-          TransformListenableBuilder<List<T>, bool>(
+          TransformedValueListenableBuilder<List<T>, bool>(
         listenable: controller.data,
         transformer: (value) => value.isEmpty && placeholderWidget != null,
         builder: (context, value, child) {
@@ -323,7 +323,7 @@ class PaginationStaggeredGridView<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) =>
-          TransformListenableBuilder<List<T>, bool>(
+          TransformedValueListenableBuilder<List<T>, bool>(
         listenable: controller.data,
         transformer: (value) => value.isEmpty && placeholderWidget != null,
         builder: (context, value, child) {
