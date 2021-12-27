@@ -57,6 +57,7 @@ class _TransformedValueListenableBuilderState<T, D>
   Widget build(BuildContext context) {
     return ValueListenableBuilder<D>(
       valueListenable: notifier,
+      child: widget.child,
       builder: widget.builder,
     );
   }
@@ -124,6 +125,7 @@ class _TransformedValueListenableBuilder2State<A, B, S>
   Widget build(BuildContext context) {
     return ValueListenableBuilder<S>(
       valueListenable: notifier,
+      child: widget.child,
       builder: widget.builder,
     );
   }
@@ -196,6 +198,7 @@ class _TransformedValueListenableBuilder3State<A, B, C, S>
   Widget build(BuildContext context) {
     return ValueListenableBuilder<S>(
       valueListenable: notifier,
+      child: widget.child,
       builder: widget.builder,
     );
   }
