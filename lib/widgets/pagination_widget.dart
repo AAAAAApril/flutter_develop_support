@@ -62,7 +62,7 @@ class PaginationListView<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) =>
-          TransformedValueListenableBuilder<List<T>, bool>(
+          TransformedListenableBuilder<List<T>, bool>(
         listenable: controller.data,
         transformer: (value) => value.isEmpty && placeholderWidget != null,
         builder: (context, value, child) {
@@ -166,7 +166,7 @@ class PaginationGridView<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) =>
-          TransformedValueListenableBuilder<List<T>, bool>(
+          TransformedListenableBuilder<List<T>, bool>(
         listenable: controller.data,
         transformer: (value) => value.isEmpty && placeholderWidget != null,
         builder: (context, value, child) {
@@ -323,7 +323,7 @@ class PaginationStaggeredGridView<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) =>
-          TransformedValueListenableBuilder<List<T>, bool>(
+          TransformedListenableBuilder<List<T>, bool>(
         listenable: controller.data,
         transformer: (value) => value.isEmpty && placeholderWidget != null,
         builder: (context, value, child) {

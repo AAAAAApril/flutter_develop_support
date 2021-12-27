@@ -3,8 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 ///和 [ValueListenableBuilder] 作用一样，只不过这个会筛选出需要的数据
-class TransformedValueListenableBuilder<T, D> extends StatefulWidget {
-  const TransformedValueListenableBuilder({
+class TransformedListenableBuilder<T, D> extends StatefulWidget {
+  const TransformedListenableBuilder({
     Key? key,
     required this.listenable,
     required this.transformer,
@@ -18,12 +18,12 @@ class TransformedValueListenableBuilder<T, D> extends StatefulWidget {
   final Widget? child;
 
   @override
-  _TransformedValueListenableBuilderState<T, D> createState() =>
-      _TransformedValueListenableBuilderState<T, D>();
+  _TransformedListenableBuilderState<T, D> createState() =>
+      _TransformedListenableBuilderState<T, D>();
 }
 
-class _TransformedValueListenableBuilderState<T, D>
-    extends State<TransformedValueListenableBuilder<T, D>> {
+class _TransformedListenableBuilderState<T, D>
+    extends State<TransformedListenableBuilder<T, D>> {
   late TransformedValueNotifier<T, D> notifier;
 
   @override
@@ -36,7 +36,7 @@ class _TransformedValueListenableBuilderState<T, D>
   }
 
   @override
-  void didUpdateWidget(TransformedValueListenableBuilder<T, D> oldWidget) {
+  void didUpdateWidget(TransformedListenableBuilder<T, D> oldWidget) {
     if (oldWidget.listenable != widget.listenable) {
       notifier.dispose();
       notifier = TransformedValueNotifier<T, D>(
@@ -64,8 +64,8 @@ class _TransformedValueListenableBuilderState<T, D>
 }
 
 ///根据两个数据观察者筛选出需要的数据
-class TransformedValueListenableBuilder2<A, B, S> extends StatefulWidget {
-  const TransformedValueListenableBuilder2({
+class TransformedListenableBuilder2<A, B, S> extends StatefulWidget {
+  const TransformedListenableBuilder2({
     Key? key,
     required this.listenableA,
     required this.listenableB,
@@ -81,12 +81,12 @@ class TransformedValueListenableBuilder2<A, B, S> extends StatefulWidget {
   final Widget? child;
 
   @override
-  _TransformedValueListenableBuilder2State<A, B, S> createState() =>
-      _TransformedValueListenableBuilder2State<A, B, S>();
+  _TransformedListenableBuilder2State<A, B, S> createState() =>
+      _TransformedListenableBuilder2State<A, B, S>();
 }
 
-class _TransformedValueListenableBuilder2State<A, B, S>
-    extends State<TransformedValueListenableBuilder2<A, B, S>> {
+class _TransformedListenableBuilder2State<A, B, S>
+    extends State<TransformedListenableBuilder2<A, B, S>> {
   late TransformedValueNotifier2<A, B, S> notifier;
 
   @override
@@ -101,7 +101,7 @@ class _TransformedValueListenableBuilder2State<A, B, S>
 
   @override
   void didUpdateWidget(
-    covariant TransformedValueListenableBuilder2<A, B, S> oldWidget,
+    covariant TransformedListenableBuilder2<A, B, S> oldWidget,
   ) {
     if (oldWidget.listenableA != widget.listenableA ||
         oldWidget.listenableB != widget.listenableB) {
@@ -132,8 +132,8 @@ class _TransformedValueListenableBuilder2State<A, B, S>
 }
 
 ///根据三个数据观察者筛选出需要的数据
-class TransformedValueListenableBuilder3<A, B, C, S> extends StatefulWidget {
-  const TransformedValueListenableBuilder3({
+class TransformedListenableBuilder3<A, B, C, S> extends StatefulWidget {
+  const TransformedListenableBuilder3({
     Key? key,
     required this.listenableA,
     required this.listenableB,
@@ -151,12 +151,12 @@ class TransformedValueListenableBuilder3<A, B, C, S> extends StatefulWidget {
   final Widget? child;
 
   @override
-  _TransformedValueListenableBuilder3State<A, B, C, S> createState() =>
-      _TransformedValueListenableBuilder3State<A, B, C, S>();
+  _TransformedListenableBuilder3State<A, B, C, S> createState() =>
+      _TransformedListenableBuilder3State<A, B, C, S>();
 }
 
-class _TransformedValueListenableBuilder3State<A, B, C, S>
-    extends State<TransformedValueListenableBuilder3<A, B, C, S>> {
+class _TransformedListenableBuilder3State<A, B, C, S>
+    extends State<TransformedListenableBuilder3<A, B, C, S>> {
   late TransformedValueNotifier3<A, B, C, S> notifier;
 
   @override
@@ -172,7 +172,7 @@ class _TransformedValueListenableBuilder3State<A, B, C, S>
 
   @override
   void didUpdateWidget(
-    covariant TransformedValueListenableBuilder3<A, B, C, S> oldWidget,
+    covariant TransformedListenableBuilder3<A, B, C, S> oldWidget,
   ) {
     if (oldWidget.listenableA != widget.listenableA ||
         oldWidget.listenableB != widget.listenableB ||
