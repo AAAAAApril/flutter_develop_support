@@ -174,7 +174,24 @@ extension IntExt on int {
     if (this >= 0 && this < 10) {
       return '0$this';
     }
-    return toString();
+    return '$this';
+  }
+
+  ///对百位以内的 int 进行补 0 操作（只对正数生效）
+  String get threeDigits {
+    if (this >= 100) return "$this";
+    if (this >= 10) return "0$this";
+    return "00$this";
+  }
+
+  ///对千位以内的 int 进行补 0 操作
+  String get fourDigits {
+    int absN = abs();
+    String sign = this < 0 ? "-" : "";
+    if (absN >= 1000) return "$this";
+    if (absN >= 100) return "${sign}0$absN";
+    if (absN >= 10) return "${sign}00$absN";
+    return "${sign}000$absN";
   }
 
   ///只取末尾两个数（只对正数生效）
