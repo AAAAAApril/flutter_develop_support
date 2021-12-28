@@ -20,3 +20,8 @@ Future<void> hideInputMethod() {
 void clearFocus() {
   FocusManager.instance.primaryFocus?.unfocus();
 }
+
+///复制文本到剪切板
+Future<void> copyText2Clipboard(String text){
+  return Clipboard.setData(ClipboardData(text: text));
+}
