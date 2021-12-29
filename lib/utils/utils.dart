@@ -11,6 +11,11 @@ late final bool isDebug = () {
   return result;
 }();
 
+///显示输入法
+Future<void> showInputMethod(){
+  return SystemChannels.textInput.invokeMethod('TextInput.show');
+}
+
 ///隐藏输入法
 Future<void> hideInputMethod() {
   return SystemChannels.textInput.invokeMethod('TextInput.hide');
