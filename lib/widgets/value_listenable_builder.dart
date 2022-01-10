@@ -210,12 +210,19 @@ class ValueListenableBuilder2<A, B> extends StatefulWidget {
     Key? key,
     required this.listenableA,
     required this.listenableB,
+    this.needRebuild,
     required this.builder,
     this.child,
   }) : super(key: key);
 
   final ValueListenable<A> listenableA;
   final ValueListenable<B> listenableB;
+  final bool Function(
+    A oldA,
+    A newA,
+    B oldB,
+    B newB,
+  )? needRebuild;
   final Widget Function(
     BuildContext context,
     A valueA,
@@ -248,9 +255,20 @@ class _ValueListenableBuilder2State<A, B>
   }
 
   void _onValueChanged() {
+    final A oldA = valueA;
+    final B oldB = valueB;
     valueA = widget.listenableA.value;
     valueB = widget.listenableB.value;
-    if (mounted) setState(() {});
+    if (widget.needRebuild?.call(
+              oldA,
+              valueA,
+              oldB,
+              valueB,
+            ) !=
+            false &&
+        mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -292,6 +310,7 @@ class ValueListenableBuilder3<A, B, C> extends StatefulWidget {
     required this.listenableA,
     required this.listenableB,
     required this.listenableC,
+    this.needRebuild,
     required this.builder,
     this.child,
   }) : super(key: key);
@@ -299,6 +318,14 @@ class ValueListenableBuilder3<A, B, C> extends StatefulWidget {
   final ValueListenable<A> listenableA;
   final ValueListenable<B> listenableB;
   final ValueListenable<C> listenableC;
+  final bool Function(
+    A oldA,
+    A newA,
+    B oldB,
+    B newB,
+    C oldC,
+    C newC,
+  )? needRebuild;
   final Widget Function(
     BuildContext context,
     A valueA,
@@ -335,10 +362,24 @@ class _ValueListenableBuildere3State<A, B, C>
   }
 
   void _onValueChanged() {
+    final A oldA = valueA;
+    final B oldB = valueB;
+    final C oldC = valueC;
     valueA = widget.listenableA.value;
     valueB = widget.listenableB.value;
     valueC = widget.listenableC.value;
-    if (mounted) setState(() {});
+    if (widget.needRebuild?.call(
+              oldA,
+              valueA,
+              oldB,
+              valueB,
+              oldC,
+              valueC,
+            ) !=
+            false &&
+        mounted) {
+      setState(() {});
+    }
   }
 
   @override
