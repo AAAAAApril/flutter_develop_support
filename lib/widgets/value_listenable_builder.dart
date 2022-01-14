@@ -2,69 +2,6 @@ import 'package:april/data/selector_listenable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
-///和 [ValueListenableBuilder] 作用一样，只不过这个会筛选出需要的数据
-@Deprecated('use SelectorListenableBuilder<T, D> instead')
-class TransformedListenableBuilder<T, D>
-    extends SelectorListenableBuilder<T, D> {
-  const TransformedListenableBuilder({
-    Key? key,
-    required ValueListenable<T> listenable,
-    required D Function(T value) transformer,
-    required ValueWidgetBuilder<D> builder,
-    Widget? child,
-  }) : super(
-          key: key,
-          valueListenable: listenable,
-          selector: transformer,
-          builder: builder,
-          child: child,
-        );
-}
-
-///根据两个数据观察者筛选出需要的数据
-@Deprecated('use SelectorListenableBuilder2<A, B, S> instead')
-class TransformedListenableBuilder2<A, B, S>
-    extends SelectorListenableBuilder2<A, B, S> {
-  const TransformedListenableBuilder2({
-    Key? key,
-    required ValueListenable<A> listenableA,
-    required ValueListenable<B> listenableB,
-    required S Function(A aValue, B bValue) transformer,
-    required ValueWidgetBuilder<S> builder,
-    Widget? child,
-  }) : super(
-          key: key,
-          valueListenableA: listenableA,
-          valueListenableB: listenableB,
-          selector: transformer,
-          builder: builder,
-          child: child,
-        );
-}
-
-///根据三个数据观察者筛选出需要的数据
-@Deprecated('use SelectorListenableBuilder3<A, B, C, S> instead')
-class TransformedListenableBuilder3<A, B, C, S>
-    extends SelectorListenableBuilder3<A, B, C, S> {
-  const TransformedListenableBuilder3({
-    Key? key,
-    required ValueListenable<A> listenableA,
-    required ValueListenable<B> listenableB,
-    required ValueListenable<C> listenableC,
-    required S Function(A aValue, B bValue, C valueC) transformer,
-    required ValueWidgetBuilder<S> builder,
-    Widget? child,
-  }) : super(
-          key: key,
-          valueListenableA: listenableA,
-          valueListenableB: listenableB,
-          valueListenableC: listenableC,
-          selector: transformer,
-          builder: builder,
-          child: child,
-        );
-}
-
 ///同时监听两个数据观察者
 class ValueListenableBuilder2<A, B> extends StatefulWidget {
   const ValueListenableBuilder2({
@@ -478,4 +415,67 @@ class _SelectorListenableBuilder3State<A, B, C, S>
       builder: widget.builder,
     );
   }
+}
+
+///和 [ValueListenableBuilder] 作用一样，只不过这个会筛选出需要的数据
+@Deprecated('use SelectorListenableBuilder<T, D> instead')
+class TransformedListenableBuilder<T, D>
+    extends SelectorListenableBuilder<T, D> {
+  const TransformedListenableBuilder({
+    Key? key,
+    required ValueListenable<T> listenable,
+    required D Function(T value) transformer,
+    required ValueWidgetBuilder<D> builder,
+    Widget? child,
+  }) : super(
+          key: key,
+          valueListenable: listenable,
+          selector: transformer,
+          builder: builder,
+          child: child,
+        );
+}
+
+///根据两个数据观察者筛选出需要的数据
+@Deprecated('use SelectorListenableBuilder2<A, B, S> instead')
+class TransformedListenableBuilder2<A, B, S>
+    extends SelectorListenableBuilder2<A, B, S> {
+  const TransformedListenableBuilder2({
+    Key? key,
+    required ValueListenable<A> listenableA,
+    required ValueListenable<B> listenableB,
+    required S Function(A aValue, B bValue) transformer,
+    required ValueWidgetBuilder<S> builder,
+    Widget? child,
+  }) : super(
+          key: key,
+          valueListenableA: listenableA,
+          valueListenableB: listenableB,
+          selector: transformer,
+          builder: builder,
+          child: child,
+        );
+}
+
+///根据三个数据观察者筛选出需要的数据
+@Deprecated('use SelectorListenableBuilder3<A, B, C, S> instead')
+class TransformedListenableBuilder3<A, B, C, S>
+    extends SelectorListenableBuilder3<A, B, C, S> {
+  const TransformedListenableBuilder3({
+    Key? key,
+    required ValueListenable<A> listenableA,
+    required ValueListenable<B> listenableB,
+    required ValueListenable<C> listenableC,
+    required S Function(A aValue, B bValue, C valueC) transformer,
+    required ValueWidgetBuilder<S> builder,
+    Widget? child,
+  }) : super(
+          key: key,
+          valueListenableA: listenableA,
+          valueListenableB: listenableB,
+          valueListenableC: listenableC,
+          selector: transformer,
+          builder: builder,
+          child: child,
+        );
 }
