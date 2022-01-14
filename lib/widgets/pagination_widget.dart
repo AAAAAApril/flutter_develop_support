@@ -61,66 +61,67 @@ class PaginationListView<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (context, constraints) =>
-          TransformedListenableBuilder<List<T>, bool>(
-        listenable: controller.data,
-        transformer: (value) => value.isEmpty && placeholderWidget != null,
-        builder: (context, value, child) {
-          Widget result = value
-              ? ListView(
-                  controller: placeholderScrollController,
-                  physics: physics,
-                  padding: padding,
-                  scrollDirection: scrollDirection,
-                  shrinkWrap: shrinkWrap,
-                  children: [
-                    SizedBox(
-                      height: constraints.maxHeight,
-                      child: placeholderWidget!,
-                    ),
-                  ],
-                )
-              : child!;
-          if (needRefresh) {
-            result = RefreshIndicator(
-              onRefresh: controller.refresh,
-              child: result,
-            );
-          }
-          return result;
-        },
-        child: ValueListenableBuilder<List<T>>(
+      builder: (context, constraints) {
+        return SelectorListenableBuilder<List<T>, bool>(
           valueListenable: controller.data,
-          builder: (context, value, child) => ListView.separated(
-            itemCount: 1 +
-                value.length +
-                (controller.hasMoreData.value == true ? 1 : 0),
-            padding: padding,
-            shrinkWrap: shrinkWrap,
-            physics: physics,
-            scrollDirection: scrollDirection,
-            controller: scrollController,
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                return header;
-              } else if (index == value.length + 1) {
-                return footer ?? LoadMoreWidget(controller: controller);
-              }
-              return itemBuilder.call(context, value, index - 1);
-            },
-            separatorBuilder: (context, index) {
-              if (index == 0) {
-                return headerSeparator;
-              } else if (index == value.length) {
-                return footerSeparator;
-              } else {
-                return separatorBuilder?.call(context, index - 1) ??
-                    const SizedBox.shrink();
-              }
-            },
+          selector: (value) => value.isEmpty && placeholderWidget != null,
+          builder: (context, value, child) {
+            Widget result = value
+                ? ListView(
+                    controller: placeholderScrollController,
+                    physics: physics,
+                    padding: padding,
+                    scrollDirection: scrollDirection,
+                    shrinkWrap: shrinkWrap,
+                    children: [
+                      SizedBox(
+                        height: constraints.maxHeight,
+                        child: placeholderWidget!,
+                      ),
+                    ],
+                  )
+                : child!;
+            if (needRefresh) {
+              result = RefreshIndicator(
+                onRefresh: controller.refresh,
+                child: result,
+              );
+            }
+            return result;
+          },
+          child: ValueListenableBuilder<List<T>>(
+            valueListenable: controller.data,
+            builder: (context, value, child) => ListView.separated(
+              itemCount: 1 +
+                  value.length +
+                  (controller.hasMoreData.value == true ? 1 : 0),
+              padding: padding,
+              shrinkWrap: shrinkWrap,
+              physics: physics,
+              scrollDirection: scrollDirection,
+              controller: scrollController,
+              itemBuilder: (context, index) {
+                if (index == 0) {
+                  return header;
+                } else if (index == value.length + 1) {
+                  return footer ?? LoadMoreWidget(controller: controller);
+                }
+                return itemBuilder.call(context, value, index - 1);
+              },
+              separatorBuilder: (context, index) {
+                if (index == 0) {
+                  return headerSeparator;
+                } else if (index == value.length) {
+                  return footerSeparator;
+                } else {
+                  return separatorBuilder?.call(context, index - 1) ??
+                      const SizedBox.shrink();
+                }
+              },
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
@@ -165,51 +166,52 @@ class PaginationGridView<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (context, constraints) =>
-          TransformedListenableBuilder<List<T>, bool>(
-        listenable: controller.data,
-        transformer: (value) => value.isEmpty && placeholderWidget != null,
-        builder: (context, value, child) {
-          Widget result = value
-              ? ListView(
-                  controller: placeholderScrollController,
-                  physics: physics,
-                  padding: padding,
-                  scrollDirection: scrollDirection,
-                  shrinkWrap: shrinkWrap,
-                  children: [
-                    SizedBox(
-                      height: constraints.maxHeight,
-                      child: placeholderWidget!,
-                    ),
-                  ],
-                )
-              : child!;
-          if (needRefresh) {
-            result = RefreshIndicator(
-              onRefresh: controller.refresh,
-              child: result,
-            );
-          }
-          return result;
-        },
-        child: ValueListenableBuilder<List<T>>(
+      builder: (context, constraints) {
+        return SelectorListenableBuilder<List<T>, bool>(
           valueListenable: controller.data,
-          builder: (context, value, child) => GridView.builder(
-            itemCount:
-                value.length + (controller.hasMoreData.value == true ? 1 : 0),
-            padding: padding,
-            shrinkWrap: shrinkWrap,
-            physics: physics,
-            scrollDirection: scrollDirection,
-            controller: scrollController,
-            gridDelegate: gridDelegate,
-            itemBuilder: (context, index) => index == value.length
-                ? LoadMoreWidget(controller: controller)
-                : itemBuilder.call(context, value, index),
+          selector: (value) => value.isEmpty && placeholderWidget != null,
+          builder: (context, value, child) {
+            Widget result = value
+                ? ListView(
+                    controller: placeholderScrollController,
+                    physics: physics,
+                    padding: padding,
+                    scrollDirection: scrollDirection,
+                    shrinkWrap: shrinkWrap,
+                    children: [
+                      SizedBox(
+                        height: constraints.maxHeight,
+                        child: placeholderWidget!,
+                      ),
+                    ],
+                  )
+                : child!;
+            if (needRefresh) {
+              result = RefreshIndicator(
+                onRefresh: controller.refresh,
+                child: result,
+              );
+            }
+            return result;
+          },
+          child: ValueListenableBuilder<List<T>>(
+            valueListenable: controller.data,
+            builder: (context, value, child) => GridView.builder(
+              itemCount:
+                  value.length + (controller.hasMoreData.value == true ? 1 : 0),
+              padding: padding,
+              shrinkWrap: shrinkWrap,
+              physics: physics,
+              scrollDirection: scrollDirection,
+              controller: scrollController,
+              gridDelegate: gridDelegate,
+              itemBuilder: (context, index) => index == value.length
+                  ? LoadMoreWidget(controller: controller)
+                  : itemBuilder.call(context, value, index),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
@@ -277,8 +279,8 @@ class PaginationPageView<T> extends StatelessWidget {
 }
 
 ///自带刷新和加载更多功能的 瀑布流 式布局
-class PaginationStaggeredGridView<T> extends StatelessWidget {
-  const PaginationStaggeredGridView({
+class PaginationWaterfallGridView<T> extends StatelessWidget {
+  const PaginationWaterfallGridView({
     Key? key,
     required this.controller,
     required this.itemBuilder,
@@ -322,53 +324,54 @@ class PaginationStaggeredGridView<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (context, constraints) =>
-          TransformedListenableBuilder<List<T>, bool>(
-        listenable: controller.data,
-        transformer: (value) => value.isEmpty && placeholderWidget != null,
-        builder: (context, value, child) {
-          Widget result = value
-              ? ListView(
-                  controller: placeholderScrollController,
-                  physics: physics,
-                  padding: padding,
-                  scrollDirection: scrollDirection,
-                  shrinkWrap: shrinkWrap,
-                  children: [
-                    SizedBox(
-                      height: constraints.maxHeight,
-                      child: placeholderWidget!,
-                    ),
-                  ],
-                )
-              : child!;
-          if (needRefresh) {
-            result = RefreshIndicator(
-              onRefresh: controller.refresh,
-              child: result,
-            );
-          }
-          return result;
-        },
-        child: ValueListenableBuilder<List<T>>(
+      builder: (context, constraints) {
+        return SelectorListenableBuilder<List<T>, bool>(
           valueListenable: controller.data,
-          builder: (context, value, child) => StaggeredGridView.countBuilder(
-            controller: scrollController,
-            itemCount: value.length,
-            crossAxisCount: crossAxisCount,
-            padding: padding,
-            mainAxisSpacing: mainAxisSpacing,
-            crossAxisSpacing: crossAxisSpacing,
-            shrinkWrap: shrinkWrap,
-            physics: physics,
-            scrollDirection: scrollDirection,
-            addAutomaticKeepAlives: addAutomaticKeepAlives,
-            itemBuilder: (context, index) =>
-                itemBuilder.call(context, value, index),
-            staggeredTileBuilder: (index) => const StaggeredTile.fit(1),
+          selector: (value) => value.isEmpty && placeholderWidget != null,
+          builder: (context, value, child) {
+            Widget result = value
+                ? ListView(
+                    controller: placeholderScrollController,
+                    physics: physics,
+                    padding: padding,
+                    scrollDirection: scrollDirection,
+                    shrinkWrap: shrinkWrap,
+                    children: [
+                      SizedBox(
+                        height: constraints.maxHeight,
+                        child: placeholderWidget!,
+                      ),
+                    ],
+                  )
+                : child!;
+            if (needRefresh) {
+              result = RefreshIndicator(
+                onRefresh: controller.refresh,
+                child: result,
+              );
+            }
+            return result;
+          },
+          child: ValueListenableBuilder<List<T>>(
+            valueListenable: controller.data,
+            builder: (context, value, child) => MasonryGridView.builder(
+              controller: scrollController,
+              shrinkWrap: shrinkWrap,
+              padding: padding,
+              physics: physics,
+              scrollDirection: scrollDirection,
+              mainAxisSpacing: mainAxisSpacing,
+              crossAxisSpacing: crossAxisSpacing,
+              addAutomaticKeepAlives: addAutomaticKeepAlives,
+              gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+              ),
+              itemBuilder: (context, index) =>
+                  itemBuilder.call(context, value, index),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

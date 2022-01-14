@@ -1,207 +1,68 @@
-import 'package:april/data/transformed_listenable.dart';
+import 'package:april/data/selector_listenable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 ///和 [ValueListenableBuilder] 作用一样，只不过这个会筛选出需要的数据
-class TransformedListenableBuilder<T, D> extends StatefulWidget {
+@Deprecated('use SelectorListenableBuilder<T, D> instead')
+class TransformedListenableBuilder<T, D>
+    extends SelectorListenableBuilder<T, D> {
   const TransformedListenableBuilder({
     Key? key,
-    required this.listenable,
-    required this.transformer,
-    required this.builder,
-    this.child,
-  }) : super(key: key);
-
-  final ValueListenable<T> listenable;
-  final D Function(T value) transformer;
-  final ValueWidgetBuilder<D> builder;
-  final Widget? child;
-
-  @override
-  _TransformedListenableBuilderState<T, D> createState() =>
-      _TransformedListenableBuilderState<T, D>();
-}
-
-class _TransformedListenableBuilderState<T, D>
-    extends State<TransformedListenableBuilder<T, D>> {
-  late TransformedValueNotifier<T, D> notifier;
-
-  @override
-  void initState() {
-    super.initState();
-    notifier = TransformedValueNotifier<T, D>(
-      listenable: widget.listenable,
-      transformer: widget.transformer,
-    );
-  }
-
-  @override
-  void didUpdateWidget(TransformedListenableBuilder<T, D> oldWidget) {
-    if (oldWidget.listenable != widget.listenable) {
-      notifier.dispose();
-      notifier = TransformedValueNotifier<T, D>(
-        listenable: widget.listenable,
-        transformer: widget.transformer,
-      );
-    }
-    super.didUpdateWidget(oldWidget);
-  }
-
-  @override
-  void dispose() {
-    notifier.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder<D>(
-      valueListenable: notifier,
-      child: widget.child,
-      builder: widget.builder,
-    );
-  }
+    required ValueListenable<T> listenable,
+    required D Function(T value) transformer,
+    required ValueWidgetBuilder<D> builder,
+    Widget? child,
+  }) : super(
+          key: key,
+          valueListenable: listenable,
+          selector: transformer,
+          builder: builder,
+          child: child,
+        );
 }
 
 ///根据两个数据观察者筛选出需要的数据
-class TransformedListenableBuilder2<A, B, S> extends StatefulWidget {
+@Deprecated('use SelectorListenableBuilder2<A, B, S> instead')
+class TransformedListenableBuilder2<A, B, S>
+    extends SelectorListenableBuilder2<A, B, S> {
   const TransformedListenableBuilder2({
     Key? key,
-    required this.listenableA,
-    required this.listenableB,
-    required this.transformer,
-    required this.builder,
-    this.child,
-  }) : super(key: key);
-
-  final ValueListenable<A> listenableA;
-  final ValueListenable<B> listenableB;
-  final S Function(A aValue, B bValue) transformer;
-  final ValueWidgetBuilder<S> builder;
-  final Widget? child;
-
-  @override
-  _TransformedListenableBuilder2State<A, B, S> createState() =>
-      _TransformedListenableBuilder2State<A, B, S>();
-}
-
-class _TransformedListenableBuilder2State<A, B, S>
-    extends State<TransformedListenableBuilder2<A, B, S>> {
-  late TransformedValueNotifier2<A, B, S> notifier;
-
-  @override
-  void initState() {
-    super.initState();
-    notifier = TransformedValueNotifier2<A, B, S>(
-      listenableA: widget.listenableA,
-      listenableB: widget.listenableB,
-      transformer: widget.transformer,
-    );
-  }
-
-  @override
-  void didUpdateWidget(
-    covariant TransformedListenableBuilder2<A, B, S> oldWidget,
-  ) {
-    if (oldWidget.listenableA != widget.listenableA ||
-        oldWidget.listenableB != widget.listenableB) {
-      notifier.dispose();
-      notifier = TransformedValueNotifier2<A, B, S>(
-        listenableA: widget.listenableA,
-        listenableB: widget.listenableB,
-        transformer: widget.transformer,
-      );
-    }
-    super.didUpdateWidget(oldWidget);
-  }
-
-  @override
-  void dispose() {
-    notifier.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder<S>(
-      valueListenable: notifier,
-      child: widget.child,
-      builder: widget.builder,
-    );
-  }
+    required ValueListenable<A> listenableA,
+    required ValueListenable<B> listenableB,
+    required S Function(A aValue, B bValue) transformer,
+    required ValueWidgetBuilder<S> builder,
+    Widget? child,
+  }) : super(
+          key: key,
+          valueListenableA: listenableA,
+          valueListenableB: listenableB,
+          selector: transformer,
+          builder: builder,
+          child: child,
+        );
 }
 
 ///根据三个数据观察者筛选出需要的数据
-class TransformedListenableBuilder3<A, B, C, S> extends StatefulWidget {
+@Deprecated('use SelectorListenableBuilder3<A, B, C, S> instead')
+class TransformedListenableBuilder3<A, B, C, S>
+    extends SelectorListenableBuilder3<A, B, C, S> {
   const TransformedListenableBuilder3({
     Key? key,
-    required this.listenableA,
-    required this.listenableB,
-    required this.listenableC,
-    required this.transformer,
-    required this.builder,
-    this.child,
-  }) : super(key: key);
-
-  final ValueListenable<A> listenableA;
-  final ValueListenable<B> listenableB;
-  final ValueListenable<C> listenableC;
-  final S Function(A aValue, B bValue, C valueC) transformer;
-  final ValueWidgetBuilder<S> builder;
-  final Widget? child;
-
-  @override
-  _TransformedListenableBuilder3State<A, B, C, S> createState() =>
-      _TransformedListenableBuilder3State<A, B, C, S>();
-}
-
-class _TransformedListenableBuilder3State<A, B, C, S>
-    extends State<TransformedListenableBuilder3<A, B, C, S>> {
-  late TransformedValueNotifier3<A, B, C, S> notifier;
-
-  @override
-  void initState() {
-    super.initState();
-    notifier = TransformedValueNotifier3<A, B, C, S>(
-      listenableA: widget.listenableA,
-      listenableB: widget.listenableB,
-      listenableC: widget.listenableC,
-      transformer: widget.transformer,
-    );
-  }
-
-  @override
-  void didUpdateWidget(
-    covariant TransformedListenableBuilder3<A, B, C, S> oldWidget,
-  ) {
-    if (oldWidget.listenableA != widget.listenableA ||
-        oldWidget.listenableB != widget.listenableB ||
-        oldWidget.listenableC != widget.listenableC) {
-      notifier.dispose();
-      notifier = TransformedValueNotifier3<A, B, C, S>(
-        listenableA: widget.listenableA,
-        listenableB: widget.listenableB,
-        listenableC: widget.listenableC,
-        transformer: widget.transformer,
-      );
-    }
-    super.didUpdateWidget(oldWidget);
-  }
-
-  @override
-  void dispose() {
-    notifier.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder<S>(
-      valueListenable: notifier,
-      child: widget.child,
-      builder: widget.builder,
-    );
-  }
+    required ValueListenable<A> listenableA,
+    required ValueListenable<B> listenableB,
+    required ValueListenable<C> listenableC,
+    required S Function(A aValue, B bValue, C valueC) transformer,
+    required ValueWidgetBuilder<S> builder,
+    Widget? child,
+  }) : super(
+          key: key,
+          valueListenableA: listenableA,
+          valueListenableB: listenableB,
+          valueListenableC: listenableC,
+          selector: transformer,
+          builder: builder,
+          child: child,
+        );
 }
 
 ///同时监听两个数据观察者
@@ -413,6 +274,208 @@ class _ValueListenableBuildere3State<A, B, C>
       valueB,
       valueC,
       widget.child,
+    );
+  }
+}
+
+///监听 [T] 的变化，并返回 [D]
+class SelectorListenableBuilder<T, D> extends StatefulWidget {
+  const SelectorListenableBuilder({
+    Key? key,
+    required this.valueListenable,
+    required this.selector,
+    required this.builder,
+    this.child,
+  }) : super(key: key);
+
+  final ValueListenable<T> valueListenable;
+  final D Function(T value) selector;
+  final ValueWidgetBuilder<D> builder;
+  final Widget? child;
+
+  @override
+  _SelectorListenableBuilderState<T, D> createState() =>
+      _SelectorListenableBuilderState<T, D>();
+}
+
+class _SelectorListenableBuilderState<T, D>
+    extends State<SelectorListenableBuilder<T, D>> {
+  late SelectValueNotifier<T, D> notifier;
+
+  @override
+  void initState() {
+    super.initState();
+    notifier = SelectValueNotifier<T, D>(
+      valueListenable: widget.valueListenable,
+      selector: widget.selector,
+    );
+  }
+
+  @override
+  void didUpdateWidget(SelectorListenableBuilder<T, D> oldWidget) {
+    if (oldWidget.valueListenable != widget.valueListenable) {
+      notifier.dispose();
+      notifier = SelectValueNotifier<T, D>(
+        valueListenable: widget.valueListenable,
+        selector: widget.selector,
+      );
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void dispose() {
+    notifier.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<D>(
+      valueListenable: notifier,
+      child: widget.child,
+      builder: widget.builder,
+    );
+  }
+}
+
+///根据两个数据观察者筛选出需要的数据
+class SelectorListenableBuilder2<A, B, S> extends StatefulWidget {
+  const SelectorListenableBuilder2({
+    Key? key,
+    required this.valueListenableA,
+    required this.valueListenableB,
+    required this.selector,
+    required this.builder,
+    this.child,
+  }) : super(key: key);
+
+  final ValueListenable<A> valueListenableA;
+  final ValueListenable<B> valueListenableB;
+  final S Function(A aValue, B bValue) selector;
+  final ValueWidgetBuilder<S> builder;
+  final Widget? child;
+
+  @override
+  _SelectorListenableBuilder2State<A, B, S> createState() =>
+      _SelectorListenableBuilder2State<A, B, S>();
+}
+
+class _SelectorListenableBuilder2State<A, B, S>
+    extends State<SelectorListenableBuilder2<A, B, S>> {
+  late SelectValueNotifier2<A, B, S> notifier;
+
+  @override
+  void initState() {
+    super.initState();
+    notifier = SelectValueNotifier2<A, B, S>(
+      valueListenableA: widget.valueListenableA,
+      valueListenableB: widget.valueListenableB,
+      selector: widget.selector,
+    );
+  }
+
+  @override
+  void didUpdateWidget(
+    covariant SelectorListenableBuilder2<A, B, S> oldWidget,
+  ) {
+    if (oldWidget.valueListenableA != widget.valueListenableA ||
+        oldWidget.valueListenableB != widget.valueListenableB) {
+      notifier.dispose();
+      notifier = SelectValueNotifier2<A, B, S>(
+        valueListenableA: widget.valueListenableA,
+        valueListenableB: widget.valueListenableB,
+        selector: widget.selector,
+      );
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void dispose() {
+    notifier.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<S>(
+      valueListenable: notifier,
+      child: widget.child,
+      builder: widget.builder,
+    );
+  }
+}
+
+///根据三个数据观察者筛选出需要的数据
+class SelectorListenableBuilder3<A, B, C, S> extends StatefulWidget {
+  const SelectorListenableBuilder3({
+    Key? key,
+    required this.valueListenableA,
+    required this.valueListenableB,
+    required this.valueListenableC,
+    required this.selector,
+    required this.builder,
+    this.child,
+  }) : super(key: key);
+
+  final ValueListenable<A> valueListenableA;
+  final ValueListenable<B> valueListenableB;
+  final ValueListenable<C> valueListenableC;
+  final S Function(A aValue, B bValue, C valueC) selector;
+  final ValueWidgetBuilder<S> builder;
+  final Widget? child;
+
+  @override
+  _SelectorListenableBuilder3State<A, B, C, S> createState() =>
+      _SelectorListenableBuilder3State<A, B, C, S>();
+}
+
+class _SelectorListenableBuilder3State<A, B, C, S>
+    extends State<SelectorListenableBuilder3<A, B, C, S>> {
+  late SelectValueNotifier3<A, B, C, S> notifier;
+
+  @override
+  void initState() {
+    super.initState();
+    notifier = SelectValueNotifier3<A, B, C, S>(
+      valueListenableA: widget.valueListenableA,
+      valueListenableB: widget.valueListenableB,
+      valueListenableC: widget.valueListenableC,
+      selector: widget.selector,
+    );
+  }
+
+  @override
+  void didUpdateWidget(
+    covariant SelectorListenableBuilder3<A, B, C, S> oldWidget,
+  ) {
+    if (oldWidget.valueListenableA != widget.valueListenableA ||
+        oldWidget.valueListenableB != widget.valueListenableB ||
+        oldWidget.valueListenableC != widget.valueListenableC) {
+      notifier.dispose();
+      notifier = SelectValueNotifier3<A, B, C, S>(
+        valueListenableA: widget.valueListenableA,
+        valueListenableB: widget.valueListenableB,
+        valueListenableC: widget.valueListenableC,
+        selector: widget.selector,
+      );
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void dispose() {
+    notifier.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<S>(
+      valueListenable: notifier,
+      child: widget.child,
+      builder: widget.builder,
     );
   }
 }

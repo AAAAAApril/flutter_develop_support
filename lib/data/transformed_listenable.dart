@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 ///监听一个监听器，得到另一个值
+@Deprecated('use SelectValueNotifier<T, D> instead')
 class TransformedValueNotifier<T, D> extends ValueNotifier<D> {
   TransformedValueNotifier({
     required ValueListenable<T> listenable,
@@ -36,6 +37,7 @@ class TransformedValueNotifier<T, D> extends ValueNotifier<D> {
 }
 
 ///同时监听两个监听器，并转换其值
+@Deprecated('use SelectValueNotifier2<A, B, R> instead')
 class TransformedValueNotifier2<A, B, R> extends ValueNotifier<R> {
   TransformedValueNotifier2({
     required this.listenableA,
@@ -77,6 +79,7 @@ class TransformedValueNotifier2<A, B, R> extends ValueNotifier<R> {
 }
 
 ///同时监听三个监听器，并转换其值
+@Deprecated('use SelectValueNotifier3<A, B, C, R> instead')
 class TransformedValueNotifier3<A, B, C, R> extends ValueNotifier<R> {
   TransformedValueNotifier3({
     required this.listenableA,
