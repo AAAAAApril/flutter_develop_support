@@ -289,7 +289,7 @@ class SelectorListenableBuilder2<A, B, S> extends StatefulWidget {
 
   final ValueListenable<A> valueListenableA;
   final ValueListenable<B> valueListenableB;
-  final S Function(A aValue, B bValue) selector;
+  final S Function(A valueA, B valueB) selector;
   final ValueWidgetBuilder<S> builder;
   final Widget? child;
 
@@ -359,7 +359,7 @@ class SelectorListenableBuilder3<A, B, C, S> extends StatefulWidget {
   final ValueListenable<A> valueListenableA;
   final ValueListenable<B> valueListenableB;
   final ValueListenable<C> valueListenableC;
-  final S Function(A aValue, B bValue, C valueC) selector;
+  final S Function(A valueA, B valueB, C valueC) selector;
   final ValueWidgetBuilder<S> builder;
   final Widget? child;
 
@@ -444,7 +444,7 @@ class TransformedListenableBuilder2<A, B, S>
     Key? key,
     required ValueListenable<A> listenableA,
     required ValueListenable<B> listenableB,
-    required S Function(A aValue, B bValue) transformer,
+    required S Function(A valueA, B valueB) transformer,
     required ValueWidgetBuilder<S> builder,
     Widget? child,
   }) : super(
@@ -466,7 +466,7 @@ class TransformedListenableBuilder3<A, B, C, S>
     required ValueListenable<A> listenableA,
     required ValueListenable<B> listenableB,
     required ValueListenable<C> listenableC,
-    required S Function(A aValue, B bValue, C valueC) transformer,
+    required S Function(A valueA, B valueB, C valueC) transformer,
     required ValueWidgetBuilder<S> builder,
     Widget? child,
   }) : super(
