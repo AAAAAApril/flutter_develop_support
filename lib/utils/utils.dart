@@ -12,7 +12,7 @@ late final bool isDebug = () {
 }();
 
 ///显示输入法
-Future<void> showInputMethod(){
+Future<void> showInputMethod() {
   return SystemChannels.textInput.invokeMethod('TextInput.show');
 }
 
@@ -27,6 +27,13 @@ void clearFocus() {
 }
 
 ///复制文本到剪切板
-Future<void> copyText2Clipboard(String text){
+Future<void> copyText2Clipboard(String text) {
   return Clipboard.setData(ClipboardData(text: text));
+}
+
+///从剪切板粘贴文字
+Future<String?> pasteTextFromClipboard() {
+  return Clipboard.getData('text/plain').then<String?>(
+    (value) => value?.text,
+  );
 }
