@@ -1,7 +1,9 @@
 package com.april.support
 
 import android.app.Activity
+import android.content.ComponentName
 import android.content.Intent
+import android.net.Uri
 import android.os.Process
 import androidx.annotation.NonNull
 
@@ -44,18 +46,32 @@ class AprilPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
                 result.success(activity != null)
                 activity?.let { activity ->
                     activity.baseContext.packageManager
-                        .getLaunchIntentForPackage(activity.baseContext.packageName)
-                        ?.let {
-                            it.addFlags(
-                                Intent.FLAG_ACTIVITY_NEW_TASK
-                                        or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                                        or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                            )
-                            activity.baseContext.startActivity(it)
-                        }
+                            .getLaunchIntentForPackage(activity.baseContext.packageName)
+                            ?.let {
+                                it.addFlags(
+                                        Intent.FLAG_ACTIVITY_NEW_TASK
+                                                or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                                or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                )
+                                activity.baseContext.startActivity(it)
+                            }
                     activity.overridePendingTransition(0, 0)
                     Process.killProcess(Process.myPid())
                     exitProcess(0)
+                }
+            }
+            //获取能够接收该隐式跳转链的 APP 包名
+            "canLaunchComponentName" -> {
+                if (activity == null) {
+                    result.error("The host Activity is destroyed", null, null)
+                } else {
+                    val componentName: ComponentName? = Intent(Intent.ACTION_VIEW).also {
+                        it.data = Uri.parse(call.argument<String>("url") ?: "")
+                    }.resolveActivity(activity!!.packageManager)
+                    result.success(mapOf(
+                            "packageName" to componentName?.packageName,
+                            "className" to componentName?.className,
+                    ))
                 }
             }
             else -> {
