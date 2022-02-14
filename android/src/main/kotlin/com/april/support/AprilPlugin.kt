@@ -3,7 +3,12 @@ package com.april.support
 import android.app.Activity
 import android.content.ComponentName
 import android.content.Intent
+import android.content.pm.ActivityInfo
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.net.Uri
+import android.os.Build
 import android.os.Process
 import androidx.annotation.NonNull
 
@@ -60,19 +65,66 @@ class AprilPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
                     exitProcess(0)
                 }
             }
-            //获取能够接收该隐式跳转链的 APP 包名
-            "canLaunchComponentName" -> {
+            //根据包名查询对应包相关信息
+            "installedAppInfo" -> {
                 if (activity == null) {
-                    result.error("The host Activity is destroyed", null, null)
+                    result.success(mapOf<Any, Any>())
                 } else {
-                    val componentName: ComponentName? = Intent(Intent.ACTION_VIEW).also {
-                        it.data = Uri.parse(call.argument<String>("url") ?: "")
-                    }.resolveActivity(activity!!.packageManager)
-                    result.success(mapOf(
-                            "packageName" to componentName?.packageName,
-                            "className" to componentName?.className,
-                    ))
+                    try {
+                        val packageInfo: PackageInfo = activity!!.packageManager.getPackageInfo(
+                                (call.arguments as String?) ?: "",
+                                0
+                        )
+                        result.success(mapOf(
+                                "packageName" to packageInfo.packageName,
+                                "versionName" to packageInfo.versionName,
+                                "versionCode" to if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                                    packageInfo.longVersionCode
+                                } else {
+                                    packageInfo.versionCode
+                                },
+                                "firstInstallTime" to packageInfo.firstInstallTime,
+                                "lastUpdateTime" to packageInfo.lastUpdateTime,
+                        ))
+                    } catch (e: Exception) {
+                        result.success(mapOf<Any, Any>())
+                    }
                 }
+            }
+            "supportedActivities" -> {
+                if (activity == null) {
+                    result.success(listOf<Map<Any, Any>>())
+                } else {
+                    val resolveInfoList: List<ResolveInfo> = activity!!.packageManager.queryIntentActivities(
+                            Intent(Intent.ACTION_VIEW).also {
+                                it.data = Uri.parse((call.arguments as String?) ?: "")
+                            },
+                            PackageManager.MATCH_DEFAULT_ONLY,
+                    )
+                    result.success(resolveInfoList.map {
+                        val activityInfo: ActivityInfo = it.activityInfo ?: return@map null
+                        return@map mapOf(
+                                "packageName" to activityInfo.packageName,
+                                "className" to activityInfo.name,
+                        )
+                    })
+                }
+            }
+            "launchUrl" -> {
+                activity?.startActivity(
+                        Intent(Intent.ACTION_VIEW).also {
+                            it.data = Uri.parse(call.argument<String>("url") ?: "")
+                            val packageName: String? = call.argument<String>("packageName")
+                            val className: String? = call.argument<String>("className")
+                            if (packageName.isNullOrEmpty() || className.isNullOrEmpty()) {
+                                return@also
+                            }
+                            it.component = ComponentName(
+                                    packageName,
+                                    className,
+                            )
+                        }
+                )
             }
             else -> {
                 result.notImplemented()

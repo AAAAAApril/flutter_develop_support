@@ -1,3 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.april.support">
+
+
+    <!--  如果需要使用到 根据包名查找应用 的相关功能，则需要在主工程添加以下配置  -->
+<!--    <queries>-->
+<!--        <intent>-->
+<!--            &lt;!&ndash;      https://juejin.cn/post/6904922007297916936      &ndash;&gt;-->
+<!--            &lt;!&ndash; https://blog.csdn.net/mad1989/article/details/38090513 &ndash;&gt;-->
+<!--            <action android:name="android.intent.action.MAIN" />-->
+<!--        </intent>-->
+<!--    </queries>-->
+
 </manifest>
