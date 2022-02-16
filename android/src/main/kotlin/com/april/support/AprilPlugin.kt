@@ -114,22 +114,32 @@ class AprilPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
                 }
             }
             "launchUrl" -> {
-                activity?.startActivity(
-                    Intent(Intent.ACTION_VIEW).also {
-                        it.data = Uri.parse(call.argument<String>("url") ?: "")
-                        val packageName: String =
-                            call.argument<String>("packageName") ?: return@also
-                        val className: String? = call.argument<String>("className")
-                        if (className.isNullOrEmpty()) {
-                            it.setPackage(packageName)
-                        } else {
-                            it.component = ComponentName(
-                                packageName,
-                                className,
-                            )
-                        }
+                if (activity == null) {
+                    result.success(false)
+                } else {
+                    try {
+                        activity!!.startActivity(
+                            Intent(Intent.ACTION_VIEW).also {
+                                it.data = Uri.parse(call.argument<String>("url") ?: "")
+                                val packageName: String =
+                                    call.argument<String>("packageName") ?: return@also
+                                val className: String? = call.argument<String>("className")
+                                if (className.isNullOrEmpty()) {
+                                    it.setPackage(packageName)
+                                } else {
+                                    it.component = ComponentName(
+                                        packageName,
+                                        className,
+                                    )
+                                }
+                            }
+                        )
+                        result.success(true)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        result.success(false)
                     }
-                )
+                }
             }
             else -> {
                 result.notImplemented()

@@ -86,7 +86,7 @@ class April {
   }
 
   ///加载跳转链
-  static Future<void> launchUrl(
+  static Future<bool> launchUrl(
     //需要加载的跳转链
     String url, {
     //指定包名
@@ -95,13 +95,13 @@ class April {
     String className = '',
   }) {
     return _channel
-        .invokeMethod('launchUrl', {
+        .invokeMethod<bool>('launchUrl', {
           'packageName': packageName,
           'className': className,
           'url': url,
         })
-        .then<void>((value) {})
-        .catchError((_) {});
+        .then<bool>((value) => value ?? false)
+        .catchError((_) => false);
   }
 }
 
