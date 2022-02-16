@@ -28,8 +28,8 @@ class AprilPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(
-                flutterPluginBinding.binaryMessenger,
-                "April.FlutterDevelopSupport.MethodChannelName",
+            flutterPluginBinding.binaryMessenger,
+            "April.FlutterDevelopSupport.MethodChannelName",
         )
         channel.setMethodCallHandler(this)
     }
@@ -51,15 +51,15 @@ class AprilPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
                 result.success(activity != null)
                 activity?.let { activity ->
                     activity.baseContext.packageManager
-                            .getLaunchIntentForPackage(activity.baseContext.packageName)
-                            ?.let {
-                                it.addFlags(
-                                        Intent.FLAG_ACTIVITY_NEW_TASK
-                                                or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                                                or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                                )
-                                activity.baseContext.startActivity(it)
-                            }
+                        .getLaunchIntentForPackage(activity.baseContext.packageName)
+                        ?.let {
+                            it.addFlags(
+                                Intent.FLAG_ACTIVITY_NEW_TASK
+                                        or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                        or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            )
+                            activity.baseContext.startActivity(it)
+                        }
                     activity.overridePendingTransition(0, 0)
                     Process.killProcess(Process.myPid())
                     exitProcess(0)
@@ -72,10 +72,11 @@ class AprilPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
                 } else {
                     try {
                         val packageInfo: PackageInfo = activity!!.packageManager.getPackageInfo(
-                                (call.arguments as String?) ?: "",
-                                0
+                            (call.arguments as String?) ?: "",
+                            0
                         )
-                        result.success(mapOf(
+                        result.success(
+                            mapOf(
                                 "packageName" to packageInfo.packageName,
                                 "versionName" to packageInfo.versionName,
                                 "versionCode" to if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -85,7 +86,8 @@ class AprilPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
                                 },
                                 "firstInstallTime" to packageInfo.firstInstallTime,
                                 "lastUpdateTime" to packageInfo.lastUpdateTime,
-                        ))
+                            )
+                        )
                     } catch (e: Exception) {
                         result.success(mapOf<Any, Any>())
                     }
@@ -95,35 +97,38 @@ class AprilPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
                 if (activity == null) {
                     result.success(listOf<Map<Any, Any>>())
                 } else {
-                    val resolveInfoList: List<ResolveInfo> = activity!!.packageManager.queryIntentActivities(
+                    val resolveInfoList: List<ResolveInfo> =
+                        activity!!.packageManager.queryIntentActivities(
                             Intent(Intent.ACTION_VIEW).also {
                                 it.data = Uri.parse((call.arguments as String?) ?: "")
                             },
                             PackageManager.MATCH_DEFAULT_ONLY,
-                    )
+                        )
                     result.success(resolveInfoList.map {
                         val activityInfo: ActivityInfo = it.activityInfo ?: return@map null
                         return@map mapOf(
-                                "packageName" to activityInfo.packageName,
-                                "className" to activityInfo.name,
+                            "packageName" to activityInfo.packageName,
+                            "className" to activityInfo.name,
                         )
                     })
                 }
             }
             "launchUrl" -> {
                 activity?.startActivity(
-                        Intent(Intent.ACTION_VIEW).also {
-                            it.data = Uri.parse(call.argument<String>("url") ?: "")
-                            val packageName: String? = call.argument<String>("packageName")
-                            val className: String? = call.argument<String>("className")
-                            if (packageName.isNullOrEmpty() || className.isNullOrEmpty()) {
-                                return@also
-                            }
+                    Intent(Intent.ACTION_VIEW).also {
+                        it.data = Uri.parse(call.argument<String>("url") ?: "")
+                        val packageName: String =
+                            call.argument<String>("packageName") ?: return@also
+                        val className: String? = call.argument<String>("className")
+                        if (className.isNullOrEmpty()) {
+                            it.setPackage(packageName)
+                        } else {
                             it.component = ComponentName(
-                                    packageName,
-                                    className,
+                                packageName,
+                                className,
                             )
                         }
+                    }
                 )
             }
             else -> {
