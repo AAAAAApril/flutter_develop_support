@@ -58,13 +58,16 @@ class April {
   ///查找所有支持这个跳转链的 Activity 的信息
   static Future<List<ResolveActivityInfo>> supportedActivities(String url) {
     return _channel
-        .invokeMethod<List<Map>>('supportedActivities', url)
+        .invokeMethod<List>('supportedActivities', url)
         .then<List<ResolveActivityInfo>>((value) {
       if (value == null || value.isEmpty) {
         return <ResolveActivityInfo>[];
       }
       return List<ResolveActivityInfo>.from(
         value.map<ResolveActivityInfo?>((e) {
+          if (e is! Map) {
+            return null;
+          }
           if (e.isEmpty) {
             return null;
           }
