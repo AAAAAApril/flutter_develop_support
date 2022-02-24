@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
@@ -8,6 +9,21 @@ class April {
   static const MethodChannel _channel = MethodChannel(
     'April.FlutterDevelopSupport.MethodChannelName',
   );
+
+  //是否已经设置过监听器了
+  static bool _setCallHandler = false;
+
+  ///接收 Intent data
+  static late final StreamController<String?> _onIntentDataController =
+      StreamController<String?>.broadcast();
+
+  static Stream<String?> get onIntentData {
+    if (!_setCallHandler) {
+      _setCallHandler = true;
+      _channel.setMethodCallHandler(_onMethodCall);
+    }
+    return _onIntentDataController.stream;
+  }
 
   ///回退到桌面
   static void backToDesktop() {
@@ -102,6 +118,21 @@ class April {
         })
         .then<bool>((value) => value ?? false)
         .catchError((_) => false);
+  }
+
+  //接收到原生端发来的消息
+  static Future<dynamic> _onMethodCall(MethodCall call) async {
+    switch (call.method) {
+      case 'onIntentData':
+        try {
+          _onIntentDataController.add(call.arguments as String?);
+        } catch (_) {
+          //ignore
+        }
+        return 0;
+      default:
+        return;
+    }
   }
 }
 

@@ -1,6 +1,5 @@
 package com.april.support
 
-import android.app.Activity
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -11,7 +10,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Process
 import androidx.annotation.NonNull
-
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -19,27 +17,30 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import io.flutter.plugin.common.PluginRegistry
 import kotlin.system.exitProcess
 
 /** AprilPlugin */
-class AprilPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
-    private var activity: Activity? = null
-    private lateinit var channel: MethodChannel
+class AprilPlugin : FlutterPlugin, ActivityAware, PluginRegistry.NewIntentListener,
+    MethodCallHandler {
+    private var binding: ActivityPluginBinding? = null
+    private var channel: MethodChannel? = null
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(
             flutterPluginBinding.binaryMessenger,
             "April.FlutterDevelopSupport.MethodChannelName",
-        )
-        channel.setMethodCallHandler(this)
+        ).also {
+            it.setMethodCallHandler(this)
+        }
     }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         when (call.method) {
             //回到桌面
             "backToDesktop" -> {
-                activity?.moveTaskToBack(false)
-                result.success(activity != null)
+                binding?.activity?.moveTaskToBack(false)
+                result.success(binding != null)
             }
             //关闭应用
             "closeApplication" -> {
@@ -48,8 +49,8 @@ class AprilPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
             }
             //重启应用
             "restartApplication" -> {
-                result.success(activity != null)
-                activity?.let { activity ->
+                result.success(binding != null)
+                binding?.activity?.let { activity ->
                     activity.baseContext.packageManager
                         .getLaunchIntentForPackage(activity.baseContext.packageName)
                         ?.let {
@@ -67,14 +68,15 @@ class AprilPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
             }
             //根据包名查询对应包相关信息
             "installedAppInfo" -> {
-                if (activity == null) {
+                if (binding == null) {
                     result.success(mapOf<Any, Any>())
                 } else {
                     try {
-                        val packageInfo: PackageInfo = activity!!.packageManager.getPackageInfo(
-                            (call.arguments as String?) ?: "",
-                            0
-                        )
+                        val packageInfo: PackageInfo =
+                            binding!!.activity.packageManager.getPackageInfo(
+                                (call.arguments as String?) ?: "",
+                                0
+                            )
                         result.success(
                             mapOf(
                                 "packageName" to packageInfo.packageName,
@@ -93,12 +95,13 @@ class AprilPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
                     }
                 }
             }
+            //根据隐式跳转链，查找能接收跳转的 包和类信息
             "supportedActivities" -> {
-                if (activity == null) {
+                if (binding == null) {
                     result.success(listOf<Map<Any, Any>>())
                 } else {
                     val resolveInfoList: List<ResolveInfo> =
-                        activity!!.packageManager.queryIntentActivities(
+                        binding!!.activity.packageManager.queryIntentActivities(
                             Intent(Intent.ACTION_VIEW).also {
                                 it.data = Uri.parse((call.arguments as String?) ?: "")
                             },
@@ -113,12 +116,13 @@ class AprilPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
                     })
                 }
             }
+            //执行隐式跳转链
             "launchUrl" -> {
-                if (activity == null) {
+                if (binding == null) {
                     result.success(false)
                 } else {
                     try {
-                        activity!!.startActivity(
+                        binding!!.activity.startActivity(
                             Intent(Intent.ACTION_VIEW).also {
                                 it.data = Uri.parse(call.argument<String>("url") ?: "")
                                 val packageName: String =
@@ -148,22 +152,42 @@ class AprilPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
-        channel.setMethodCallHandler(null)
+        channel?.setMethodCallHandler(null)
+        channel = null
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
-        activity = binding.activity
+        this.binding = binding
+        binding.addOnNewIntentListener(this)
+        binding.activity.intent?.let {
+            if (
+                (it.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY)
+                != Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY
+            ) {
+                onNewIntent(it)
+            }
+        }
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
-        activity = null
+        this.binding?.removeOnNewIntentListener(this)
+        this.binding = null
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-        activity = binding.activity
+        this.binding = binding
+        binding.addOnNewIntentListener(this)
     }
 
     override fun onDetachedFromActivity() {
-        activity = null
+        this.binding?.removeOnNewIntentListener(this)
+        this.binding = null
+    }
+
+    override fun onNewIntent(intent: Intent?): Boolean {
+        intent?.let {
+            channel?.invokeMethod("onIntentData", it.dataString)
+        }
+        return false
     }
 }
