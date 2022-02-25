@@ -145,6 +145,22 @@ class AprilPlugin : FlutterPlugin, ActivityAware, PluginRegistry.NewIntentListen
                     }
                 }
             }
+            //获取 Intent 的 data 字段
+            "getIntentData" -> {
+                val intent: Intent? = binding?.activity?.intent
+                if (intent == null) {
+                    result.success(null)
+                } else {
+                    if (
+                        (intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY)
+                        != Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY
+                    ) {
+                        result.success(intent.dataString)
+                    } else {
+                        result.success(null)
+                    }
+                }
+            }
             else -> {
                 result.notImplemented()
             }
@@ -159,14 +175,6 @@ class AprilPlugin : FlutterPlugin, ActivityAware, PluginRegistry.NewIntentListen
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         this.binding = binding
         binding.addOnNewIntentListener(this)
-        binding.activity.intent?.let {
-            if (
-                (it.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY)
-                != Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY
-            ) {
-                onNewIntent(it)
-            }
-        }
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
@@ -185,9 +193,7 @@ class AprilPlugin : FlutterPlugin, ActivityAware, PluginRegistry.NewIntentListen
     }
 
     override fun onNewIntent(intent: Intent?): Boolean {
-        intent?.let {
-            channel?.invokeMethod("onIntentData", it.dataString)
-        }
+        channel?.invokeMethod("onNewIntentData", intent?.dataString)
         return false
     }
 }

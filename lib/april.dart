@@ -17,7 +17,7 @@ class April {
   static late final StreamController<String?> _onIntentDataController =
       StreamController<String?>.broadcast();
 
-  static Stream<String?> get onIntentData {
+  static Stream<String?> get onNewIntentData {
     if (!_setCallHandler) {
       _setCallHandler = true;
       _channel.setMethodCallHandler(_onMethodCall);
@@ -120,10 +120,18 @@ class April {
         .catchError((_) => false);
   }
 
+  ///获取 Intent 的 data 字段数据
+  static Future<String?> getIntentData() {
+    return _channel
+        .invokeMethod<dynamic>('getIntentData')
+        .then<String?>((value) => value as String?)
+        .catchError((_) => null);
+  }
+
   //接收到原生端发来的消息
   static Future<dynamic> _onMethodCall(MethodCall call) async {
     switch (call.method) {
-      case 'onIntentData':
+      case 'onNewIntentData':
         try {
           _onIntentDataController.add(call.arguments as String?);
         } catch (_) {
