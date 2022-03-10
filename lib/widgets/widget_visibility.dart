@@ -1,6 +1,12 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:visibility_detector/visibility_detector.dart';
+
+typedef VisibilityCallback = void Function(
+  bool appVisible,
+  bool widgetVisible,
+);
 
 ///能够监听 内部 Widget 可见性变化的组件
 class VisibilityDetectorWidget extends StatefulWidget {
@@ -9,6 +15,7 @@ class VisibilityDetectorWidget extends StatefulWidget {
     required this.detectorKey,
     required this.child,
     this.onVisibleChanged,
+    this.visibilityCallback,
   }) : super(key: key);
 
   ///监听器的 Key
@@ -16,6 +23,9 @@ class VisibilityDetectorWidget extends StatefulWidget {
 
   ///可见性变更通知
   final ValueChanged<bool>? onVisibleChanged;
+
+  ///可见性回调（同时回调两个值，比[onVisibleChanged]更早，不一定是因为值变化而触发）
+  final VisibilityCallback? visibilityCallback;
 
   ///内嵌的组件
   final Widget child;
@@ -39,6 +49,13 @@ class _VisibilityDetectorWidgetState extends State<VisibilityDetectorWidget>
   void initState() {
     super.initState();
     checkVisible();
+    WidgetsBinding.instance?.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance?.removeObserver(this);
+    super.dispose();
   }
 
   @override
@@ -69,6 +86,7 @@ class _VisibilityDetectorWidgetState extends State<VisibilityDetectorWidget>
   void checkVisible() {
     Future.delayed(Duration.zero, () {
       final bool newVisible = widgetVisible && appVisible;
+      widget.visibilityCallback?.call(appVisible, widgetVisible);
       if (resultVisible != newVisible) {
         resultVisible = newVisible;
         widget.onVisibleChanged?.call(newVisible);
