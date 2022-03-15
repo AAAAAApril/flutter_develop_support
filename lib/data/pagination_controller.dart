@@ -12,65 +12,30 @@ abstract class AbsPaginationController<T, W extends AbsPaginationDataWrapper<T>>
   AbsPaginationController({
     //默认的数据
     List<T>? data,
-    //是否自动触发一次刷新
-    bool autoRefresh = true,
-    //是否懒刷新，即：在第一获取数据监听器时触发刷新
-    bool lazyRefresh = true,
-    //获取数据监听器其时，发现数据量为空，是否触发刷新
-    bool autoRefreshOnEmptyList = true,
-    //分页起始页码
-    int startPageNum = 1,
-    //每一页的数据量
-    int pageSize = 20,
-  })  : assert(pageSize > 0),
-        super(
+    PaginationConfig? config,
+  }) : super(
           data: data,
-          autoRefresh: autoRefresh,
-          lazyRefresh: lazyRefresh,
-          autoRefreshOnEmptyList: autoRefreshOnEmptyList,
-          startPageNum: startPageNum,
-          pageSize: pageSize,
+          paginationConfig: config ?? PaginationConfig(),
         );
 }
 
-abstract class _PaginationControllerInternal<T, W extends AbsPaginationDataWrapper<T>>
+abstract class _PaginationControllerInternal<T,
+        W extends AbsPaginationDataWrapper<T>>
     extends AbsRefreshableController<T, W> implements Pagination<T> {
   _PaginationControllerInternal({
     required List<T>? data,
-    required bool autoRefresh,
-    required bool lazyRefresh,
-    required bool autoRefreshOnEmptyList,
-    required this.startPageNum,
-    required this.pageSize,
-  })  : assert(pageSize > 0),
-        _currentPageNum = startPageNum,
-        super(
-          data: data,
-          autoRefresh: autoRefresh,
-          lazyRefresh: lazyRefresh,
-          autoRefreshOnEmptyList: autoRefreshOnEmptyList,
-        );
+    required this.paginationConfig,
+  }) : super(data: data, config: paginationConfig);
 
-  ///起始页码数
-  final int startPageNum;
-
-  ///当前页码数
-  int _currentPageNum;
-
-  int get currentPageNum => _currentPageNum;
-
-  ///用于在加载更多操作时，获取下一页的页码
-  int get nextPageNum => _currentPageNum + 1;
-
-  ///分页时每一页的数据量
-  final int pageSize;
+  ///配置参数
+  final PaginationConfig paginationConfig;
 
   ///加载更多操作
   @override
   @mustCallSuper
   Future<void> loadMore() async {
     //如果第一次刷新都还没执行过，则直接转接到刷新操作
-    if (!firstRefreshed) {
+    if (!paginationConfig.firstRefreshed) {
       return refresh();
     }
     //没有更多数据时不允许触发加载更多操作
@@ -90,7 +55,7 @@ abstract class _PaginationControllerInternal<T, W extends AbsPaginationDataWrapp
     //加载数据
     await loadMoreInternal().then<void>((wrapper) async {
       if (wrapper.succeed) {
-        _currentPageNum = nextPageNum;
+        paginationConfig._currentPageNum = paginationConfig.nextPageNum;
         setHasMoreData(wrapper.hasMore);
         await onLoadMoreSucceed(wrapper);
       } else {
@@ -109,7 +74,7 @@ abstract class _PaginationControllerInternal<T, W extends AbsPaginationDataWrapp
   @mustCallSuper
   Future<void> onRefreshSucceed(covariant W wrapper) async {
     //当前页码赋值为初始值
-    _currentPageNum = startPageNum;
+    paginationConfig._currentPageNum = paginationConfig.startPageNum;
     setHasMoreData(wrapper.hasMore);
     return super.onRefreshSucceed(wrapper);
   }
@@ -138,4 +103,35 @@ abstract class _PaginationControllerInternal<T, W extends AbsPaginationDataWrapp
   ///加载更多操作的具体执行方法
   @protected
   Future<W> loadMoreInternal();
+}
+
+///分页功能的一些配置参数
+class PaginationConfig extends RefreshableConfig {
+  PaginationConfig({
+    this.startPageNum = 1,
+    this.pageSize = 20,
+    bool autoRefresh = true,
+    bool lazyRefresh = true,
+    bool autoRefreshOnEmptyList = true,
+  })  : assert(pageSize > 0),
+        _currentPageNum = startPageNum,
+        super(
+          autoRefresh: autoRefresh,
+          lazyRefresh: lazyRefresh,
+          autoRefreshOnEmptyList: autoRefreshOnEmptyList,
+        );
+
+  ///起始页码数
+  final int startPageNum;
+
+  ///当前页码数
+  int _currentPageNum;
+
+  int get currentPageNum => _currentPageNum;
+
+  ///用于在加载更多操作时，获取下一页的页码
+  int get nextPageNum => _currentPageNum + 1;
+
+  ///分页时每一页的数据量
+  final int pageSize;
 }

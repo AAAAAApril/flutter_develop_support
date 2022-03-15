@@ -9,46 +9,33 @@ abstract class AbsRefreshableController<T,
   AbsRefreshableController({
     //默认的数据
     List<T>? data,
-    //是否自动触发一次刷新
-    bool autoRefresh = true,
-    //是否懒刷新，即：在第一获取数据监听器时触发刷新
-    bool lazyRefresh = true,
-    //获取数据监听器其时，发现数据量为空，是否触发刷新
-    bool autoRefreshOnEmptyList = true,
-  })  : _autoRefreshOnEmptyList = autoRefreshOnEmptyList,
-        _autoRefresh = autoRefresh,
-        _lazyRefresh = lazyRefresh {
+    RefreshableConfig? config,
+  }) : refreshableConfig = config ?? RefreshableConfig() {
     if (data != null) {
       setData(data);
     }
-    if (!firstRefreshed && _autoRefresh && !_lazyRefresh) {
+    if (!refreshableConfig.firstRefreshed &&
+        refreshableConfig.autoRefresh &&
+        !refreshableConfig.lazyRefresh) {
       refresh();
     }
   }
 
-  ///是否自动触发一次刷新
-  final bool _autoRefresh;
-
-  ///是否懒刷新，如果是，则在第一次获取数据监听器的时候刷新
-  ///否则，则在构造函数内刷新。
-  ///当 [_autoRefresh] 为 true 时生效
-  final bool _lazyRefresh;
-
-  ///获取数据监听器其时，发现数据量为空，是否触发刷新
-  final bool _autoRefreshOnEmptyList;
-
-  ///是否已经刷新过一次了
-  @protected
-  bool firstRefreshed = false;
+  ///配置参数
+  final RefreshableConfig refreshableConfig;
 
   @protected
   @override
   void onGetDataListenable(List<T> oldData) {
-    if (!firstRefreshed && _autoRefresh && _lazyRefresh) {
+    if (!refreshableConfig.firstRefreshed &&
+        refreshableConfig.autoRefresh &&
+        refreshableConfig.lazyRefresh) {
       refresh();
     }
     //如果已经刷新过了，但是列表为空，触发一次刷新操作
-    else if (firstRefreshed && oldData.isEmpty && _autoRefreshOnEmptyList) {
+    else if (refreshableConfig.firstRefreshed &&
+        oldData.isEmpty &&
+        refreshableConfig.autoRefreshOnEmptyList) {
       refresh();
     }
   }
@@ -67,7 +54,7 @@ abstract class AbsRefreshableController<T,
   ///刷新操作真实执行函数
   Future<void> _paginationRefresh() async {
     setRefreshing(true);
-    firstRefreshed = true;
+    refreshableConfig.firstRefreshed = true;
     //加载数据
     await refreshInternal().then<void>((wrapper) async {
       if (wrapper.succeed) {
@@ -116,4 +103,27 @@ abstract class AbsRefreshableController<T,
   ///刷新操作的具体执行方法
   @protected
   Future<W> refreshInternal();
+}
+
+///刷新功能的一些配置参数
+class RefreshableConfig {
+  RefreshableConfig({
+    this.autoRefresh = true,
+    this.lazyRefresh = true,
+    this.autoRefreshOnEmptyList = true,
+  });
+
+  ///是否自动触发一次刷新
+  final bool autoRefresh;
+
+  ///是否懒刷新，如果是，则在第一次获取数据监听器的时候刷新
+  ///否则，则在构造函数内刷新。
+  ///当 [autoRefresh] 为 true 时生效
+  final bool lazyRefresh;
+
+  ///获取数据监听器其时，发现数据量为空，是否触发刷新
+  final bool autoRefreshOnEmptyList;
+
+  ///是否已经刷新过一次了
+  bool firstRefreshed = false;
 }
