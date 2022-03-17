@@ -61,7 +61,7 @@ class _TaskDialogState<T> extends State<TaskDialog<T>> {
     super.initState();
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       //延迟一会儿再执行任务
-      Future.delayed(const Duration(milliseconds: 100), () {
+      Future.delayed(const Duration(milliseconds: 10), () {
         route = ModalRoute.of(context)!;
         _runTask();
       });
