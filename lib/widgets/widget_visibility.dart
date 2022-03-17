@@ -89,7 +89,9 @@ class _VisibilityDetectorWidgetState extends State<VisibilityDetectorWidget>
       widget.visibilityCallback?.call(appVisible, widgetVisible);
       if (resultVisible != newVisible) {
         resultVisible = newVisible;
-        widget.onVisibleChanged?.call(newVisible);
+        if (mounted) {
+          widget.onVisibleChanged?.call(newVisible);
+        }
       }
     });
   }
