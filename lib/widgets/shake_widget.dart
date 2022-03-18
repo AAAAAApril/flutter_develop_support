@@ -10,8 +10,8 @@ import 'package:april/utils/extensions.dart';
 class ShakeWidget extends StatefulWidget {
   const ShakeWidget({
     Key? key,
-    required this.child,
     required this.detectorKey,
+    required this.child,
     this.angleValues = const <double>[0, -45, 45, 0],
     this.durations = const <Duration>[
       Duration(milliseconds: 150),

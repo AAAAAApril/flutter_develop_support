@@ -1,3 +1,5 @@
+import 'package:april/widgets/periodic_scale_animation_widget.dart';
+import 'package:april/widgets/shake_widget.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -40,8 +42,15 @@ class ExampleWidget extends StatefulWidget {
 class _ExampleWidgetState extends State<ExampleWidget> {
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('测试界面'),
-    );
+    return Column(children: [
+      PeriodicScaleAnimationWidget(
+        detectorKey: const ValueKey<String>('周期性缩放动画'),
+        child: const Icon(Icons.diamond, size: 48),
+      ),
+      ShakeWidget(
+        detectorKey: const ValueKey<String>('旋转动画'),
+        child: const Icon(Icons.title, size: 48),
+      ),
+    ]);
   }
 }

@@ -7,8 +7,8 @@ import 'package:april/utils/extensions.dart';
 class PeriodicScaleAnimationWidget extends StatefulWidget {
   const PeriodicScaleAnimationWidget({
     Key? key,
-    required this.child,
     required this.detectorKey,
+    required this.child,
     this.duration = const Duration(milliseconds: 1500),
     this.scales = const <double>[1.0, 1.2, 1.0, 0.8],
   })  : assert(scales.length >= 2),
@@ -100,7 +100,7 @@ class _ScaleAnimateWidgetState extends State<PeriodicScaleAnimationWidget>
       detectorKey: widget.detectorKey,
       onVisibleChanged: (visible) {
         if (visible) {
-          controller.forward();
+          controller.repeat();
         } else {
           controller.stop();
         }
