@@ -1,3 +1,4 @@
+import 'package:april/widgets/widget_visibility.dart';
 import 'package:flutter/material.dart';
 
 import 'package:april/utils/extensions.dart';
@@ -7,6 +8,7 @@ class PeriodicScaleAnimationWidget extends StatefulWidget {
   const PeriodicScaleAnimationWidget({
     Key? key,
     required this.child,
+    required this.detectorKey,
     this.duration = const Duration(milliseconds: 1500),
     this.scales = const <double>[1.0, 1.2, 1.0, 0.8],
   })  : assert(scales.length >= 2),
@@ -20,6 +22,9 @@ class PeriodicScaleAnimationWidget extends StatefulWidget {
 
   ///动画执行时长
   final Duration duration;
+
+  ///组件可见性保持 Key
+  final Key detectorKey;
 
   @override
   State<PeriodicScaleAnimationWidget> createState() =>
@@ -91,9 +96,19 @@ class _ScaleAnimateWidgetState extends State<PeriodicScaleAnimationWidget>
 
   @override
   Widget build(BuildContext context) {
-    return ScaleTransition(
-      scale: animation,
-      child: widget.child,
+    return VisibilityDetectorWidget(
+      detectorKey: widget.detectorKey,
+      onVisibleChanged: (visible) {
+        if (visible) {
+          controller.forward();
+        } else {
+          controller.stop();
+        }
+      },
+      child: ScaleTransition(
+        scale: animation,
+        child: widget.child,
+      ),
     );
   }
 }
