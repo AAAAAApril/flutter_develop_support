@@ -287,3 +287,17 @@ extension BuildContextExt on BuildContext {
     }
   }
 }
+
+extension StatefulWidgetStateExt<T extends StatefulWidget> on State<T> {
+  @protected
+  void unSafetySetState([VoidCallback? fn]) {
+    setState(fn ?? () {});
+  }
+
+  @protected
+  void safetySetState([VoidCallback? fn]) {
+    if (mounted) {
+      setState(fn ?? () {});
+    }
+  }
+}
