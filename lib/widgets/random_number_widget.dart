@@ -11,7 +11,8 @@ class RandomNumberWidget extends StatefulWidget {
     this.child,
     this.duration = const Duration(milliseconds: 100),
     this.ticks = 3,
-  })  : assert(number == null || number < 0 || (number >= 0 && number < 10)),
+  })
+      : assert(number == null || number < 0 || (number >= 0 && number < 10)),
         super(key: key);
 
   ///目标数字
@@ -27,10 +28,10 @@ class RandomNumberWidget extends StatefulWidget {
   final int ticks;
 
   final Widget Function(
-    BuildContext context,
-    int number,
-    Widget? child,
-  ) builder;
+      BuildContext context,
+      int number,
+      Widget? child,
+      ) builder;
   final Widget? child;
 
   @override
@@ -45,22 +46,18 @@ class _RandomNumberWidgetState extends State<RandomNumberWidget> {
 
   int value = 0;
 
+  int? lastNumber;
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
   @override
   void didUpdateWidget(covariant RandomNumberWidget oldWidget) {
-    ///需要取消定时器
-    final int? newNumber = widget.number;
-    if (newNumber == null) {
-      timer?.cancel();
-    }
-
-    ///需要开始随机
-    else if (newNumber < 0) {
-      randomTimerTick();
-    }
-
-    ///需要滚动到目标数字
-    else if (newNumber >= 0 && newNumber <= 9) {
-      targetTimerTick();
+    if (widget.number!=oldWidget.number) {
+      init();
     }
     super.didUpdateWidget(oldWidget);
   }
@@ -69,6 +66,29 @@ class _RandomNumberWidgetState extends State<RandomNumberWidget> {
   void dispose() {
     timer?.cancel();
     super.dispose();
+  }
+
+  ///初始化
+  void init() {
+    final int? newNumber = widget.number;
+    if (newNumber != lastNumber) {
+      lastNumber = newNumber;
+
+      ///需要取消定时器
+      if (newNumber == null) {
+        timer?.cancel();
+      }
+
+      ///需要开始随机
+      else if (newNumber < 0) {
+        randomTimerTick();
+      }
+
+      ///需要滚动到目标数字
+      else if (newNumber >= 0 && newNumber <= 9) {
+        targetTimerTick();
+      }
+    }
   }
 
   ///开始随机显示
