@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 
 ///可自由拖拽组件
+///Tips：[FreeDraggableWidget] 的父组件必须是 [Stack]
 class FreeDraggableWidget extends StatefulWidget {
   const FreeDraggableWidget({
     Key? key,
@@ -73,6 +75,7 @@ class _FreeDraggableWidgetState extends State<FreeDraggableWidget> {
   }
 
   late ValueNotifier<Offset> offset;
+  late Offset currentOffset;
 
   ///宽高边界
   late double widthBoundary, heightBoundary;
@@ -82,18 +85,24 @@ class _FreeDraggableWidgetState extends State<FreeDraggableWidget> {
     super.initState();
     widthBoundary = widget.viewportSize.width - widget.contentSize.width;
     heightBoundary = widget.viewportSize.height - widget.contentSize.height;
-    offset = ValueNotifier<Offset>(
-      calculateOffset(
-        offset: widget.initialOffset,
+    currentOffset = widget.initialOffset;
+    offset = ValueNotifier<Offset>(offsetValue);
+  }
+
+  @override
+  void didUpdateWidget(covariant FreeDraggableWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+  }
+
+  Offset get offsetValue => calculateOffset(
+        offset: currentOffset,
         snap: widget.snap,
         padding: widget.padding,
         widthBoundary: widthBoundary,
         heightBoundary: heightBoundary,
         contentSize: widget.contentSize,
         viewportSize: widget.viewportSize,
-      ),
-    );
-  }
+      );
 
   @override
   void dispose() {
@@ -116,17 +125,65 @@ class _FreeDraggableWidgetState extends State<FreeDraggableWidget> {
         childWhenDragging: const SizedBox.shrink(),
         //因为没有拖拽目标，因此需要在 canceled 状态更新位置
         onDraggableCanceled: (Velocity velocity, Offset offset) {
-          this.offset.value = calculateOffset(
-            padding: widget.padding,
-            contentSize: widget.contentSize,
-            heightBoundary: heightBoundary,
-            widthBoundary: widthBoundary,
-            offset: offset,
-            snap: widget.snap,
-            viewportSize: widget.viewportSize,
-          );
+          currentOffset = offset;
+          this.offset.value = offsetValue;
         },
       ),
+    );
+  }
+}
+
+class FreeDraggableWrapper extends StatelessWidget {
+  const FreeDraggableWrapper({
+    Key? key,
+    this.freeDraggableWidgetKey,
+    required this.main,
+    required this.draggableWidget,
+    this.initialOffset,
+    required this.contentSize,
+    this.snap = false,
+    this.padding = EdgeInsets.zero,
+  }) : super(key: key);
+
+  final Key? freeDraggableWidgetKey;
+
+  ///主界面
+  final Widget main;
+
+  ///可以被拖动的组件
+  final Widget draggableWidget;
+
+  ///初始偏移量
+  final Offset Function(
+    BuildContext context,
+    BoxConstraints constraints,
+  )? initialOffset;
+
+  ///内容大小
+  final Size contentSize;
+
+  ///在拖动结束之后自动贴靠左右
+  final bool snap;
+
+  ///组件与容器边框的距离
+  final EdgeInsets padding;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) => Stack(children: [
+        main,
+        FreeDraggableWidget(
+          key: freeDraggableWidgetKey,
+          child: draggableWidget,
+          initialOffset:
+              initialOffset?.call(context, constraints) ?? const Offset(0, 0),
+          contentSize: contentSize,
+          padding: padding,
+          snap: snap,
+          viewportSize: Size(constraints.maxWidth, constraints.maxHeight),
+        ),
+      ]),
     );
   }
 }
