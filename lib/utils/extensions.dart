@@ -168,6 +168,24 @@ extension NullableMapExt<T, D> on Map<T, D?> {
   }
 }
 
+extension NumInt on num {
+  ///保留小数位数，但不 进位
+  String toStringAsFixedWithoutCarryUp(int fractionDigits) {
+    final String temp = toString();
+    //小数点所在下标
+    final int dotIndex = temp.indexOf('.');
+    //没有小数点
+    if (dotIndex < 0) {
+      return '$temp.${'0' * fractionDigits}';
+    }
+    //有小数点
+    else {
+      return '$temp${'0' * fractionDigits}'
+          .substring(0, dotIndex + fractionDigits + 1);
+    }
+  }
+}
+
 extension IntExt on int {
   ///对个位数的 int 进行补 0 操作（只对正数生效）
   String get twoDigits {
