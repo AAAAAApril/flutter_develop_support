@@ -356,6 +356,7 @@ class PaginationWaterfallGridView<T> extends StatelessWidget {
             valueListenable: controller.data,
             builder: (context, value, child) => MasonryGridView.builder(
               controller: scrollController,
+              itemCount: value.length,
               shrinkWrap: shrinkWrap,
               padding: padding,
               physics: physics,
