@@ -41,9 +41,9 @@ Future<String?> pasteTextFromClipboard() {
 }
 
 ///长数据量时分段打印
-void longPrint(
-  Object? source, {
-  String? tag,
+void longPrint({
+  Object? Function()? value,
+  String? Function()? tag,
   int limitLength = 500,
   bool printWhenDebugOnly = true,
 }) {
@@ -51,11 +51,12 @@ void longPrint(
     return;
   }
   if (tag != null) {
-    _flutterPrint(tag);
+    _flutterPrint(tag.call() ?? '');
   }
-  if (source == null) {
+  if (value == null) {
     return;
   }
+  Object? source = value.call();
   String target;
   if (source is Map<String, dynamic>) {
     target = jsonEncode(source);
