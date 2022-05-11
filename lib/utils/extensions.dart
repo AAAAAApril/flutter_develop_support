@@ -235,6 +235,10 @@ extension IntExt on int {
 
 extension StringExt on String {
   ///从文件路径中获取文件名
+  @Deprecated(
+    'use basename(file.path) instead,'
+    'which needs import package:path/path.dart',
+  )
   String fileNameFromPath() {
     return substring(lastIndexOf('/') + 1, length);
   }
