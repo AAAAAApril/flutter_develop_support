@@ -1,6 +1,6 @@
 name: april
 description: A package for flutter APP development.
-version: 1.7.1
+version: 1.7.2
 homepage:
 
 environment:
@@ -20,7 +20,7 @@ dependencies:
 
   # Widget 可见性检测
   # 地址：https://pub.flutter-io.cn/packages/visibility_detector
-  visibility_detector: 0.3.0
+  visibility_detector: 0.2.2
 
 dev_dependencies:
   flutter_test:
