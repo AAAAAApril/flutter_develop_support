@@ -192,8 +192,8 @@ class AprilPlugin : FlutterPlugin, ActivityAware, PluginRegistry.NewIntentListen
         this.binding = null
     }
 
-    override fun onNewIntent(intent: Intent?): Boolean {
-        channel?.invokeMethod("onNewIntentData", intent?.dataString)
+    override fun onNewIntent(intent: Intent): Boolean {
+        channel?.invokeMethod("onNewIntentData", intent.dataString)
         return false
     }
 }
