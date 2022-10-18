@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/widgets.dart';
 
+import 'package:path/path.dart' as path;
+
 extension ListExt<T> on List<T> {
   ///查找第一个满足要求的项，找不到则返回 null
   T? findFirst(bool Function(T element) test) {
@@ -240,7 +242,7 @@ extension StringExt on String {
     'which needs import package:path/path.dart',
   )
   String fileNameFromPath() {
-    return substring(lastIndexOf('/') + 1, length);
+    return path.basename(this);
   }
 
   ///对 字符串做 md5
