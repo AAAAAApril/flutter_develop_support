@@ -2,3 +2,9 @@ include: package:flutter_lints/flutter.yaml
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
+
+linter:
+  rules:
+    # 忽略导入深度依赖的包时的警告信息
+    # A 依赖 B，B 依赖 C，此时，在 A 中导入 C 里面的某个文件，会出现警告。
+    depend_on_referenced_packages: false
