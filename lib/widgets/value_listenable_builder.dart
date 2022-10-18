@@ -30,7 +30,7 @@ class ValueListenableBuilder2<A, B> extends StatefulWidget {
   final Widget? child;
 
   @override
-  _ValueListenableBuilder2State<A, B> createState() =>
+  State<ValueListenableBuilder2<A, B>> createState() =>
       _ValueListenableBuilder2State<A, B>();
 }
 
@@ -134,11 +134,11 @@ class ValueListenableBuilder3<A, B, C> extends StatefulWidget {
   final Widget? child;
 
   @override
-  _ValueListenableBuildere3State<A, B, C> createState() =>
-      _ValueListenableBuildere3State<A, B, C>();
+  State<ValueListenableBuilder3<A, B, C>> createState() =>
+      _ValueListenableBuilder3State<A, B, C>();
 }
 
-class _ValueListenableBuildere3State<A, B, C>
+class _ValueListenableBuilder3State<A, B, C>
     extends State<ValueListenableBuilder3<A, B, C>> {
   late A valueA;
   late B valueB;
@@ -231,7 +231,7 @@ class SelectorListenableBuilder<T, D> extends StatefulWidget {
   final Widget? child;
 
   @override
-  _SelectorListenableBuilderState<T, D> createState() =>
+  State<SelectorListenableBuilder<T, D>> createState() =>
       _SelectorListenableBuilderState<T, D>();
 }
 
@@ -270,8 +270,8 @@ class _SelectorListenableBuilderState<T, D>
   Widget build(BuildContext context) {
     return ValueListenableBuilder<D>(
       valueListenable: notifier,
-      child: widget.child,
       builder: widget.builder,
+      child: widget.child,
     );
   }
 }
@@ -294,7 +294,7 @@ class SelectorListenableBuilder2<A, B, S> extends StatefulWidget {
   final Widget? child;
 
   @override
-  _SelectorListenableBuilder2State<A, B, S> createState() =>
+  State<SelectorListenableBuilder2<A, B, S>> createState() =>
       _SelectorListenableBuilder2State<A, B, S>();
 }
 
@@ -338,8 +338,8 @@ class _SelectorListenableBuilder2State<A, B, S>
   Widget build(BuildContext context) {
     return ValueListenableBuilder<S>(
       valueListenable: notifier,
-      child: widget.child,
       builder: widget.builder,
+      child: widget.child,
     );
   }
 }
@@ -364,7 +364,7 @@ class SelectorListenableBuilder3<A, B, C, S> extends StatefulWidget {
   final Widget? child;
 
   @override
-  _SelectorListenableBuilder3State<A, B, C, S> createState() =>
+  State<SelectorListenableBuilder3<A, B, C, S>> createState() =>
       _SelectorListenableBuilder3State<A, B, C, S>();
 }
 
@@ -411,8 +411,8 @@ class _SelectorListenableBuilder3State<A, B, C, S>
   Widget build(BuildContext context) {
     return ValueListenableBuilder<S>(
       valueListenable: notifier,
-      child: widget.child,
       builder: widget.builder,
+      child: widget.child,
     );
   }
 }

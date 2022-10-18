@@ -15,7 +15,7 @@ class LoadMoreWidget extends StatefulWidget {
   final Widget child;
 
   @override
-  _LoadMoreWidgetState createState() => _LoadMoreWidgetState();
+  State<LoadMoreWidget> createState() => _LoadMoreWidgetState();
 }
 
 class _LoadMoreWidgetState extends State<LoadMoreWidget> {

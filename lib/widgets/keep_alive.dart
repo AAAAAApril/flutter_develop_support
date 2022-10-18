@@ -12,7 +12,7 @@ class KeepAliveWidget extends StatefulWidget {
   final bool wantKeepAlive;
 
   @override
-  _KeepAliveWidgetState createState() => _KeepAliveWidgetState();
+  State<KeepAliveWidget> createState() => _KeepAliveWidgetState();
 }
 
 class _KeepAliveWidgetState extends State<KeepAliveWidget>

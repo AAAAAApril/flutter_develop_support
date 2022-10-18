@@ -43,7 +43,7 @@ class LoopView extends StatefulWidget {
   final Axis scrollDirection;
 
   @override
-  _LoopViewState createState() => _LoopViewState();
+  State<LoopView> createState() => _LoopViewState();
 }
 
 class _LoopViewState extends State<LoopView> {

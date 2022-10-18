@@ -29,7 +29,7 @@ class MaterialHero extends StatelessWidget {
       placeholderBuilder: placeholderBuilder,
       transitionOnUserGestures: transitionOnUserGestures,
       //如果这里不用 Material 包裹，在遇到内部显示文字时，可能会出现在动画过程中样式丢失的情况
-      child: Material(child: child, color: Colors.transparent),
+      child: Material(color: Colors.transparent, child: child),
     );
   }
 }

@@ -15,7 +15,7 @@ class OrientationWidget extends StatefulWidget {
   final Widget landscapeWidget;
 
   @override
-  _OrientationWidgetState createState() => _OrientationWidgetState();
+  State<OrientationWidget> createState() => _OrientationWidgetState();
 }
 
 class _OrientationWidgetState extends State<OrientationWidget> {

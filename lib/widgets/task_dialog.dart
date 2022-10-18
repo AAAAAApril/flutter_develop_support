@@ -50,7 +50,7 @@ class TaskDialog<T> extends StatefulWidget {
   final WidgetBuilder? contentBuilder;
 
   @override
-  _TaskDialogState<T> createState() => _TaskDialogState<T>();
+  State<TaskDialog<T>> createState() => _TaskDialogState<T>();
 }
 
 class _TaskDialogState<T> extends State<TaskDialog<T>> {
@@ -59,7 +59,7 @@ class _TaskDialogState<T> extends State<TaskDialog<T>> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       //延迟一会儿再执行任务
       Future.delayed(const Duration(milliseconds: 10), () {
         route = ModalRoute.of(context)!;
@@ -71,11 +71,17 @@ class _TaskDialogState<T> extends State<TaskDialog<T>> {
   ///执行任务
   void _runTask() {
     widget.task.call().then((value) {
+      if (!mounted) {
+        return;
+      }
       //关闭弹窗
       Navigator.removeRoute(context, route);
       //回调结果
       widget.resultCompleter.complete(value);
     }).catchError((Object e, StackTrace trace) {
+      if (!mounted) {
+        return;
+      }
       //关闭弹窗
       Navigator.removeRoute(context, route);
       //回调异常

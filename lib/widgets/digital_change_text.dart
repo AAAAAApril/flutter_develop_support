@@ -14,7 +14,7 @@ class DigitalChangeText extends StatefulWidget {
   final Duration duration;
 
   @override
-  _DigitalChangeTextState createState() => _DigitalChangeTextState();
+  State<DigitalChangeText> createState() => _DigitalChangeTextState();
 }
 
 class _DigitalChangeTextState extends State<DigitalChangeText>

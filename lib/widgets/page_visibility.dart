@@ -66,7 +66,7 @@ class PageVisibilityWidget extends StatefulWidget {
   final ValueChanged<bool>? onPageVisibilityChanged;
 
   @override
-  _PageVisibilityWidgetState createState() => _PageVisibilityWidgetState();
+  State<PageVisibilityWidget> createState() => _PageVisibilityWidgetState();
 }
 
 class _PageVisibilityWidgetState extends VisibilityState<PageVisibilityWidget> {

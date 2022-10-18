@@ -33,7 +33,7 @@ class FreeDraggableWidget extends StatefulWidget {
   final EdgeInsets padding;
 
   @override
-  _FreeDraggableWidgetState createState() => _FreeDraggableWidgetState();
+  State<FreeDraggableWidget> createState() => _FreeDraggableWidgetState();
 }
 
 class _FreeDraggableWidgetState extends State<FreeDraggableWidget> {
@@ -120,7 +120,6 @@ class _FreeDraggableWidgetState extends State<FreeDraggableWidget> {
         child: child!,
       ),
       child: Draggable(
-        child: widget.child,
         feedback: widget.child,
         childWhenDragging: const SizedBox.shrink(),
         //因为没有拖拽目标，因此需要在 canceled 状态更新位置
@@ -128,6 +127,7 @@ class _FreeDraggableWidgetState extends State<FreeDraggableWidget> {
           currentOffset = offset;
           this.offset.value = offsetValue;
         },
+        child: widget.child,
       ),
     );
   }
@@ -175,13 +175,13 @@ class FreeDraggableWrapper extends StatelessWidget {
         main,
         FreeDraggableWidget(
           key: freeDraggableWidgetKey,
-          child: draggableWidget,
           initialOffset:
               initialOffset?.call(context, constraints) ?? const Offset(0, 0),
           contentSize: contentSize,
           padding: padding,
           snap: snap,
           viewportSize: Size(constraints.maxWidth, constraints.maxHeight),
+          child: draggableWidget,
         ),
       ]),
     );

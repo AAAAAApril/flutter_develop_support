@@ -14,7 +14,7 @@ class April {
   static bool _setCallHandler = false;
 
   ///接收 Intent data
-  static late final StreamController<String?> _onIntentDataController =
+  static final StreamController<String?> _onIntentDataController =
       StreamController<String?>.broadcast();
 
   static Stream<String?> get onNewIntentData {

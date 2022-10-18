@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 
 ///记得把这个监听器设置给 App
 @Deprecated('see VisibilityDetectorWidget')
-late final RouteObserver pageVisibilityRouteObserver = RouteObserver();
+final RouteObserver pageVisibilityRouteObserver = RouteObserver();
 
 ///监听页面的显示与隐藏状态
 @Deprecated('see VisibilityDetectorWidget')
@@ -64,12 +64,12 @@ mixin ApplicationVisibilityMixin<T extends StatefulWidget> on State<T>
   void initState() {
     super.initState();
     //监听应用级配置变化
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 

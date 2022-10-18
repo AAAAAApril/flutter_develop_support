@@ -45,6 +45,8 @@ class DashedSeparator extends StatelessWidget {
               (constraints.constrainWidth() / (dashWidth + gap)).floor();
         }
         return Flex(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          direction: direction,
           children: List<Widget>.generate(
             dashCount,
             (_) => SizedBox(
@@ -55,8 +57,6 @@ class DashedSeparator extends StatelessWidget {
               ),
             ),
           ),
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          direction: direction,
         );
       },
     );
