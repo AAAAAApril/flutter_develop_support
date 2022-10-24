@@ -18,6 +18,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # https://pub.flutter-io.cn/packages/html
+  html: ^0.15.1
+
   april:
     # When depending on this package from a real application you should use:
     #   april: ^x.y.z

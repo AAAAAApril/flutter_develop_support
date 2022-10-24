@@ -1,6 +1,13 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:html/dom.dart' as dom;
+
+import 'package:html/parser.dart' as parser;
+
 import 'package:april/widgets/periodic_scale_animation_widget.dart';
 import 'package:april/widgets/shake_widget.dart';
-import 'package:flutter/material.dart';
 
 void main() {
   runApp(const MyApp());
@@ -36,10 +43,39 @@ class ExampleWidget extends StatefulWidget {
   const ExampleWidget({Key? key}) : super(key: key);
 
   @override
-  _ExampleWidgetState createState() => _ExampleWidgetState();
+  State<ExampleWidget> createState() => _ExampleWidgetState();
 }
 
 class _ExampleWidgetState extends State<ExampleWidget> {
+  late HttpClient client;
+
+  @override
+  void initState() {
+    super.initState();
+    client = HttpClient();
+  }
+
+  @override
+  void dispose() {
+    client.close();
+    super.dispose();
+  }
+
+  ///请求谷歌翻译
+  void translate() async {
+    HttpClientRequest request = await client.getUrl(
+      Uri.parse(
+        'https://translate.google.com/m?sl=en&tl=zh-CN&q=hello',
+      ),
+    );
+    HttpClientResponse response = await request.close();
+    String result = await response.transform(const Utf8Decoder()).join();
+    dom.Document document = parser.parse(result);
+    dom.Element? element =
+        document.querySelector('div[class="result-container"]');
+    debugPrint('翻译结果：${element?.text}');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(children: [
@@ -50,6 +86,10 @@ class _ExampleWidgetState extends State<ExampleWidget> {
       ShakeWidget(
         detectorKey: const ValueKey<String>('旋转动画'),
         child: const Icon(Icons.title, size: 48),
+      ),
+      ElevatedButton(
+        onPressed: translate,
+        child: const Text('请求谷歌翻译'),
       ),
     ]);
   }
