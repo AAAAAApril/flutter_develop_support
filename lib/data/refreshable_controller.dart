@@ -24,6 +24,21 @@ abstract class AbsRefreshableController<T,
   ///配置参数
   final RefreshableConfig refreshableConfig;
 
+  ///刷新结果监听器（将会在数据更新之前回调）
+  /// [bool] 是否刷新成功
+  final List<ValueChanged<bool>> _refreshResultListeners =
+      <ValueChanged<bool>>[];
+
+  ///添加刷新结果监听
+  void addRefreshResultListener(ValueChanged<bool> listener) {
+    _refreshResultListeners.add(listener);
+  }
+
+  ///移除刷新结果监听
+  void removeRefreshResultListener(ValueChanged<bool> listener) {
+    _refreshResultListeners.remove(listener);
+  }
+
   @protected
   @override
   void onGetDataListenable(List<T> oldData) {
@@ -74,6 +89,9 @@ abstract class AbsRefreshableController<T,
   @protected
   @mustCallSuper
   Future<void> onRefreshSucceed(covariant W wrapper) async {
+    for (var element in _refreshResultListeners) {
+      element.call(true);
+    }
     setData(
       await onInterceptAllData(
         await onInterceptNewData(wrapper.data),
@@ -85,7 +103,9 @@ abstract class AbsRefreshableController<T,
   @protected
   @mustCallSuper
   Future<void> onRefreshFailed(covariant W wrapper) async {
-    //do something
+    for (var element in _refreshResultListeners) {
+      element.call(false);
+    }
   }
 
   ///拦截数据（可以做筛选、排序等操作，但如果数据量过大，排序操作可能导致界面卡顿。可以新开个线程处理）

@@ -30,6 +30,21 @@ abstract class _PaginationControllerInternal<T,
   ///配置参数
   final PaginationConfig paginationConfig;
 
+  ///数据加载更多结果监听器（将会在数据更新之前回调）
+  /// [bool] 是否加载更多成功
+  final List<ValueChanged<bool>> _onLoadMoreResultListeners =
+      <ValueChanged<bool>>[];
+
+  ///添加加载更多结果监听器
+  void addLoadMoreResultListener(ValueChanged<bool> listener) {
+    _onLoadMoreResultListeners.add(listener);
+  }
+
+  ///移除加载更多结果监听器
+  void removeLoadMoreResultListener(ValueChanged<bool> listener) {
+    _onLoadMoreResultListeners.remove(listener);
+  }
+
   ///加载更多操作
   @override
   @mustCallSuper
@@ -83,6 +98,9 @@ abstract class _PaginationControllerInternal<T,
   @protected
   @mustCallSuper
   Future<void> onLoadMoreSucceed(covariant W wrapper) async {
+    for (var element in _onLoadMoreResultListeners) {
+      element.call(true);
+    }
     setData(
       await onInterceptAllData(
         List.of(dataValue)
@@ -97,7 +115,9 @@ abstract class _PaginationControllerInternal<T,
   @protected
   @mustCallSuper
   Future<void> onLoadMoreFailed(covariant W wrapper) async {
-    //do something
+    for (var element in _onLoadMoreResultListeners) {
+      element.call(false);
+    }
   }
 
   ///加载更多操作的具体执行方法
