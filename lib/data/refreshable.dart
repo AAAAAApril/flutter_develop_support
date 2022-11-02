@@ -10,7 +10,7 @@ abstract class Refreshable<T> {
     return _data;
   }
 
-  List<T> get dataValue => _data.value;
+  List<T> get dataValue => List<T>.of(_data.value);
 
   ///是否正在刷新
   final ValueNotifier<bool> _isRefreshing = ValueNotifier<bool>(false);
