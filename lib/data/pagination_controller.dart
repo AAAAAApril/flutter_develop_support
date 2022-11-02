@@ -68,19 +68,28 @@ abstract class _PaginationControllerInternal<T,
   Future<void> _paginationLoadMore() async {
     setLoadingMore(true);
     //加载数据
-    await loadMoreInternal().then<void>((wrapper) async {
+    try {
+      final wrapper = await loadMoreInternal();
       if (wrapper.succeed) {
         paginationConfig._currentPageNum = paginationConfig.nextPageNum;
         setHasMoreData(wrapper.hasMore);
+        //通知监听器，加载更多成功
+        for (var element in _onLoadMoreResultListeners) {
+          element.call(true);
+        }
         await onLoadMoreSucceed(wrapper);
       } else {
+        //通知监听器，加载更多失败
+        for (var element in _onLoadMoreResultListeners) {
+          element.call(false);
+        }
         await onLoadMoreFailed(wrapper);
       }
-    }).catchError((e, trace) {
+    } catch (_) {
       //do something
-    }).whenComplete(() {
+    } finally {
       setLoadingMore(false);
-    });
+    }
   }
 
   ///刷新成功
@@ -98,9 +107,6 @@ abstract class _PaginationControllerInternal<T,
   @protected
   @mustCallSuper
   Future<void> onLoadMoreSucceed(covariant W wrapper) async {
-    for (var element in _onLoadMoreResultListeners) {
-      element.call(true);
-    }
     setData(
       await onInterceptAllData(
         List.of(dataValue)
@@ -115,9 +121,7 @@ abstract class _PaginationControllerInternal<T,
   @protected
   @mustCallSuper
   Future<void> onLoadMoreFailed(covariant W wrapper) async {
-    for (var element in _onLoadMoreResultListeners) {
-      element.call(false);
-    }
+    // do something
   }
 
   ///加载更多操作的具体执行方法

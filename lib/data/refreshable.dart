@@ -24,19 +24,8 @@ abstract class Refreshable<T> {
   }
 
   ///设置新数据
-  void setData(
-    List<T> newData, {
-    //是否需要延迟一会儿执行，延迟执行可以避免刷新状态和数据状态顺序错乱的问题
-    //正常来说，应该时刷新状态先变更，再变更数据状态
-    bool delay = true,
-  }) {
-    if (delay) {
-      Future.delayed(Duration.zero, () {
-        _data.value = newData;
-      });
-    } else {
-      _data.value = newData;
-    }
+  void setData(List<T> newData) {
+    _data.value = newData;
   }
 
   ///设置新数据，但是不通知更新

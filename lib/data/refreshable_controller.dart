@@ -71,27 +71,32 @@ abstract class AbsRefreshableController<T,
     setRefreshing(true);
     refreshableConfig.firstRefreshed = true;
     //加载数据
-    await refreshInternal().then<void>((wrapper) async {
+    try {
+      final wrapper = await refreshInternal();
       if (wrapper.succeed) {
-        //当前页码赋值为初始值
+        //通知监听器，刷新成功
+        for (var element in _refreshResultListeners) {
+          element.call(true);
+        }
         await onRefreshSucceed(wrapper);
       } else {
+        //通知监听器，刷新失败
+        for (var element in _refreshResultListeners) {
+          element.call(false);
+        }
         await onRefreshFailed(wrapper);
       }
-    }).catchError((e, trace) {
+    } catch (_) {
       //do something
-    }).whenComplete(() {
+    } finally {
       setRefreshing(false);
-    });
+    }
   }
 
   ///刷新成功
   @protected
   @mustCallSuper
   Future<void> onRefreshSucceed(covariant W wrapper) async {
-    for (var element in _refreshResultListeners) {
-      element.call(true);
-    }
     setData(
       await onInterceptAllData(
         await onInterceptNewData(wrapper.data),
@@ -103,9 +108,7 @@ abstract class AbsRefreshableController<T,
   @protected
   @mustCallSuper
   Future<void> onRefreshFailed(covariant W wrapper) async {
-    for (var element in _refreshResultListeners) {
-      element.call(false);
-    }
+    // do something
   }
 
   ///拦截数据（可以做筛选、排序等操作，但如果数据量过大，排序操作可能导致界面卡顿。可以新开个线程处理）
