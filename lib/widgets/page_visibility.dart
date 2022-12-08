@@ -1,6 +1,7 @@
-import 'package:april/route/page_visibility.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+
+import 'package:april_flutter_utils/route/page_visibility.dart';
 
 @Deprecated('see VisibilityDetectorWidget')
 abstract class VisibilityState<T extends StatefulWidget> extends State<T>

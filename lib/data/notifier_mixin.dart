@@ -1,5 +1,6 @@
-import 'package:april/data/value_notifier.dart';
 import 'package:flutter/foundation.dart';
+
+import 'package:april_flutter_utils/data/value_notifier.dart';
 
 ///集中处理各个监听器的销毁，避免每次都手动写一堆无用代码
 abstract class ChangeNotifierMixin {

@@ -1,6 +1,7 @@
-import 'package:april/data/selector_listenable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+
+import 'package:april_flutter_utils/data/selector_listenable.dart';
 
 ///同时监听两个数据观察者
 class ValueListenableBuilder2<A, B> extends StatefulWidget {

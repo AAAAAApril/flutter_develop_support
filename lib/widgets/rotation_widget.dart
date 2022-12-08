@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:april/widgets/widget_visibility.dart';
 import 'package:flutter/material.dart';
 
-import 'package:april/utils/extensions.dart';
+import 'package:april_flutter_utils/widgets/widget_visibility.dart';
+import 'package:april_flutter_utils/utils/extensions.dart';
 
 ///循环旋转组件
 ///Tips：在组件不可见时，会自动暂停播放动画，并在重新显示之后自动播放

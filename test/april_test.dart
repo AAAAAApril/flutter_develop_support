@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:april/april.dart';
+import 'package:april_flutter_utils/april.dart';
 
 void main() {
   const MethodChannel channel = MethodChannel('april');

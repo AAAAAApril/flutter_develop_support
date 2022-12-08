@@ -21,7 +21,7 @@ dependencies:
   # https://pub.flutter-io.cn/packages/html
   html: ^0.15.1
 
-  april:
+  april_flutter_utils:
     # When depending on this package from a real application you should use:
     #   april: ^x.y.z
     # See https://dart.dev/tools/pub/dependencies#version-constraints

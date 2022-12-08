@@ -1,19 +1,10 @@
+typedef DecodeMapValue<T> = T Function(Map map);
+
 ///从 json 字符串中取值时，可以用这个工具类协助，处理一些小问题
 class Json {
-  const Json(
-    this.value, {
-    this.defaultString = '',
-    this.defaultInt = 0,
-    this.defaultDouble = 0.0,
-    this.defaultBool = false,
-  });
+  const Json(this.value);
 
   final dynamic value;
-
-  final String defaultString;
-  final int defaultInt;
-  final double defaultDouble;
-  final bool defaultBool;
 
   Object? get(String key) {
     if (value == null || value is! Map) {
@@ -23,12 +14,12 @@ class Json {
   }
 
   String getString(
-    String key, [
-    String? defaultValue,
-  ]) {
+    String key, {
+    String defaultValue = '',
+  }) {
     Object? value = get(key);
     if (value == null) {
-      return defaultValue ?? defaultString;
+      return defaultValue;
     }
     if (value is String) {
       return value;
@@ -72,10 +63,10 @@ class Json {
   }
 
   int getInt(
-    String key, [
-    int? defaultValue,
-  ]) {
-    return getNullableInt(key) ?? defaultValue ?? defaultInt;
+    String key, {
+    int defaultValue = 0,
+  }) {
+    return getNullableInt(key) ?? defaultValue;
   }
 
   List<int> getIntList(String key) {
@@ -128,10 +119,10 @@ class Json {
   }
 
   double getDouble(
-    String key, [
-    double? defaultValue,
-  ]) {
-    return getNullableDouble(key) ?? defaultValue ?? defaultDouble;
+    String key, {
+    double defaultValue = 0.0,
+  }) {
+    return getNullableDouble(key) ?? defaultValue;
   }
 
   List<double> getDoubleList(String key) {
@@ -172,7 +163,9 @@ class Json {
   bool? getNullableBool(
     String key, {
     //这个 int 值将会被判定为 true，其他则为 false
-    int? trueInt,
+    int trueInt = 1,
+    //这个 String 值将会被判定为 true，其他则为 false
+    String trueString = 'true',
   }) {
     Object? value = get(key);
     if (value == null) {
@@ -182,16 +175,9 @@ class Json {
       return value;
     }
     if (value is String) {
-      switch (value.toLowerCase()) {
-        case 'true':
-          return true;
-        case 'false':
-          return false;
-        default:
-          return null;
-      }
+      return trueString == value;
     }
-    if (trueInt != null && value is int) {
+    if (value is int) {
       return value == trueInt;
     }
     return null;
@@ -199,19 +185,26 @@ class Json {
 
   bool getBool(
     String key, {
-    bool? defaultValue,
+    bool defaultValue = false,
     //这个 int 值将会被判定为 true，其他则为 false
-    int? trueInt,
+    int trueInt = 1,
+    //这个 String 值将会被判定为 true，其他则为 false
+    String trueString = 'true',
   }) {
-    return getNullableBool(key, trueInt: trueInt) ??
-        defaultValue ??
-        defaultBool;
+    return getNullableBool(
+          key,
+          trueInt: trueInt,
+          trueString: trueString,
+        ) ??
+        defaultValue;
   }
 
   List<bool> getBoolList(
     String key, {
     //这个 int 值将会被判定为 true，其他则为 false
-    int? trueInt,
+    int trueInt = 1,
+    //这个 String 值将会被判定为 true，其他则为 false
+    String trueString = 'true',
   }) {
     Object? value = get(key);
     if (value == null) {
@@ -221,15 +214,8 @@ class Json {
       if (value is bool) {
         return <bool>[value];
       } else if (value is String) {
-        switch (value.toLowerCase()) {
-          case 'true':
-            return <bool>[true];
-          case 'false':
-            return <bool>[false];
-          default:
-            return <bool>[];
-        }
-      } else if (trueInt != null && value is int) {
+        return <bool>[trueString == value];
+      } else if (value is int) {
         return <bool>[value == trueInt];
       } else {
         return <bool>[];
@@ -247,16 +233,9 @@ class Json {
             return e;
           }
           if (e is String) {
-            switch (e.toLowerCase()) {
-              case 'true':
-                return true;
-              case 'false':
-                return false;
-              default:
-                return null;
-            }
+            return trueString == e;
           }
-          if (trueInt != null && e is int) {
+          if (e is int) {
             return e == trueInt;
           }
           return null;
@@ -266,9 +245,9 @@ class Json {
         .toList();
   }
 
-  T? getT<T>(
+  T? getTNullable<T>(
     String key, {
-    required T Function(Map map) decoder,
+    required DecodeMapValue<T> decoder,
   }) {
     Object? value = get(key);
     if (value == null || value is! Map) {
@@ -280,7 +259,7 @@ class Json {
   @Deprecated('use [getMapList<T>] instead.')
   List<T> getList<T>(
     String key, {
-    required T Function(Map map) decoder,
+    required DecodeMapValue<T> decoder,
   }) =>
       getMapList<T>(key, decoder: decoder);
 

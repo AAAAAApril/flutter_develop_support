@@ -6,8 +6,8 @@ import 'package:html/dom.dart' as dom;
 
 import 'package:html/parser.dart' as parser;
 
-import 'package:april/widgets/periodic_scale_animation_widget.dart';
-import 'package:april/widgets/shake_widget.dart';
+import 'package:april_flutter_utils/widgets/periodic_scale_animation_widget.dart';
+import 'package:april_flutter_utils/widgets/shake_widget.dart';
 
 void main() {
   runApp(const MyApp());

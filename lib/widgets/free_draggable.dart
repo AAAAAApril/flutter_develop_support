@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 
 ///可自由拖拽组件
