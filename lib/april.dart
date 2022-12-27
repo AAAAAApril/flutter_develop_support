@@ -10,6 +10,10 @@ export 'data/refreshable_data_wrapper.dart';
 export 'data/selector_listenable.dart';
 export 'data/value_notifier.dart';
 
+export 'method/app_package_info.dart';
+export 'method/april_method.dart';
+export 'method/resolve_activity_info.dart';
+
 export 'route/page_visibility.dart';
 
 export 'utils/april.dart';
