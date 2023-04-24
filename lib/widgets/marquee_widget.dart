@@ -48,25 +48,27 @@ class MarqueeWidget extends StatefulWidget {
 class _MarqueeWidgetState extends State<MarqueeWidget> {
   late ScrollController controller;
 
-  bool visible = false;
+  late VisibilityValueNotifier notifier;
 
   @override
   void initState() {
     super.initState();
     controller = ScrollController();
+    notifier = VisibilityValueNotifier();
     autoScroll();
   }
 
   @override
   void dispose() {
+    notifier.dispose();
     controller.dispose();
     super.dispose();
   }
 
   ///自动滚动
   void autoScroll() async {
-    do {
-      if (!visible) {
+    while (mounted) {
+      if (!notifier.visible.value) {
         await Future.delayed(widget.startDelayed);
         continue;
       }
@@ -112,16 +114,14 @@ class _MarqueeWidgetState extends State<MarqueeWidget> {
         //等一秒再检测
         await Future.delayed(const Duration(seconds: 1));
       }
-    } while (mounted);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     Widget child = VisibilityDetectorWidget(
       detectorKey: widget.detectorKey,
-      onVisibleChanged: (visible) {
-        this.visible = visible;
-      },
+      visibilityNotifier: notifier,
       child: ListView.separated(
         controller: controller,
         itemCount: widget.itemCount,

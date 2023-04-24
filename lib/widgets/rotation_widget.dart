@@ -47,9 +47,13 @@ class _RotationWidgetState extends State<RotationWidget>
   late Animation<double> animation;
   Timer? waitTimer;
 
+  late VisibilityValueNotifier notifier;
+
   @override
   void initState() {
     super.initState();
+    notifier = VisibilityValueNotifier();
+    notifier.visible.addListener(onVisibleChanged);
     init();
   }
 
@@ -96,6 +100,7 @@ class _RotationWidgetState extends State<RotationWidget>
   @override
   void dispose() {
     release();
+    notifier.dispose();
     super.dispose();
   }
 
@@ -127,17 +132,19 @@ class _RotationWidgetState extends State<RotationWidget>
     }
   }
 
+  void onVisibleChanged() {
+    if (notifier.visible.value) {
+      controller.forward();
+    } else {
+      controller.stop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return VisibilityDetectorWidget(
       detectorKey: widget.detectorKey,
-      onVisibleChanged: (visible) {
-        if (visible) {
-          controller.forward();
-        } else {
-          controller.stop();
-        }
-      },
+      visibilityNotifier: notifier,
       child: RotationTransition(
         turns: animation,
         child: widget.child,
