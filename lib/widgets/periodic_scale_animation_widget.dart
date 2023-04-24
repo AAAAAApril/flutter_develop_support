@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:april_flutter_utils/widgets/widget_visibility.dart';
 import 'package:april_flutter_utils/utils/extensions.dart';
+
+import 'visibility_detector_widget.dart';
 
 ///可以周期性执行缩放动画的组件
 class PeriodicScaleAnimationWidget extends StatefulWidget {
@@ -35,10 +36,13 @@ class _ScaleAnimateWidgetState extends State<PeriodicScaleAnimationWidget>
     with SingleTickerProviderStateMixin {
   late AnimationController controller;
   late Animation<double> animation;
+  late VisibilityValueNotifier notifier;
 
   @override
   void initState() {
     super.initState();
+    notifier = VisibilityValueNotifier();
+    notifier.visible.addListener(onVisibleChanged);
     init();
   }
 
@@ -54,6 +58,7 @@ class _ScaleAnimateWidgetState extends State<PeriodicScaleAnimationWidget>
   @override
   void dispose() {
     release();
+    notifier.dispose();
     super.dispose();
   }
 
@@ -94,17 +99,19 @@ class _ScaleAnimateWidgetState extends State<PeriodicScaleAnimationWidget>
     controller.dispose();
   }
 
+  void onVisibleChanged() {
+    if (notifier.visible.value) {
+      controller.repeat();
+    } else {
+      controller.stop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return VisibilityDetectorWidget(
       detectorKey: widget.detectorKey,
-      onVisibleChanged: (visible) {
-        if (visible) {
-          controller.repeat();
-        } else {
-          controller.stop();
-        }
-      },
+      visibilityNotifier: notifier,
       child: ScaleTransition(
         scale: animation,
         child: widget.child,

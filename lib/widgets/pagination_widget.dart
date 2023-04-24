@@ -64,9 +64,9 @@ class PaginationListView<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        return SelectorListenableBuilder<List<T>, bool>(
-          valueListenable: controller.data,
-          selector: (value) => value.isEmpty && placeholderWidget != null,
+        return TransformableListenableBuilder<List<T>, bool>(
+          source: controller.data,
+          transformer: (value) => value.isEmpty && placeholderWidget != null,
           builder: (context, value, child) {
             Widget result = value
                 ? ListView(
@@ -94,9 +94,7 @@ class PaginationListView<T> extends StatelessWidget {
           child: ValueListenableBuilder<List<T>>(
             valueListenable: controller.data,
             builder: (context, value, child) => ListView.separated(
-              itemCount: 1 +
-                  value.length +
-                  (controller.hasMoreData.value == true ? 1 : 0),
+              itemCount: 1 + value.length + (controller.hasMoreData.value == true ? 1 : 0),
               padding: padding,
               shrinkWrap: shrinkWrap,
               physics: physics,
@@ -116,8 +114,7 @@ class PaginationListView<T> extends StatelessWidget {
                 } else if (index == value.length) {
                   return footerSeparator;
                 } else {
-                  return separatorBuilder?.call(context, index - 1) ??
-                      const SizedBox.shrink();
+                  return separatorBuilder?.call(context, index - 1) ?? const SizedBox.shrink();
                 }
               },
             ),
@@ -169,9 +166,9 @@ class PaginationGridView<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        return SelectorListenableBuilder<List<T>, bool>(
-          valueListenable: controller.data,
-          selector: (value) => value.isEmpty && placeholderWidget != null,
+        return TransformableListenableBuilder<List<T>, bool>(
+          source: controller.data,
+          transformer: (value) => value.isEmpty && placeholderWidget != null,
           builder: (context, value, child) {
             Widget result = value
                 ? ListView(
@@ -199,8 +196,7 @@ class PaginationGridView<T> extends StatelessWidget {
           child: ValueListenableBuilder<List<T>>(
             valueListenable: controller.data,
             builder: (context, value, child) => GridView.builder(
-              itemCount:
-                  value.length + (controller.hasMoreData.value == true ? 1 : 0),
+              itemCount: value.length + (controller.hasMoreData.value == true ? 1 : 0),
               padding: padding,
               shrinkWrap: shrinkWrap,
               physics: physics,
@@ -256,8 +252,7 @@ class PaginationPageView<T> extends StatelessWidget {
       builder: (context, value, child) => PageView.builder(
         controller: pageController,
         physics: physics,
-        itemCount:
-            value.length + (controller.hasMoreData.value == true ? 1 : 0),
+        itemCount: value.length + (controller.hasMoreData.value == true ? 1 : 0),
         onPageChanged: onPageChanged,
         scrollDirection: scrollDirection,
         allowImplicitScrolling: true,
@@ -327,9 +322,9 @@ class PaginationWaterfallGridView<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        return SelectorListenableBuilder<List<T>, bool>(
-          valueListenable: controller.data,
-          selector: (value) => value.isEmpty && placeholderWidget != null,
+        return TransformableListenableBuilder<List<T>, bool>(
+          source: controller.data,
+          transformer: (value) => value.isEmpty && placeholderWidget != null,
           builder: (context, value, child) {
             Widget result = value
                 ? ListView(
@@ -369,8 +364,7 @@ class PaginationWaterfallGridView<T> extends StatelessWidget {
               gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: crossAxisCount,
               ),
-              itemBuilder: (context, index) =>
-                  itemBuilder.call(context, value, index),
+              itemBuilder: (context, index) => itemBuilder.call(context, value, index),
             ),
           ),
         );

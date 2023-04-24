@@ -11,8 +11,7 @@ class RandomNumberWidget extends StatefulWidget {
     this.child,
     this.duration = const Duration(milliseconds: 100),
     this.ticks = 3,
-  })
-      : assert(number == null || number < 0 || (number >= 0 && number < 10)),
+  })  : assert(number == null || number < 0 || (number >= 0 && number < 10)),
         super(key: key);
 
   ///目标数字
@@ -28,10 +27,11 @@ class RandomNumberWidget extends StatefulWidget {
   final int ticks;
 
   final Widget Function(
-      BuildContext context,
-      int number,
-      Widget? child,
-      ) builder;
+    BuildContext context,
+    int number,
+    Widget? child,
+  ) builder;
+
   final Widget? child;
 
   @override
@@ -56,7 +56,7 @@ class _RandomNumberWidgetState extends State<RandomNumberWidget> {
 
   @override
   void didUpdateWidget(covariant RandomNumberWidget oldWidget) {
-    if (widget.number!=oldWidget.number) {
+    if (widget.number != oldWidget.number) {
       init();
     }
     super.didUpdateWidget(oldWidget);

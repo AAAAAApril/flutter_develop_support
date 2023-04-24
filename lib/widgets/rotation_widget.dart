@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import 'package:april_flutter_utils/widgets/widget_visibility.dart';
 import 'package:april_flutter_utils/utils/extensions.dart';
+
+import 'visibility_detector_widget.dart';
 
 ///循环旋转组件
 ///Tips：在组件不可见时，会自动暂停播放动画，并在重新显示之后自动播放
@@ -47,9 +48,13 @@ class _RotationWidgetState extends State<RotationWidget>
   late Animation<double> animation;
   Timer? waitTimer;
 
+  late VisibilityValueNotifier notifier;
+
   @override
   void initState() {
     super.initState();
+    notifier = VisibilityValueNotifier();
+    notifier.visible.addListener(onVisibleChanged);
     init();
   }
 
@@ -96,6 +101,7 @@ class _RotationWidgetState extends State<RotationWidget>
   @override
   void dispose() {
     release();
+    notifier.dispose();
     super.dispose();
   }
 
@@ -127,17 +133,19 @@ class _RotationWidgetState extends State<RotationWidget>
     }
   }
 
+  void onVisibleChanged() {
+    if (notifier.visible.value) {
+      controller.forward();
+    } else {
+      controller.stop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return VisibilityDetectorWidget(
       detectorKey: widget.detectorKey,
-      onVisibleChanged: (visible) {
-        if (visible) {
-          controller.forward();
-        } else {
-          controller.stop();
-        }
-      },
+      visibilityNotifier: notifier,
       child: RotationTransition(
         turns: animation,
         child: widget.child,
