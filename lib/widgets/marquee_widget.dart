@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-import 'widget_visibility.dart';
+import 'visibility_detector_widget.dart';
 
 ///跑马灯效果
 ///由 ListView 实现

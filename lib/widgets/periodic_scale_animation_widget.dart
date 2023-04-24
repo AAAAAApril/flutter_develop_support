@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:april_flutter_utils/widgets/widget_visibility.dart';
 import 'package:april_flutter_utils/utils/extensions.dart';
+
+import 'visibility_detector_widget.dart';
 
 ///可以周期性执行缩放动画的组件
 class PeriodicScaleAnimationWidget extends StatefulWidget {
