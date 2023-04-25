@@ -256,13 +256,6 @@ class Json {
     return decoder.call(value);
   }
 
-  @Deprecated('use [getMapList<T>] instead.')
-  List<T> getList<T>(
-    String key, {
-    required DecodeMapValue<T> decoder,
-  }) =>
-      getMapList<T>(key, decoder: decoder);
-
   List<T> getMapList<T>(
     String key, {
     required T Function(Map map) decoder,

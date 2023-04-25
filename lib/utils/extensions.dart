@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/widgets.dart';
 
 import 'package:crypto/crypto.dart';
-import 'package:path/path.dart' as path;
 
 extension ListExt<T> on List<T> {
   ///查找第一个满足要求的项，找不到则返回 null
@@ -28,9 +27,7 @@ extension ListExt<T> on List<T> {
   ///[groupLength] 每一组的个数
   List<List<T>> asGroup(int groupLength) {
     final List<List<T>> newList = <List<T>>[];
-    for (int index = 0, length = this.length;
-        index < length;
-        index += groupLength) {
+    for (int index = 0, length = this.length; index < length; index += groupLength) {
       final List<T> item = <T>[this[index]];
       for (int innerIndex = 1; innerIndex < groupLength; innerIndex++) {
         final int nextIndex = index + innerIndex;
@@ -91,8 +88,7 @@ extension InlineSpanListExt on List<InlineSpan> {
     }
     final List<InlineSpan> newWidgets = <InlineSpan>[];
     for (int index = 0; index < length; index++) {
-      final addedWidget =
-          (index == 0 && removeFirst) ? null : builder?.call(length, index);
+      final addedWidget = (index == 0 && removeFirst) ? null : builder?.call(length, index);
       if (addedWidget != null) {
         newWidgets.add(WidgetSpan(child: addedWidget));
       }
@@ -121,8 +117,7 @@ extension WidgetListExt on List<Widget> {
     }
     final List<Widget> newWidgets = <Widget>[];
     for (int index = 0; index < length; index++) {
-      final addedWidget =
-          (index == 0 && removeFirst) ? null : builder?.call(length, index);
+      final addedWidget = (index == 0 && removeFirst) ? null : builder?.call(length, index);
       if (addedWidget != null) {
         newWidgets.add(addedWidget);
       }
@@ -183,8 +178,7 @@ extension NumInt on num {
     }
     //有小数点
     else {
-      return '$temp${'0' * fractionDigits}'
-          .substring(0, dotIndex + fractionDigits + 1);
+      return '$temp${'0' * fractionDigits}'.substring(0, dotIndex + fractionDigits + 1);
     }
   }
 }
@@ -237,15 +231,6 @@ extension IntExt on int {
 }
 
 extension StringExt on String {
-  ///从文件路径中获取文件名
-  @Deprecated(
-    'use basename(file.path) instead,'
-    'which needs import package:path/path.dart',
-  )
-  String fileNameFromPath() {
-    return path.basename(this);
-  }
-
   ///对 字符串做 md5
   String toMD5() {
     return md5.convert(utf8.encode(this)).toString();
@@ -309,20 +294,6 @@ extension BuildContextExt on BuildContext {
         //移除自己
         Navigator.removeRoute(this, route);
       }
-    }
-  }
-}
-
-extension StatefulWidgetStateExt<T extends StatefulWidget> on State<T> {
-  @protected
-  void unSafetySetState([VoidCallback? fn]) {
-    setState(fn ?? () {});
-  }
-
-  @protected
-  void safetySetState([VoidCallback? fn]) {
-    if (mounted) {
-      setState(fn ?? () {});
     }
   }
 }

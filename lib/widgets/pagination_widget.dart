@@ -94,7 +94,7 @@ class PaginationListView<T> extends StatelessWidget {
           child: ValueListenableBuilder<List<T>>(
             valueListenable: controller.data,
             builder: (context, value, child) => ListView.separated(
-              itemCount: 1 + value.length + (controller.hasMoreData.value == true ? 1 : 0),
+              itemCount: 1 + value.length + (controller.loadMoreState.value.hasMoreData ? 1 : 0),
               padding: padding,
               shrinkWrap: shrinkWrap,
               physics: physics,
@@ -196,7 +196,7 @@ class PaginationGridView<T> extends StatelessWidget {
           child: ValueListenableBuilder<List<T>>(
             valueListenable: controller.data,
             builder: (context, value, child) => GridView.builder(
-              itemCount: value.length + (controller.hasMoreData.value == true ? 1 : 0),
+              itemCount: value.length + (controller.loadMoreState.value.hasMoreData ? 1 : 0),
               padding: padding,
               shrinkWrap: shrinkWrap,
               physics: physics,
@@ -252,7 +252,7 @@ class PaginationPageView<T> extends StatelessWidget {
       builder: (context, value, child) => PageView.builder(
         controller: pageController,
         physics: physics,
-        itemCount: value.length + (controller.hasMoreData.value == true ? 1 : 0),
+        itemCount: value.length + (controller.loadMoreState.value.hasMoreData ? 1 : 0),
         onPageChanged: onPageChanged,
         scrollDirection: scrollDirection,
         allowImplicitScrolling: true,

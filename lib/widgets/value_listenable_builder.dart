@@ -468,54 +468,6 @@ class _TransformableListenableBuilder4State<A, B, C, D, S>
   }
 }
 
-@Deprecated('Use TransformableListenableBuilder<T, D> instead.')
-class SelectorListenableBuilder<T, D> extends TransformableListenableBuilder<T, D> {
-  const SelectorListenableBuilder({
-    super.key,
-    required ValueListenable<T> valueListenable,
-    required D Function(T value) selector,
-    required super.builder,
-    super.child,
-  }) : super(
-          source: valueListenable,
-          transformer: selector,
-        );
-}
-
-@Deprecated('Use TransformableListenableBuilder2<A, B, R> instead.')
-class SelectorListenableBuilder2<A, B, R> extends TransformableListenableBuilder2<A, B, R> {
-  const SelectorListenableBuilder2({
-    super.key,
-    required ValueListenable<A> valueListenableA,
-    required ValueListenable<B> valueListenableB,
-    required R Function(A valueA, B valueB) selector,
-    required super.builder,
-    super.child,
-  }) : super(
-          sourceA: valueListenableA,
-          sourceB: valueListenableB,
-          transformer: selector,
-        );
-}
-
-@Deprecated('Use TransformableListenableBuilder3<A, B, C, S> instead.')
-class SelectorListenableBuilder3<A, B, C, R> extends TransformableListenableBuilder3<A, B, C, R> {
-  const SelectorListenableBuilder3({
-    super.key,
-    required ValueListenable<A> valueListenableA,
-    required ValueListenable<B> valueListenableB,
-    required ValueListenable<C> valueListenableC,
-    required R Function(A valueA, B valueB, C valueC) selector,
-    required super.builder,
-    super.child,
-  }) : super(
-          sourceA: valueListenableA,
-          sourceB: valueListenableB,
-          sourceC: valueListenableC,
-          transformer: selector,
-        );
-}
-
 extension TransformableListenableBuilderExt<T> on ValueListenable<T> {
   TransformableListenableBuilder<T, D> transformBuilder<D>({
     Key? key,
