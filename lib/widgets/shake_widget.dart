@@ -3,7 +3,6 @@ import 'package:flutter/widgets.dart';
 import 'package:april_flutter_utils/widgets/rotation_widget.dart';
 
 ///左右摇晃的 组件
-@Deprecated('Use RotationWidget instead.')
 class ShakeWidget extends RotationWidget {
   const ShakeWidget({
     Key? key,

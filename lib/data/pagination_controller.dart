@@ -7,58 +7,80 @@ import 'refreshable_controller.dart';
 ///分页列表控制器
 ///所有的分页列表的刷新以及加载更多逻辑都应该继承此类处理
 ///[T] 绑定的数据类型
-abstract class AbsPaginationController<T, W extends AbsPaginationDataWrapper<T>>
-    extends _PaginationControllerInternal<T, W> with Pagination<T> {
+///[N] 页码的数据类型（通常是 [int]，但也存在是其他类型的特殊情况，比如 [String]）
+abstract class AbsPaginationController<T, W extends AbsPaginationDataWrapper<T>, N>
+    extends _PaginationControllerInternal<T, W, N> with Pagination<T> {
   AbsPaginationController({
-    //默认的数据
-    List<T>? data,
-    PaginationConfig? config,
-  }) : super(
-          data: data,
-          paginationConfig: config ?? PaginationConfig(),
-        );
+    required PaginationConfig<N> config,
+  }) : super(paginationConfig: config);
 }
 
-abstract class _PaginationControllerInternal<T,
-        W extends AbsPaginationDataWrapper<T>>
+///分页功能的一些配置参数
+abstract class PaginationConfig<T> extends RefreshableConfig {
+  PaginationConfig({
+    required this.startPageNum,
+    this.pageSize = 20,
+    bool notifyStateFirst = true,
+    bool autoRefresh = true,
+    bool lazyRefresh = true,
+    bool autoRefreshOnEmptyList = true,
+  })  : assert(pageSize > 0),
+        _currentPageNum = startPageNum,
+        super(
+          notifyStateFirst: notifyStateFirst,
+          autoRefresh: autoRefresh,
+          lazyRefresh: lazyRefresh,
+          autoRefreshOnEmptyList: autoRefreshOnEmptyList,
+        );
+
+  ///起始页码数
+  final T startPageNum;
+
+  ///当前页码数
+  T _currentPageNum;
+
+  T get currentPageNum => _currentPageNum;
+
+  ///用于在加载更多操作时，获取下一页的页码
+  T getNextPageNum();
+
+  ///分页时每一页的数据量
+  final int pageSize;
+}
+
+/// 限定页码为 [int] 型
+class PaginationConfigInt extends PaginationConfig<int> {
+  PaginationConfigInt({
+    super.startPageNum = 1,
+  });
+
+  @override
+  int getNextPageNum() => _currentPageNum + 1;
+}
+
+abstract class _PaginationControllerInternal<T, W extends AbsPaginationDataWrapper<T>, N>
     extends AbsRefreshableController<T, W> implements Pagination<T> {
   _PaginationControllerInternal({
-    required List<T>? data,
     required this.paginationConfig,
-  }) : super(data: data, config: paginationConfig);
+  }) : super(config: paginationConfig);
 
   ///配置参数
-  final PaginationConfig paginationConfig;
-
-  ///数据加载更多结果监听器（将会在数据更新之前回调）
-  /// [bool] 是否加载更多成功
-  final List<ValueChanged<bool>> _onLoadMoreResultListeners =
-      <ValueChanged<bool>>[];
-
-  ///添加加载更多结果监听器
-  void addLoadMoreResultListener(ValueChanged<bool> listener) {
-    _onLoadMoreResultListeners.add(listener);
-  }
-
-  ///移除加载更多结果监听器
-  void removeLoadMoreResultListener(ValueChanged<bool> listener) {
-    _onLoadMoreResultListeners.remove(listener);
-  }
+  final PaginationConfig<N> paginationConfig;
 
   ///加载更多操作
   @override
   @mustCallSuper
   Future<void> loadMore() async {
     //如果第一次刷新都还没执行过，则直接转接到刷新操作
-    if (!paginationConfig.firstRefreshed) {
+    if (!refreshableStateInternal.value.isRefreshedOnce) {
       return refresh();
     }
     //没有更多数据时不允许触发加载更多操作
-    if (!hasMoreData.value) {
+    if (!loadMoreStateInternal.value.hasMoreData) {
       return;
     }
     //正在加载更多数据时不允许触发加载更多操作
-    if (isLoadingMore.value) {
+    if (loadMoreStateInternal.value.isLoadingMore) {
       return;
     }
     await _paginationLoadMore();
@@ -71,19 +93,34 @@ abstract class _PaginationControllerInternal<T,
     try {
       final wrapper = await loadMoreInternal();
       if (wrapper.succeed) {
-        paginationConfig._currentPageNum = paginationConfig.nextPageNum;
-        setHasMoreData(wrapper.hasMore);
-        //通知监听器，加载更多成功
-        for (var element in _onLoadMoreResultListeners) {
-          element.call(true);
+        paginationConfig._currentPageNum = paginationConfig.getNextPageNum();
+        if (refreshableConfig.notifyStateFirst) {
+          setLoadMoreSucceed(
+            succeed: true,
+            hasMore: wrapper.hasMore,
+          );
         }
         await onLoadMoreSucceed(wrapper);
+        if (!refreshableConfig.notifyStateFirst) {
+          setLoadMoreSucceed(
+            succeed: true,
+            hasMore: wrapper.hasMore,
+          );
+        }
       } else {
-        //通知监听器，加载更多失败
-        for (var element in _onLoadMoreResultListeners) {
-          element.call(false);
+        if (refreshableConfig.notifyStateFirst) {
+          setLoadMoreSucceed(
+            succeed: false,
+            hasMore: false,
+          );
         }
         await onLoadMoreFailed(wrapper);
+        if (!refreshableConfig.notifyStateFirst) {
+          setLoadMoreSucceed(
+            succeed: false,
+            hasMore: false,
+          );
+        }
       }
     } catch (_) {
       //do something
@@ -99,8 +136,13 @@ abstract class _PaginationControllerInternal<T,
   Future<void> onRefreshSucceed(covariant W wrapper) async {
     //当前页码赋值为初始值
     paginationConfig._currentPageNum = paginationConfig.startPageNum;
-    setHasMoreData(wrapper.hasMore);
-    return super.onRefreshSucceed(wrapper);
+    if (refreshableConfig.notifyStateFirst) {
+      setHasMoreData(wrapper.hasMore);
+    }
+    await super.onRefreshSucceed(wrapper);
+    if (!refreshableConfig.notifyStateFirst) {
+      setHasMoreData(wrapper.hasMore);
+    }
   }
 
   ///加载更多成功
@@ -127,35 +169,4 @@ abstract class _PaginationControllerInternal<T,
   ///加载更多操作的具体执行方法
   @protected
   Future<W> loadMoreInternal();
-}
-
-///分页功能的一些配置参数
-class PaginationConfig extends RefreshableConfig {
-  PaginationConfig({
-    this.startPageNum = 1,
-    this.pageSize = 20,
-    bool autoRefresh = true,
-    bool lazyRefresh = true,
-    bool autoRefreshOnEmptyList = true,
-  })  : assert(pageSize > 0),
-        _currentPageNum = startPageNum,
-        super(
-          autoRefresh: autoRefresh,
-          lazyRefresh: lazyRefresh,
-          autoRefreshOnEmptyList: autoRefreshOnEmptyList,
-        );
-
-  ///起始页码数
-  final int startPageNum;
-
-  ///当前页码数
-  int _currentPageNum;
-
-  int get currentPageNum => _currentPageNum;
-
-  ///用于在加载更多操作时，获取下一页的页码
-  int get nextPageNum => _currentPageNum + 1;
-
-  ///分页时每一页的数据量
-  final int pageSize;
 }
