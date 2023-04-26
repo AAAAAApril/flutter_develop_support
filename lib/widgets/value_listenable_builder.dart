@@ -234,7 +234,7 @@ class _TransformableListenableBuilderState<A, R> extends State<TransformableList
 
   @override
   void didUpdateWidget(TransformableListenableBuilder<A, R> oldWidget) {
-    if (oldWidget.source != widget.source) {
+    if (oldWidget.source != widget.source || oldWidget.transformer != widget.transformer) {
       notifier.dispose();
       notifier = widget.source.transform<R>(
         transformer: widget.transformer,
@@ -295,7 +295,9 @@ class _TransformableListenableBuilder2State<A, B, R> extends State<Transformable
 
   @override
   void didUpdateWidget(covariant TransformableListenableBuilder2<A, B, R> oldWidget) {
-    if (oldWidget.sourceA != widget.sourceA || oldWidget.sourceB != widget.sourceB) {
+    if (oldWidget.sourceA != widget.sourceA ||
+        oldWidget.sourceB != widget.sourceB ||
+        oldWidget.transformer != widget.transformer) {
       notifier.dispose();
       notifier = TransformableValueNotifier2<A, B, R>(
         sourceA: widget.sourceA,
@@ -364,7 +366,8 @@ class _TransformableListenableBuilder3State<A, B, C, S> extends State<Transforma
   void didUpdateWidget(covariant TransformableListenableBuilder3<A, B, C, S> oldWidget) {
     if (oldWidget.sourceA != widget.sourceA ||
         oldWidget.sourceB != widget.sourceB ||
-        oldWidget.sourceC != widget.sourceC) {
+        oldWidget.sourceC != widget.sourceC ||
+        oldWidget.transformer != widget.transformer) {
       notifier.dispose();
       notifier = TransformableValueNotifier3<A, B, C, S>(
         sourceA: widget.sourceA,
@@ -439,7 +442,8 @@ class _TransformableListenableBuilder4State<A, B, C, D, S>
     if (oldWidget.sourceA != widget.sourceA ||
         oldWidget.sourceB != widget.sourceB ||
         oldWidget.sourceC != widget.sourceC ||
-        oldWidget.sourceD != widget.sourceD) {
+        oldWidget.sourceD != widget.sourceD ||
+        oldWidget.transformer != widget.transformer) {
       notifier.dispose();
       notifier = TransformableValueNotifier4<A, B, C, D, S>(
         sourceA: widget.sourceA,
