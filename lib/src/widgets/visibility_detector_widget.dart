@@ -1,4 +1,4 @@
-import 'package:april_flutter_utils/april.dart';
+import 'package:april_flutter_utils/src/data/transformable_value_notifier.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -79,11 +79,9 @@ class VisibilityValue {
   int get hashCode => widgetVisible.hashCode ^ appVisible.hashCode;
 }
 
-class VisibilityValueNotifier extends ValueNotifier<VisibilityValue>
-    with WidgetsBindingObserver {
+class VisibilityValueNotifier extends ValueNotifier<VisibilityValue> with WidgetsBindingObserver {
   ///只要 Widget 有一像素可见，则认定为 Widget 可见
-  static bool _checkWidgetVisible(VisibilityInfo info) =>
-      info.visibleFraction != 0;
+  static bool _checkWidgetVisible(VisibilityInfo info) => info.visibleFraction != 0;
 
   VisibilityValueNotifier({
     VisibilityValue defaultValue = const VisibilityValue.def(),
@@ -91,8 +89,7 @@ class VisibilityValueNotifier extends ValueNotifier<VisibilityValue>
   }) : super(defaultValue) {
     _visible = TransformableValueNotifier<VisibilityValue, bool>(
       source: this,
-      transformer: (sourceValue) =>
-          sourceValue.appVisible && sourceValue.widgetVisible,
+      transformer: (sourceValue) => sourceValue.appVisible && sourceValue.widgetVisible,
     );
     WidgetsBinding.instance.addObserver(this);
   }

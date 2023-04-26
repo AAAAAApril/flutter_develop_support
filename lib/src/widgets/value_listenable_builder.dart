@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
-import 'package:april_flutter_utils/data/transformable_value_notifier.dart';
+import 'package:april_flutter_utils/src/data/transformable_value_notifier.dart';
 
 ///同时监听两个数据观察者
 class ValueListenableBuilder2<A, B> extends StatefulWidget {

@@ -124,7 +124,7 @@ packages:
     source: hosted
     version: "1.8.0"
   path:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: path
       sha256: db9d4f58c908a4ba5953fcee2ae317c94889433e5024c27ce74a37f94267945b
@@ -188,10 +188,10 @@ packages:
     dependency: transitive
     description:
       name: typed_data
-      sha256: "53bdf7e979cfbf3e28987552fd72f637e63f3c8724c9e56d9246942dc2fa36ee"
+      sha256: "26f87ade979c47a150c9eaab93ccd2bebe70a27dc0b4b29517f2904f04eb11a5"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.3.0"
+    version: "1.3.1"
   vector_math:
     dependency: transitive
     description:
@@ -204,10 +204,10 @@ packages:
     dependency: "direct main"
     description:
       name: visibility_detector
-      sha256: "15c54a459ec2c17b4705450483f3d5a2858e733aee893dcee9d75fd04814940d"
+      sha256: dd5cc11e13494f432d15939c3aa8ae76844c42b723398643ce9addb88a5ed420
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.3.3"
+    version: "0.4.0+2"
 sdks:
   dart: ">=2.18.0 <3.0.0"
   flutter: ">=3.3.0"

@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-import 'package:april_flutter_utils/data/refreshable.dart';
+import 'package:april_flutter_utils/src/data/refreshable.dart';
 import 'refreshable_data_wrapper.dart';
 
 ///刷新列表控制器

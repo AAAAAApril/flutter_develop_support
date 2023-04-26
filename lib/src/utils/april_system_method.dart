@@ -1,10 +1,10 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-import 'package:april_flutter_utils/utils/utils.dart';
+import 'package:april_flutter_utils/src/utils/utils.dart';
 
-class April {
-  April._();
+class AprilSystemMethod {
+  AprilSystemMethod._();
 
   ///显示输入法
   static Future<void> showInputMethod() {
