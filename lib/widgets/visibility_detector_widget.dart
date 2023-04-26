@@ -99,8 +99,8 @@ class VisibilityValueNotifier extends ValueNotifier<VisibilityValue>
 
   @override
   void dispose() {
-    _visible.dispose();
     WidgetsBinding.instance.removeObserver(this);
+    _visible.dispose();
     super.dispose();
   }
 
