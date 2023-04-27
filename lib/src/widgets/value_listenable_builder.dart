@@ -228,16 +228,16 @@ class _TransformableListenableBuilderState<A, R> extends State<TransformableList
   void initState() {
     super.initState();
     notifier = widget.source.transform<R>(
-      transformer: widget.transformer,
+      transformer: transform,
     );
   }
 
   @override
   void didUpdateWidget(TransformableListenableBuilder<A, R> oldWidget) {
-    if (oldWidget.source != widget.source || oldWidget.transformer != widget.transformer) {
+    if (oldWidget.source != widget.source) {
       notifier.dispose();
       notifier = widget.source.transform<R>(
-        transformer: widget.transformer,
+        transformer: transform,
       );
     }
     super.didUpdateWidget(oldWidget);
@@ -248,6 +248,8 @@ class _TransformableListenableBuilderState<A, R> extends State<TransformableList
     notifier.dispose();
     super.dispose();
   }
+
+  R transform(A a) => widget.transformer.call(a);
 
   @override
   Widget build(BuildContext context) {
@@ -289,20 +291,18 @@ class _TransformableListenableBuilder2State<A, B, R> extends State<Transformable
     notifier = TransformableValueNotifier2<A, B, R>(
       sourceA: widget.sourceA,
       sourceB: widget.sourceB,
-      transformer: widget.transformer,
+      transformer: transform,
     );
   }
 
   @override
   void didUpdateWidget(covariant TransformableListenableBuilder2<A, B, R> oldWidget) {
-    if (oldWidget.sourceA != widget.sourceA ||
-        oldWidget.sourceB != widget.sourceB ||
-        oldWidget.transformer != widget.transformer) {
+    if (oldWidget.sourceA != widget.sourceA || oldWidget.sourceB != widget.sourceB) {
       notifier.dispose();
       notifier = TransformableValueNotifier2<A, B, R>(
         sourceA: widget.sourceA,
         sourceB: widget.sourceB,
-        transformer: widget.transformer,
+        transformer: transform,
       );
     }
     super.didUpdateWidget(oldWidget);
@@ -313,6 +313,8 @@ class _TransformableListenableBuilder2State<A, B, R> extends State<Transformable
     notifier.dispose();
     super.dispose();
   }
+
+  R transform(A a, B b) => widget.transformer.call(a, b);
 
   @override
   Widget build(BuildContext context) {
@@ -358,7 +360,7 @@ class _TransformableListenableBuilder3State<A, B, C, S> extends State<Transforma
       sourceA: widget.sourceA,
       sourceB: widget.sourceB,
       sourceC: widget.sourceC,
-      transformer: widget.transformer,
+      transformer: transform,
     );
   }
 
@@ -366,14 +368,13 @@ class _TransformableListenableBuilder3State<A, B, C, S> extends State<Transforma
   void didUpdateWidget(covariant TransformableListenableBuilder3<A, B, C, S> oldWidget) {
     if (oldWidget.sourceA != widget.sourceA ||
         oldWidget.sourceB != widget.sourceB ||
-        oldWidget.sourceC != widget.sourceC ||
-        oldWidget.transformer != widget.transformer) {
+        oldWidget.sourceC != widget.sourceC) {
       notifier.dispose();
       notifier = TransformableValueNotifier3<A, B, C, S>(
         sourceA: widget.sourceA,
         sourceB: widget.sourceB,
         sourceC: widget.sourceC,
-        transformer: widget.transformer,
+        transformer: transform,
       );
     }
     super.didUpdateWidget(oldWidget);
@@ -384,6 +385,8 @@ class _TransformableListenableBuilder3State<A, B, C, S> extends State<Transforma
     notifier.dispose();
     super.dispose();
   }
+
+  S transform(A a, B b, C c) => widget.transformer.call(a, b, c);
 
   @override
   Widget build(BuildContext context) {
@@ -433,7 +436,7 @@ class _TransformableListenableBuilder4State<A, B, C, D, S>
       sourceB: widget.sourceB,
       sourceC: widget.sourceC,
       sourceD: widget.sourceD,
-      transformer: widget.transformer,
+      transformer: transform,
     );
   }
 
@@ -442,15 +445,14 @@ class _TransformableListenableBuilder4State<A, B, C, D, S>
     if (oldWidget.sourceA != widget.sourceA ||
         oldWidget.sourceB != widget.sourceB ||
         oldWidget.sourceC != widget.sourceC ||
-        oldWidget.sourceD != widget.sourceD ||
-        oldWidget.transformer != widget.transformer) {
+        oldWidget.sourceD != widget.sourceD) {
       notifier.dispose();
       notifier = TransformableValueNotifier4<A, B, C, D, S>(
         sourceA: widget.sourceA,
         sourceB: widget.sourceB,
         sourceC: widget.sourceC,
         sourceD: widget.sourceD,
-        transformer: widget.transformer,
+        transformer: transform,
       );
     }
     super.didUpdateWidget(oldWidget);
@@ -461,6 +463,8 @@ class _TransformableListenableBuilder4State<A, B, C, D, S>
     notifier.dispose();
     super.dispose();
   }
+
+  S transform(A a, B b, C c, D d) => widget.transformer.call(a, b, c, d);
 
   @override
   Widget build(BuildContext context) {
