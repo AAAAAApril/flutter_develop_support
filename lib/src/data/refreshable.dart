@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import 'value_notifier/cacheable_value_listenable.dart';
+
 ///可刷新功能超类
 abstract class Refreshable<T> {
   ///绑定的数据列
@@ -14,11 +16,12 @@ abstract class Refreshable<T> {
 
   ///刷新状态值
   @protected
-  final ValueNotifier<RefreshableStateValue> refreshableStateInternal = ValueNotifier<RefreshableStateValue>(
+  final CacheableValueNotifier<RefreshableStateValue> refreshableStateInternal =
+      CacheableValueNotifier<RefreshableStateValue>(
     const RefreshableStateValue.def(),
   );
 
-  ValueListenable<RefreshableStateValue> get refreshableState => refreshableStateInternal;
+  CacheableValueListenable<RefreshableStateValue> get refreshableState => refreshableStateInternal;
 
   ///正在获取数据监听器
   @protected

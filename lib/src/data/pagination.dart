@@ -1,16 +1,17 @@
 import 'package:flutter/foundation.dart';
 
 import 'refreshable.dart';
+import 'value_notifier/cacheable_value_listenable.dart';
 
 ///分页基础功能超类
 mixin Pagination<T> on Refreshable<T> {
   ///分页加载状态值
   @protected
-  final ValueNotifier<LoadMoreStateValue> loadMoreStateInternal = ValueNotifier<LoadMoreStateValue>(
+  final CacheableValueNotifier<LoadMoreStateValue> loadMoreStateInternal = CacheableValueNotifier<LoadMoreStateValue>(
     const LoadMoreStateValue.def(),
   );
 
-  ValueListenable<LoadMoreStateValue> get loadMoreState => loadMoreStateInternal;
+  CacheableValueListenable<LoadMoreStateValue> get loadMoreState => loadMoreStateInternal;
 
   ///设置是否正在加载更多
   @protected
