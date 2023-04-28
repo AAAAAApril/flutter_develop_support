@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:april_flutter_utils/april.dart';
+import 'package:april_flutter_utils/april_flutter_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
 

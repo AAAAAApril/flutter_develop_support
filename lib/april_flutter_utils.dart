@@ -1,4 +1,4 @@
-library april;
+library april_flutter_utils;
 
 export 'src/data/pagination.dart';
 export 'src/data/pagination_controller.dart';
