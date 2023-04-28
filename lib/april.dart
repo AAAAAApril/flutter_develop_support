@@ -11,7 +11,7 @@ export 'src/data/value_notifier/cacheable_value_listenable.dart';
 export 'src/data/value_notifier/notifiable_value_notifier.dart';
 
 export 'src/method/app_package_info.dart';
-export 'src/method/april_method.dart';
+export 'src/method/april_android_method.dart';
 export 'src/method/resolve_activity_info.dart';
 
 export 'src/utils/april_system_method.dart';
