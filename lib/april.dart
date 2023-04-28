@@ -8,7 +8,6 @@ export 'src/data/refreshable_controller.dart';
 export 'src/data/refreshable_data_wrapper.dart';
 export 'src/data/transformable_value_notifier.dart';
 export 'src/data/value_notifier/cacheable_value_listenable.dart';
-export 'src/data/value_notifier/list_value_notifier.dart';
 export 'src/data/value_notifier/notifiable_value_notifier.dart';
 
 export 'src/method/app_package_info.dart';
