@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
-import 'package:april_flutter_utils/data/pagination.dart';
+import 'package:april_flutter_utils/src/data/pagination.dart';
 
 import 'load_more_widget.dart';
 import 'value_listenable_builder.dart';

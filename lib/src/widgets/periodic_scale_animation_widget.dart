@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:april_flutter_utils/utils/extensions.dart';
+import 'package:april_flutter_utils/src/utils/extensions.dart';
 
 import 'visibility_detector_widget.dart';
 

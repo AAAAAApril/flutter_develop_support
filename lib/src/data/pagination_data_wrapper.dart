@@ -1,4 +1,4 @@
-import 'package:april_flutter_utils/data/refreshable_data_wrapper.dart';
+import 'package:april_flutter_utils/src/data/refreshable_data_wrapper.dart';
 
 ///分页数据结构包装
 abstract class AbsPaginationDataWrapper<T>

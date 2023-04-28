@@ -6,30 +6,26 @@ import 'package:flutter/services.dart';
 import 'app_package_info.dart';
 import 'resolve_activity_info.dart';
 
-class AprilMethod {
-  AprilMethod._();
+class AprilAndroidMethod {
+  factory AprilAndroidMethod() => _instance ??= AprilAndroidMethod._();
+  
+  static AprilAndroidMethod? _instance;
+
+  AprilAndroidMethod._() {
+    _channel.setMethodCallHandler(_onMethodCall);
+  }
 
   static const MethodChannel _channel = MethodChannel(
     'April.FlutterDevelopSupport.MethodChannelName',
   );
 
-  //是否已经设置过监听器了
-  static bool _setCallHandler = false;
-
   ///接收 Intent data
-  static final StreamController<String?> _onIntentDataController =
-      StreamController<String?>.broadcast();
+  final StreamController<String?> _onIntentDataController = StreamController<String?>.broadcast();
 
-  static Stream<String?> get onNewIntentData {
-    if (!_setCallHandler) {
-      _setCallHandler = true;
-      _channel.setMethodCallHandler(_onMethodCall);
-    }
-    return _onIntentDataController.stream;
-  }
+  Stream<String?> get onNewIntentData => _onIntentDataController.stream;
 
   ///回退到桌面
-  static void backToDesktop() {
+  void backToDesktop() {
     if (!Platform.isAndroid) {
       return;
     }
@@ -37,7 +33,7 @@ class AprilMethod {
   }
 
   ///关闭应用
-  static void closeApplication() {
+  void closeApplication() {
     if (!Platform.isAndroid) {
       return;
     }
@@ -45,7 +41,7 @@ class AprilMethod {
   }
 
   ///重启应用
-  static void restartApplication() {
+  void restartApplication() {
     if (!Platform.isAndroid) {
       return;
     }
@@ -53,10 +49,11 @@ class AprilMethod {
   }
 
   ///根据包名检测安装的
-  static Future<AppPackageInfo?> installedAppInfo(String packageName) {
-    return _channel
-        .invokeMethod<Map>('installedAppInfo', packageName)
-        .then<AppPackageInfo?>((value) {
+  Future<AppPackageInfo?> installedAppInfo(String packageName) async {
+    if (!Platform.isAndroid) {
+      return null;
+    }
+    return _channel.invokeMethod<Map>('installedAppInfo', packageName).then<AppPackageInfo?>((value) {
       if (value == null || value.isEmpty) {
         return null;
       }
@@ -75,10 +72,11 @@ class AprilMethod {
   }
 
   ///查找所有支持这个跳转链的 Activity 的信息
-  static Future<List<ResolveActivityInfo>> supportedActivities(String url) {
-    return _channel
-        .invokeMethod<List>('supportedActivities', url)
-        .then<List<ResolveActivityInfo>>((value) {
+  Future<List<ResolveActivityInfo>> supportedActivities(String url) async {
+    if (!Platform.isAndroid) {
+      return <ResolveActivityInfo>[];
+    }
+    return _channel.invokeMethod<List>('supportedActivities', url).then<List<ResolveActivityInfo>>((value) {
       if (value == null || value.isEmpty) {
         return <ResolveActivityInfo>[];
       }
@@ -105,14 +103,17 @@ class AprilMethod {
   }
 
   ///加载跳转链
-  static Future<bool> launchUrl(
+  Future<bool> launchUrl(
     //需要加载的跳转链
     String url, {
     //指定包名
     String packageName = '',
     //指定类名（完整）
     String className = '',
-  }) {
+  }) async {
+    if (!Platform.isAndroid) {
+      return false;
+    }
     return _channel
         .invokeMethod<bool>('launchUrl', {
           'packageName': packageName,
@@ -124,7 +125,10 @@ class AprilMethod {
   }
 
   ///获取 Intent 的 data 字段数据
-  static Future<String?> getIntentData() {
+  Future<String?> getIntentData() async {
+    if (!Platform.isAndroid) {
+      return null;
+    }
     return _channel
         .invokeMethod<dynamic>('getIntentData')
         .then<String?>((value) => value as String?)
@@ -132,7 +136,7 @@ class AprilMethod {
   }
 
   //接收到原生端发来的消息
-  static Future<dynamic> _onMethodCall(MethodCall call) async {
+  Future<dynamic> _onMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'onNewIntentData':
         try {

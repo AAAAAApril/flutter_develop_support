@@ -1,13 +1,16 @@
 import 'package:flutter/foundation.dart';
 
 ///支持 更新值但不通知 的功能
-class NotifiableValueNotifier<T> extends ChangeNotifier
-    implements ValueListenable<T> {
+class NotifiableValueNotifier<T> extends ChangeNotifier implements ValueListenable<T> {
   NotifiableValueNotifier(this._value);
+
+  T _value;
+
+  ///是否需要更新了
+  bool _needNotify = false;
 
   @override
   T get value => _value;
-  T _value;
 
   set value(T newValue) {
     if (!_needNotify && _value == newValue) {
@@ -19,9 +22,6 @@ class NotifiableValueNotifier<T> extends ChangeNotifier
     _value = newValue;
     notifyListeners();
   }
-
-  ///是否需要更新了
-  bool _needNotify = false;
 
   ///更新值，但是不通知更新
   void setValueWithoutNotify(T newValue) {

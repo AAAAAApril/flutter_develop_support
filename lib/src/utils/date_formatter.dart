@@ -1,4 +1,4 @@
-import 'package:april_flutter_utils/utils/extensions.dart';
+import 'package:april_flutter_utils/src/utils/extensions.dart';
 
 ///时间、日期格式化工具
 class DateFormatter {

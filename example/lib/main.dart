@@ -1,13 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:april_flutter_utils/april_flutter_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
 
 import 'package:html/parser.dart' as parser;
-
-import 'package:april_flutter_utils/widgets/periodic_scale_animation_widget.dart';
-import 'package:april_flutter_utils/widgets/shake_widget.dart';
 
 void main() {
   runApp(const MyApp());
@@ -71,8 +69,7 @@ class _ExampleWidgetState extends State<ExampleWidget> {
     HttpClientResponse response = await request.close();
     String result = await response.transform(const Utf8Decoder()).join();
     dom.Document document = parser.parse(result);
-    dom.Element? element =
-        document.querySelector('div[class="result-container"]');
+    dom.Element? element = document.querySelector('div[class="result-container"]');
     debugPrint('翻译结果：${element?.text}');
   }
 
