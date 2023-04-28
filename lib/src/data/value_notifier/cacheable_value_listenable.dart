@@ -32,9 +32,6 @@ class CacheableValueNotifier<T> extends ChangeNotifier implements CacheableValue
   @override
   List<T> get cachedValues => _cachedValues;
 
-  ///成功赋值过的次数（包括初始值）
-  int get setTimes => _cachedValues.length + 1;
-
   @override
   String toString() => '${describeIdentity(this)}($value,cacheCount:${_cachedValues.length})';
 }

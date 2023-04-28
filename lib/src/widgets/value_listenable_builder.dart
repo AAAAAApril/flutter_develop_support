@@ -1,33 +1,19 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
-import 'package:april_flutter_utils/src/data/transformable_value_notifier.dart';
-
 ///同时监听两个数据观察者
 class ValueListenableBuilder2<A, B> extends StatefulWidget {
   const ValueListenableBuilder2({
     super.key,
     required this.listenableA,
     required this.listenableB,
-    this.needRebuild,
     required this.builder,
     this.child,
   });
 
   final ValueListenable<A> listenableA;
   final ValueListenable<B> listenableB;
-  final bool Function(
-    A oldA,
-    A newA,
-    B oldB,
-    B newB,
-  )? needRebuild;
-  final Widget Function(
-    BuildContext context,
-    A valueA,
-    B valueB,
-    Widget? child,
-  ) builder;
+  final Widget Function(BuildContext context, A valueA, B valueB, Widget? child) builder;
   final Widget? child;
 
   @override
@@ -41,14 +27,32 @@ class _ValueListenableBuilder2State<A, B> extends State<ValueListenableBuilder2<
   @override
   void initState() {
     super.initState();
-    _init();
-  }
-
-  void _init() {
     valueA = widget.listenableA.value;
     valueB = widget.listenableB.value;
     widget.listenableA.addListener(_onValueChanged);
     widget.listenableB.addListener(_onValueChanged);
+  }
+
+  @override
+  void didUpdateWidget(covariant ValueListenableBuilder2<A, B> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.listenableA != widget.listenableA) {
+      oldWidget.listenableA.removeListener(_onValueChanged);
+      valueA = widget.listenableA.value;
+      widget.listenableA.addListener(_onValueChanged);
+    }
+    if (oldWidget.listenableB != widget.listenableB) {
+      oldWidget.listenableB.removeListener(_onValueChanged);
+      valueB = widget.listenableB.value;
+      widget.listenableB.addListener(_onValueChanged);
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.listenableA.removeListener(_onValueChanged);
+    widget.listenableB.removeListener(_onValueChanged);
+    super.dispose();
   }
 
   void _onValueChanged() {
@@ -56,46 +60,15 @@ class _ValueListenableBuilder2State<A, B> extends State<ValueListenableBuilder2<
     final B oldB = valueB;
     valueA = widget.listenableA.value;
     valueB = widget.listenableB.value;
-    if (widget.needRebuild?.call(
-              oldA,
-              valueA,
-              oldB,
-              valueB,
-            ) !=
-            false &&
-        mounted) {
-      setState(() {});
+    if (oldA == valueA && oldB == valueB) {
+      return;
     }
-  }
-
-  @override
-  void didUpdateWidget(covariant ValueListenableBuilder2<A, B> oldWidget) {
-    if (oldWidget.listenableA != widget.listenableA || oldWidget.listenableB != widget.listenableB) {
-      _release(oldWidget);
-      _init();
-    }
-    super.didUpdateWidget(oldWidget);
-  }
-
-  void _release(ValueListenableBuilder2<A, B> widget) {
-    widget.listenableA.removeListener(_onValueChanged);
-    widget.listenableB.removeListener(_onValueChanged);
-  }
-
-  @override
-  void dispose() {
-    _release(widget);
-    super.dispose();
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget.builder.call(
-      context,
-      valueA,
-      valueB,
-      widget.child,
-    );
+    return widget.builder.call(context, valueA, valueB, widget.child);
   }
 }
 
@@ -106,7 +79,6 @@ class ValueListenableBuilder3<A, B, C> extends StatefulWidget {
     required this.listenableA,
     required this.listenableB,
     required this.listenableC,
-    this.needRebuild,
     required this.builder,
     this.child,
   });
@@ -114,21 +86,7 @@ class ValueListenableBuilder3<A, B, C> extends StatefulWidget {
   final ValueListenable<A> listenableA;
   final ValueListenable<B> listenableB;
   final ValueListenable<C> listenableC;
-  final bool Function(
-    A oldA,
-    A newA,
-    B oldB,
-    B newB,
-    C oldC,
-    C newC,
-  )? needRebuild;
-  final Widget Function(
-    BuildContext context,
-    A valueA,
-    B valueB,
-    C valueC,
-    Widget? child,
-  ) builder;
+  final Widget Function(BuildContext context, A valueA, B valueB, C valueC, Widget? child) builder;
   final Widget? child;
 
   @override
@@ -143,16 +101,40 @@ class _ValueListenableBuilder3State<A, B, C> extends State<ValueListenableBuilde
   @override
   void initState() {
     super.initState();
-    _init();
-  }
-
-  void _init() {
     valueA = widget.listenableA.value;
     valueB = widget.listenableB.value;
     valueC = widget.listenableC.value;
     widget.listenableA.addListener(_onValueChanged);
     widget.listenableB.addListener(_onValueChanged);
     widget.listenableC.addListener(_onValueChanged);
+  }
+
+  @override
+  void didUpdateWidget(covariant ValueListenableBuilder3<A, B, C> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.listenableA != widget.listenableA) {
+      oldWidget.listenableA.removeListener(_onValueChanged);
+      valueA = widget.listenableA.value;
+      widget.listenableA.addListener(_onValueChanged);
+    }
+    if (oldWidget.listenableB != widget.listenableB) {
+      oldWidget.listenableB.removeListener(_onValueChanged);
+      valueB = widget.listenableB.value;
+      widget.listenableB.addListener(_onValueChanged);
+    }
+    if (oldWidget.listenableC != widget.listenableC) {
+      oldWidget.listenableC.removeListener(_onValueChanged);
+      valueC = widget.listenableC.value;
+      widget.listenableC.addListener(_onValueChanged);
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.listenableA.removeListener(_onValueChanged);
+    widget.listenableB.removeListener(_onValueChanged);
+    widget.listenableC.removeListener(_onValueChanged);
+    super.dispose();
   }
 
   void _onValueChanged() {
@@ -162,43 +144,15 @@ class _ValueListenableBuilder3State<A, B, C> extends State<ValueListenableBuilde
     valueA = widget.listenableA.value;
     valueB = widget.listenableB.value;
     valueC = widget.listenableC.value;
-    if (widget.needRebuild?.call(oldA, valueA, oldB, valueB, oldC, valueC) != false && mounted) {
-      setState(() {});
+    if (oldA == valueA && oldB == valueB && oldC == valueC) {
+      return;
     }
-  }
-
-  @override
-  void didUpdateWidget(covariant ValueListenableBuilder3<A, B, C> oldWidget) {
-    if (oldWidget.listenableA != widget.listenableA ||
-        oldWidget.listenableB != widget.listenableB ||
-        oldWidget.listenableC != widget.listenableC) {
-      _release(oldWidget);
-      _init();
-    }
-    super.didUpdateWidget(oldWidget);
-  }
-
-  void _release(ValueListenableBuilder3<A, B, C> widget) {
-    widget.listenableA.removeListener(_onValueChanged);
-    widget.listenableB.removeListener(_onValueChanged);
-    widget.listenableC.removeListener(_onValueChanged);
-  }
-
-  @override
-  void dispose() {
-    _release(widget);
-    super.dispose();
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget.builder.call(
-      context,
-      valueA,
-      valueB,
-      valueC,
-      widget.child,
-    );
+    return widget.builder.call(context, valueA, valueB, valueC, widget.child);
   }
 }
 
@@ -222,42 +176,43 @@ class TransformableListenableBuilder<A, R> extends StatefulWidget {
 }
 
 class _TransformableListenableBuilderState<A, R> extends State<TransformableListenableBuilder<A, R>> {
-  late ValueNotifier<R> notifier;
+  late R value;
 
   @override
   void initState() {
     super.initState();
-    notifier = widget.source.transform<R>(
-      transformer: transform,
-    );
+    value = widget.transformer.call(widget.source.value);
+    widget.source.addListener(_onValueChanged);
   }
 
   @override
   void didUpdateWidget(TransformableListenableBuilder<A, R> oldWidget) {
-    if (oldWidget.source != widget.source) {
-      notifier.dispose();
-      notifier = widget.source.transform<R>(
-        transformer: transform,
-      );
-    }
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.source != widget.source) {
+      oldWidget.source.removeListener(_onValueChanged);
+      value = widget.transformer.call(widget.source.value);
+      widget.source.addListener(_onValueChanged);
+    }
   }
 
   @override
   void dispose() {
-    notifier.dispose();
+    widget.source.removeListener(_onValueChanged);
     super.dispose();
   }
 
-  R transform(A a) => widget.transformer.call(a);
+  void _onValueChanged() {
+    final R newValue = widget.transformer.call(widget.source.value);
+    if (value == newValue) {
+      return;
+    }
+    value = newValue;
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<R>(
-      valueListenable: notifier,
-      builder: widget.builder,
-      child: widget.child,
-    );
+    return widget.builder.call(context, value, widget.child);
   }
 }
 
@@ -283,46 +238,63 @@ class TransformableListenableBuilder2<A, B, R> extends StatefulWidget {
 }
 
 class _TransformableListenableBuilder2State<A, B, R> extends State<TransformableListenableBuilder2<A, B, R>> {
-  late ValueNotifier<R> notifier;
+  late R value;
 
   @override
   void initState() {
     super.initState();
-    notifier = TransformableValueNotifier2<A, B, R>(
-      sourceA: widget.sourceA,
-      sourceB: widget.sourceB,
-      transformer: transform,
+    value = widget.transformer.call(
+      widget.sourceA.value,
+      widget.sourceB.value,
     );
+    widget.sourceA.addListener(_onValueChanged);
+    widget.sourceB.addListener(_onValueChanged);
   }
 
   @override
   void didUpdateWidget(covariant TransformableListenableBuilder2<A, B, R> oldWidget) {
-    if (oldWidget.sourceA != widget.sourceA || oldWidget.sourceB != widget.sourceB) {
-      notifier.dispose();
-      notifier = TransformableValueNotifier2<A, B, R>(
-        sourceA: widget.sourceA,
-        sourceB: widget.sourceB,
-        transformer: transform,
+    super.didUpdateWidget(oldWidget);
+    bool changed = false;
+    if (oldWidget.sourceA != widget.sourceA) {
+      changed = true;
+      oldWidget.sourceA.removeListener(_onValueChanged);
+      widget.sourceA.addListener(_onValueChanged);
+    }
+    if (oldWidget.sourceB != widget.sourceB) {
+      changed = true;
+      oldWidget.sourceB.removeListener(_onValueChanged);
+      widget.sourceB.addListener(_onValueChanged);
+    }
+    if (changed) {
+      value = widget.transformer.call(
+        widget.sourceA.value,
+        widget.sourceB.value,
       );
     }
-    super.didUpdateWidget(oldWidget);
   }
 
   @override
   void dispose() {
-    notifier.dispose();
+    widget.sourceA.removeListener(_onValueChanged);
+    widget.sourceB.removeListener(_onValueChanged);
     super.dispose();
   }
 
-  R transform(A a, B b) => widget.transformer.call(a, b);
+  void _onValueChanged() {
+    final R newValue = widget.transformer.call(
+      widget.sourceA.value,
+      widget.sourceB.value,
+    );
+    if (value == newValue) {
+      return;
+    }
+    value = newValue;
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<R>(
-      valueListenable: notifier,
-      builder: widget.builder,
-      child: widget.child,
-    );
+    return widget.builder.call(context, value, widget.child);
   }
 }
 
@@ -351,50 +323,73 @@ class TransformableListenableBuilder3<A, B, C, S> extends StatefulWidget {
 }
 
 class _TransformableListenableBuilder3State<A, B, C, S> extends State<TransformableListenableBuilder3<A, B, C, S>> {
-  late ValueNotifier<S> notifier;
+  late S value;
 
   @override
   void initState() {
     super.initState();
-    notifier = TransformableValueNotifier3<A, B, C, S>(
-      sourceA: widget.sourceA,
-      sourceB: widget.sourceB,
-      sourceC: widget.sourceC,
-      transformer: transform,
+    value = widget.transformer.call(
+      widget.sourceA.value,
+      widget.sourceB.value,
+      widget.sourceC.value,
     );
+    widget.sourceA.addListener(_onValueChanged);
+    widget.sourceB.addListener(_onValueChanged);
+    widget.sourceC.addListener(_onValueChanged);
   }
 
   @override
   void didUpdateWidget(covariant TransformableListenableBuilder3<A, B, C, S> oldWidget) {
-    if (oldWidget.sourceA != widget.sourceA ||
-        oldWidget.sourceB != widget.sourceB ||
-        oldWidget.sourceC != widget.sourceC) {
-      notifier.dispose();
-      notifier = TransformableValueNotifier3<A, B, C, S>(
-        sourceA: widget.sourceA,
-        sourceB: widget.sourceB,
-        sourceC: widget.sourceC,
-        transformer: transform,
+    super.didUpdateWidget(oldWidget);
+    bool changed = false;
+    if (oldWidget.sourceA != widget.sourceA) {
+      changed = true;
+      oldWidget.sourceA.removeListener(_onValueChanged);
+      widget.sourceA.addListener(_onValueChanged);
+    }
+    if (oldWidget.sourceB != widget.sourceB) {
+      changed = true;
+      oldWidget.sourceB.removeListener(_onValueChanged);
+      widget.sourceB.addListener(_onValueChanged);
+    }
+    if (oldWidget.sourceC != widget.sourceC) {
+      changed = true;
+      oldWidget.sourceC.removeListener(_onValueChanged);
+      widget.sourceC.addListener(_onValueChanged);
+    }
+    if (changed) {
+      value = widget.transformer.call(
+        widget.sourceA.value,
+        widget.sourceB.value,
+        widget.sourceC.value,
       );
     }
-    super.didUpdateWidget(oldWidget);
   }
 
   @override
   void dispose() {
-    notifier.dispose();
+    widget.sourceA.removeListener(_onValueChanged);
+    widget.sourceB.removeListener(_onValueChanged);
+    widget.sourceC.removeListener(_onValueChanged);
     super.dispose();
   }
 
-  S transform(A a, B b, C c) => widget.transformer.call(a, b, c);
+  void _onValueChanged() {
+    final S newValue = widget.transformer.call(
+      widget.sourceA.value,
+      widget.sourceB.value,
+      widget.sourceC.value,
+    );
+    if (value == newValue) {
+      return;
+    }
+    value = newValue;
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<S>(
-      valueListenable: notifier,
-      builder: widget.builder,
-      child: widget.child,
-    );
+    return widget.builder.call(context, value, widget.child);
   }
 }
 
@@ -426,53 +421,83 @@ class TransformableListenableBuilder4<A, B, C, D, S> extends StatefulWidget {
 
 class _TransformableListenableBuilder4State<A, B, C, D, S>
     extends State<TransformableListenableBuilder4<A, B, C, D, S>> {
-  late ValueNotifier<S> notifier;
+  late S value;
 
   @override
   void initState() {
     super.initState();
-    notifier = TransformableValueNotifier4<A, B, C, D, S>(
-      sourceA: widget.sourceA,
-      sourceB: widget.sourceB,
-      sourceC: widget.sourceC,
-      sourceD: widget.sourceD,
-      transformer: transform,
+    value = widget.transformer.call(
+      widget.sourceA.value,
+      widget.sourceB.value,
+      widget.sourceC.value,
+      widget.sourceD.value,
     );
+    widget.sourceA.addListener(_onValueChanged);
+    widget.sourceB.addListener(_onValueChanged);
+    widget.sourceC.addListener(_onValueChanged);
+    widget.sourceD.addListener(_onValueChanged);
   }
 
   @override
   void didUpdateWidget(covariant TransformableListenableBuilder4<A, B, C, D, S> oldWidget) {
-    if (oldWidget.sourceA != widget.sourceA ||
-        oldWidget.sourceB != widget.sourceB ||
-        oldWidget.sourceC != widget.sourceC ||
-        oldWidget.sourceD != widget.sourceD) {
-      notifier.dispose();
-      notifier = TransformableValueNotifier4<A, B, C, D, S>(
-        sourceA: widget.sourceA,
-        sourceB: widget.sourceB,
-        sourceC: widget.sourceC,
-        sourceD: widget.sourceD,
-        transformer: transform,
+    super.didUpdateWidget(oldWidget);
+    bool changed = false;
+    if (oldWidget.sourceA != widget.sourceA) {
+      changed = true;
+      oldWidget.sourceA.removeListener(_onValueChanged);
+      widget.sourceA.addListener(_onValueChanged);
+    }
+    if (oldWidget.sourceB != widget.sourceB) {
+      changed = true;
+      oldWidget.sourceB.removeListener(_onValueChanged);
+      widget.sourceB.addListener(_onValueChanged);
+    }
+    if (oldWidget.sourceC != widget.sourceC) {
+      changed = true;
+      oldWidget.sourceC.removeListener(_onValueChanged);
+      widget.sourceC.addListener(_onValueChanged);
+    }
+    if (oldWidget.sourceD != widget.sourceD) {
+      changed = true;
+      oldWidget.sourceD.removeListener(_onValueChanged);
+      widget.sourceD.addListener(_onValueChanged);
+    }
+    if (changed) {
+      value = widget.transformer.call(
+        widget.sourceA.value,
+        widget.sourceB.value,
+        widget.sourceC.value,
+        widget.sourceD.value,
       );
     }
-    super.didUpdateWidget(oldWidget);
   }
 
   @override
   void dispose() {
-    notifier.dispose();
+    widget.sourceA.removeListener(_onValueChanged);
+    widget.sourceB.removeListener(_onValueChanged);
+    widget.sourceC.removeListener(_onValueChanged);
+    widget.sourceD.removeListener(_onValueChanged);
     super.dispose();
   }
 
-  S transform(A a, B b, C c, D d) => widget.transformer.call(a, b, c, d);
+  void _onValueChanged() {
+    final S newValue = widget.transformer.call(
+      widget.sourceA.value,
+      widget.sourceB.value,
+      widget.sourceC.value,
+      widget.sourceD.value,
+    );
+    if (value == newValue) {
+      return;
+    }
+    value = newValue;
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<S>(
-      valueListenable: notifier,
-      builder: widget.builder,
-      child: widget.child,
-    );
+    return widget.builder.call(context, value, widget.child);
   }
 }
 
