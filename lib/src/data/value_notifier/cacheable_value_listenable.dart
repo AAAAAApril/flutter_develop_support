@@ -42,6 +42,11 @@ class CacheableValueNotifier<T> extends ChangeNotifier implements CacheableValue
   @override
   List<T> get cachedValues => _cachedValues;
 
+  ///清空缓存
+  void clearCaches() {
+    _cachedValues.clear();
+  }
+
   void _cache(T oldValue) {
     _cachedValues.add(oldValue);
     //当缓存数量超过最大值时
