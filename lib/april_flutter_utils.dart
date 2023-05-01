@@ -6,7 +6,7 @@ export 'src/data/pagination_data_wrapper.dart';
 export 'src/data/refreshable.dart';
 export 'src/data/refreshable_controller.dart';
 export 'src/data/refreshable_data_wrapper.dart';
-export 'src/data/transformable_value_notifier.dart';
+export 'src/data/value_notifier/transformable_value_notifier.dart';
 export 'src/data/value_notifier/cacheable_value_listenable.dart';
 export 'src/data/value_notifier/notifiable_value_notifier.dart';
 
