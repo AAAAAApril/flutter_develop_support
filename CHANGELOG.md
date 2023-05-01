@@ -1,3 +1,8 @@
+## 0.1.1
+
+* Add `updatedCount` field for `CacheableValueListenable`
+* Default value of `VisibilityValueNotifier` comes from value of current `AppLifecycleState`
+
 ## 0.1.0
 
 * Rename `april` to `april_flutter_utils`

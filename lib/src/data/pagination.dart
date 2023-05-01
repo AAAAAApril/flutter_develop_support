@@ -9,6 +9,7 @@ mixin Pagination<T> on Refreshable<T> {
   @protected
   final CacheableValueNotifier<LoadMoreStateValue> loadMoreStateInternal = CacheableValueNotifier<LoadMoreStateValue>(
     const LoadMoreStateValue.def(),
+    maxCacheCount: 5,
   );
 
   CacheableValueListenable<LoadMoreStateValue> get loadMoreState => loadMoreStateInternal;

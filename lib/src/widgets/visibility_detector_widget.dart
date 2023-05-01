@@ -1,4 +1,4 @@
-import 'package:april_flutter_utils/src/data/transformable_value_notifier.dart';
+import 'package:april_flutter_utils/src/data/value_notifier/transformable_value_notifier.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -8,9 +8,9 @@ class VisibilityDetectorWidget extends StatelessWidget {
   const VisibilityDetectorWidget({
     Key? key,
     required this.detectorKey,
-    required this.child,
     required this.visibilityNotifier,
     this.sliverWidget = false,
+    required this.child,
   }) : super(key: key);
 
   ///监听器的 Key
@@ -48,13 +48,6 @@ class VisibilityValue {
     required this.widgetVisible,
   });
 
-  const VisibilityValue.def()
-      :
-        //应用默认可见
-        appVisible = true,
-        //组件默认不不可见
-        widgetVisible = false;
-
   final bool appVisible;
   final bool widgetVisible;
 
@@ -84,9 +77,17 @@ class VisibilityValueNotifier extends ValueNotifier<VisibilityValue> with Widget
   static bool _checkWidgetVisible(VisibilityInfo info) => info.visibleFraction != 0;
 
   VisibilityValueNotifier({
-    VisibilityValue defaultValue = const VisibilityValue.def(),
+    VisibilityValue? defaultValue,
     this.isWidgetVisible = _checkWidgetVisible,
-  }) : super(defaultValue) {
+  }) : super(
+          defaultValue ??
+              VisibilityValue(
+                //获取当前 APP 是否可见
+                appVisible: WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed,
+                //默认 Widget 不可见
+                widgetVisible: false,
+              ),
+        ) {
     _visible = TransformableValueNotifier<VisibilityValue, bool>(
       source: this,
       transformer: (sourceValue) => sourceValue.appVisible && sourceValue.widgetVisible,
@@ -112,7 +113,7 @@ class VisibilityValueNotifier extends ValueNotifier<VisibilityValue> with Widget
   /// Widget 可见性变更
   void _onVisibilityChanged(VisibilityInfo info) {
     value = value.copyWith(
-      widgetVisible: isWidgetVisible(info),
+      widgetVisible: isWidgetVisible.call(info),
     );
   }
 
