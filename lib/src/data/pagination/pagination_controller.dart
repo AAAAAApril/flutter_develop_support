@@ -1,8 +1,4 @@
-import 'package:flutter/foundation.dart';
-
-import 'pagination.dart';
-import 'pagination_data_wrapper.dart';
-import 'refreshable_controller.dart';
+part of 'pagination.dart';
 
 ///分页列表控制器
 ///所有的分页列表的刷新以及加载更多逻辑都应该继承此类处理
@@ -13,49 +9,6 @@ abstract class AbsPaginationController<T, W extends AbsPaginationDataWrapper<T>,
   AbsPaginationController({
     required PaginationConfig<N> config,
   }) : super(paginationConfig: config);
-}
-
-///分页功能的一些配置参数
-abstract class PaginationConfig<T> extends RefreshableConfig {
-  PaginationConfig({
-    required this.startPageNum,
-    this.pageSize = 20,
-    bool notifyStateFirst = true,
-    bool autoRefresh = true,
-    bool lazyRefresh = true,
-    bool autoRefreshOnEmptyList = true,
-  })  : assert(pageSize > 0),
-        _currentPageNum = startPageNum,
-        super(
-          notifyStateFirst: notifyStateFirst,
-          autoRefresh: autoRefresh,
-          lazyRefresh: lazyRefresh,
-          autoRefreshOnEmptyList: autoRefreshOnEmptyList,
-        );
-
-  ///起始页码数
-  final T startPageNum;
-
-  ///当前页码数
-  T _currentPageNum;
-
-  T get currentPageNum => _currentPageNum;
-
-  ///用于在加载更多操作时，获取下一页的页码
-  T getNextPageNum();
-
-  ///分页时每一页的数据量
-  final int pageSize;
-}
-
-/// 限定页码为 [int] 型
-class PaginationConfigInt extends PaginationConfig<int> {
-  PaginationConfigInt({
-    super.startPageNum = 1,
-  });
-
-  @override
-  int getNextPageNum() => _currentPageNum + 1;
 }
 
 abstract class _PaginationControllerInternal<T, W extends AbsPaginationDataWrapper<T>, N>

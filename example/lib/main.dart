@@ -91,3 +91,20 @@ class _ExampleWidgetState extends State<ExampleWidget> {
     ]);
   }
 }
+
+final Pagination<void> pagination = PaginationController<void>(
+  paginationConfig: SimplePaginationConfig<int>(
+    startPageNum: 0,
+    getNextPageNum: (currentPageNum) => currentPageNum + 1,
+  ),
+  request: (pageNum, pageSize) async {
+    return <void>[];
+  },
+);
+
+final Refreshable<void> refreshable = RefreshController<void>(
+  config: const RefreshableConfig(),
+  request: () async {
+    return <void>[];
+  },
+);

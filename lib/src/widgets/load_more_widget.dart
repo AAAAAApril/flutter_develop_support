@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:april_flutter_utils/src/data/pagination.dart';
+import 'package:april_flutter_utils/src/data/pagination/pagination.dart';
 
 ///自动触发加载更多操作的占位布局
 class LoadMoreWidget extends StatefulWidget {

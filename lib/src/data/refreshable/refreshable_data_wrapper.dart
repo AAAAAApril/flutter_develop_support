@@ -1,3 +1,5 @@
+part of 'refreshable.dart';
+
 ///可刷新列表数据结构包装
 abstract class AbsRefreshableDataWrapper<T> {
   ///数据列

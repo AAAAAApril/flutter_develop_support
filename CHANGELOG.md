@@ -1,3 +1,9 @@
+## 0.1.2
+
+* Add `Refreshable<T>` subclass `SimpleRefreshableController<T>`
+* Add `Pagination<T>` subclass `SimplePaginationController<T, N>`
+* Both simple controller is data wrapper needless.
+
 ## 0.1.1
 
 * Add `updatedCount` field for `CacheableValueListenable`
