@@ -35,4 +35,5 @@ export 'src/widgets/shake_widget.dart';
 export 'src/widgets/slide_visible_widget.dart';
 export 'src/widgets/task_dialog.dart';
 export 'src/widgets/value_listenable_builder.dart';
+export 'src/widgets/transformable_listenable_builder.dart';
 export 'src/widgets/visibility_detector_widget.dart';
