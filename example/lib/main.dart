@@ -92,7 +92,7 @@ class _ExampleWidgetState extends State<ExampleWidget> {
   }
 }
 
-final Pagination<void> pagination = PaginationController<void>(
+final Pagination<void> pagination = SimpleIntPaginationController<void>(
   paginationConfig: SimplePaginationConfig<int>(
     startPageNum: 0,
     getNextPageNum: (currentPageNum) => currentPageNum + 1,
@@ -102,9 +102,39 @@ final Pagination<void> pagination = PaginationController<void>(
   },
 );
 
-final Refreshable<void> refreshable = RefreshController<void>(
+final Refreshable<void> refreshable = SimpleRefreshableController<void>(
   config: const RefreshableConfig(),
   request: () async {
     return <void>[];
   },
 );
+
+class CustomPaginationController extends AbsPaginationController<int, IntWrapper, int> {
+  CustomPaginationController({required super.paginationConfig});
+
+  @override
+  Future<IntWrapper> loadMoreInternal() {
+    // TODO: implement loadMoreInternal
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<IntWrapper> refreshInternal() {
+    // TODO: implement refreshInternal
+    throw UnimplementedError();
+  }
+}
+
+class IntWrapper extends AbsPaginationDataWrapper<int> {
+  @override
+  // TODO: implement data
+  List<int> get data => throw UnimplementedError();
+
+  @override
+  // TODO: implement hasMore
+  bool get hasMore => throw UnimplementedError();
+
+  @override
+  // TODO: implement succeed
+  bool get succeed => throw UnimplementedError();
+}

@@ -3,8 +3,8 @@ part of '../pagination.dart';
 /// 没有数据包装类的刷新控制器实现
 /// [N] 分页参数的
 /// Tips: 始终认定还有更多数据
-abstract class SimplePaginationController<T, N> extends SimpleRefreshableController<T> with Pagination<T> {
-  SimplePaginationController({
+abstract class AbsSimplePaginationController<T, N> extends AbsSimpleRefreshableController<T> with Pagination<T> {
+  AbsSimplePaginationController({
     required this.paginationConfig,
   }) : super(config: paginationConfig);
 
@@ -109,8 +109,8 @@ abstract class SimplePaginationController<T, N> extends SimpleRefreshableControl
 }
 
 ///限定页码数为 [int] 型的简单分页控制器
-abstract class SimpleIntPaginationController<T> extends SimplePaginationController<T, int> {
-  SimpleIntPaginationController({
+abstract class AbsSimpleIntPaginationController<T> extends AbsSimplePaginationController<T, int> {
+  AbsSimpleIntPaginationController({
     PaginationConfig<int>? paginationConfig,
   }) : super(paginationConfig: paginationConfig ?? IntPaginationConfig());
 
@@ -132,8 +132,8 @@ abstract class SimpleIntPaginationController<T> extends SimplePaginationControll
 }
 
 ///一个可以直接初始化的实现类
-class PaginationController<T> extends SimpleIntPaginationController<T> {
-  PaginationController({
+class SimpleIntPaginationController<T> extends AbsSimpleIntPaginationController<T> {
+  SimpleIntPaginationController({
     required Future<List<T>> Function(int pageNum, int pageSize) request,
     super.paginationConfig,
   }) : _request = request;

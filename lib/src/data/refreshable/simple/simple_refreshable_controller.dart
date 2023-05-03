@@ -1,8 +1,8 @@
 part of '../refreshable.dart';
 
 /// 没有数据包装类的刷新控制器实现
-abstract class SimpleRefreshableController<T> extends Refreshable<T> {
-  SimpleRefreshableController({
+abstract class AbsSimpleRefreshableController<T> extends Refreshable<T> {
+  AbsSimpleRefreshableController({
     RefreshableConfig config = const RefreshableConfig(),
   }) : refreshableConfig = config {
     if (!refreshableStateInternal.value.isRefreshedOnce &&
@@ -105,8 +105,8 @@ abstract class SimpleRefreshableController<T> extends Refreshable<T> {
 }
 
 ///一个可以直接初始化的实现类
-class RefreshController<T> extends SimpleRefreshableController<T> {
-  RefreshController({
+class SimpleRefreshableController<T> extends AbsSimpleRefreshableController<T> {
+  SimpleRefreshableController({
     required Future<List<T>> Function() request,
     super.config,
   }) : _request = request;

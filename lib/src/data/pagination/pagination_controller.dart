@@ -5,15 +5,8 @@ part of 'pagination.dart';
 ///[T] 绑定的数据类型
 ///[N] 页码的数据类型（通常是 [int]，但也存在是其他类型的特殊情况，比如 [String]）
 abstract class AbsPaginationController<T, W extends AbsPaginationDataWrapper<T>, N>
-    extends _PaginationControllerInternal<T, W, N> with Pagination<T> {
+    extends AbsRefreshableController<T, W> with Pagination<T> {
   AbsPaginationController({
-    required PaginationConfig<N> config,
-  }) : super(paginationConfig: config);
-}
-
-abstract class _PaginationControllerInternal<T, W extends AbsPaginationDataWrapper<T>, N>
-    extends AbsRefreshableController<T, W> implements Pagination<T> {
-  _PaginationControllerInternal({
     required this.paginationConfig,
   }) : super(config: paginationConfig);
 
