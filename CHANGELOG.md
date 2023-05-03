@@ -20,14 +20,17 @@
 * Rename `april` to `april_flutter_utils`
 * Rename `AprilMethod.dart`
   to [`AprilAndroidMethod.dart`](./lib/src/method/april_android_method.dart)
-* Add `CachedValueNotifier<T>` who can cache all values.
+* Add [CachedValueNotifier<T>](./lib/src/data/value_notifier/cacheable_value_listenable.dart) who
+  can cache all values.
 * Optimize all codes
   of file [`value_listenable_builder.dart`](./lib/src/widgets/value_listenable_builder.dart)
 
 ## 0.0.4
 
-* optimize the code of `refreshable.dart`、`refreshable_controller.dart`、`pagination.dart`
-  、`pagination_controller.dart`
+* optimize the code of [refreshable.dart](./lib/src/data/refreshable/refreshable.dart)
+  、[refreshable_controller.dart](./lib/src/data/refreshable/refreshable_controller.dart)
+  、[pagination.dart](./lib/src/data/pagination/pagination.dart)
+  、[pagination_controller.dart](./lib/src/data/pagination/pagination_controller.dart)
 * remove deprecated code
 
 ## 0.0.3
