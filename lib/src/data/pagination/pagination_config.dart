@@ -11,7 +11,7 @@ abstract class PaginationConfig<T> extends RefreshableConfig {
     bool lazyRefresh = true,
     bool autoRefreshOnEmptyList = true,
   })  : assert(pageSize > 0),
-        _currentPageNum = startPageNum,
+        currentPageNumInternal = startPageNum,
         super(
           notifyStateFirst: notifyStateFirst,
           autoRefresh: autoRefresh,
@@ -23,9 +23,22 @@ abstract class PaginationConfig<T> extends RefreshableConfig {
   final T startPageNum;
 
   ///当前页码数
-  T _currentPageNum;
+  @protected
+  T currentPageNumInternal;
 
-  T get currentPageNum => _currentPageNum;
+  T get currentPageNum => currentPageNumInternal;
+
+  @protected
+  @mustCallSuper
+  void onRefreshSucceed() {
+    currentPageNumInternal = startPageNum;
+  }
+
+  @protected
+  @mustCallSuper
+  void onLoadMoreSucceed() {
+    currentPageNumInternal = getNextPageNum();
+  }
 
   ///用于在加载更多操作时，获取下一页的页码
   T getNextPageNum();
@@ -44,7 +57,7 @@ class SimplePaginationConfig<T> extends PaginationConfig<T> {
   final T Function(T currentPageNum) _getNextPageNum;
 
   @override
-  T getNextPageNum() => _getNextPageNum.call(_currentPageNum);
+  T getNextPageNum() => _getNextPageNum.call(currentPageNumInternal);
 }
 
 /// 限定页码为 [int] 型
@@ -59,5 +72,5 @@ class IntPaginationConfig extends PaginationConfig<int> {
   });
 
   @override
-  int getNextPageNum() => _currentPageNum + 1;
+  int getNextPageNum() => currentPageNumInternal + 1;
 }

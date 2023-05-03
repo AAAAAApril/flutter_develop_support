@@ -41,7 +41,7 @@ abstract class AbsSimplePaginationController<T, N> extends AbsSimpleRefreshableC
     try {
       //只要没有抛异常，就认为加载更多成功
       final data = await loadMoreInternal();
-      paginationConfig._currentPageNum = paginationConfig.getNextPageNum();
+      paginationConfig.onLoadMoreSucceed();
       if (refreshableConfig.notifyStateFirst) {
         setLoadMoreSucceed(succeed: true);
       }
@@ -73,7 +73,7 @@ abstract class AbsSimplePaginationController<T, N> extends AbsSimpleRefreshableC
   @mustCallSuper
   Future<void> onRefreshSucceed(List<T> data) async {
     //当前页码赋值为初始值
-    paginationConfig._currentPageNum = paginationConfig.startPageNum;
+    paginationConfig.onRefreshSucceed();
     if (refreshableConfig.notifyStateFirst) {
       setHasMoreData(true);
     }

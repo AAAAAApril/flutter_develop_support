@@ -39,7 +39,7 @@ abstract class AbsPaginationController<T, W extends AbsPaginationDataWrapper<T>,
     try {
       final wrapper = await loadMoreInternal();
       if (wrapper.succeed) {
-        paginationConfig._currentPageNum = paginationConfig.getNextPageNum();
+        paginationConfig.onLoadMoreSucceed();
         if (refreshableConfig.notifyStateFirst) {
           setLoadMoreSucceed(
             succeed: true,
@@ -81,7 +81,7 @@ abstract class AbsPaginationController<T, W extends AbsPaginationDataWrapper<T>,
   @mustCallSuper
   Future<void> onRefreshSucceed(covariant W wrapper) async {
     //当前页码赋值为初始值
-    paginationConfig._currentPageNum = paginationConfig.startPageNum;
+    paginationConfig.onRefreshSucceed();
     if (refreshableConfig.notifyStateFirst) {
       setHasMoreData(wrapper.hasMore);
     }

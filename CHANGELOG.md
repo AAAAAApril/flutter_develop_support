@@ -1,3 +1,7 @@
+## 0.1.2+1
+
+* Fix "private field xxx could be 'final'" warning.
+
 ## 0.1.2
 
 * Add subclass [`AbsSimpleRefreshableController<T>`](
