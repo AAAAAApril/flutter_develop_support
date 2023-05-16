@@ -31,3 +31,6 @@ flutter:
       android:
         package: com.april.support
         pluginClass: AprilPlugin
+
+# 发布插件执行命令
+# flutter packages pub publish --server=https://pub.dartlang.org
