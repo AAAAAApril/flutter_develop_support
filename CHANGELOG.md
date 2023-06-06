@@ -1,3 +1,7 @@
+## 0.1.3
+
+* Dart SDK version: `">=2.18.0 <4.0.0"`.
+
 ## 0.1.2+1
 
 * Fix "private field xxx could be 'final'" warning.
