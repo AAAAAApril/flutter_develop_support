@@ -1,3 +1,4 @@
+import 'package:extended_value_notifier/extended_value_notifier.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -5,7 +6,6 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:april_flutter_utils/src/data/pagination/pagination.dart';
 
 import 'load_more_widget.dart';
-import 'transformable_listenable_builder.dart';
 
 ///自带刷新以及加载更多功能的 ListView
 class PaginationListView<T> extends StatelessWidget {

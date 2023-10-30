@@ -1,11 +1,5 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:april_flutter_utils/april_flutter_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:html/dom.dart' as dom;
-
-import 'package:html/parser.dart' as parser;
 
 void main() {
   runApp(const MyApp());
@@ -45,96 +39,40 @@ class ExampleWidget extends StatefulWidget {
 }
 
 class _ExampleWidgetState extends State<ExampleWidget> {
-  late HttpClient client;
+  late VisibilityValueNotifier notifier;
 
   @override
   void initState() {
     super.initState();
-    client = HttpClient();
+    notifier = VisibilityValueNotifier();
+    notifier.addListener(onVisibilityChanged);
   }
 
   @override
   void dispose() {
-    client.close();
     super.dispose();
+    notifier.dispose();
   }
 
-  ///请求谷歌翻译
-  void translate() async {
-    HttpClientRequest request = await client.getUrl(
-      Uri.parse(
-        'https://translate.google.com/m?sl=en&tl=zh-CN&q=hello',
-      ),
-    );
-    HttpClientResponse response = await request.close();
-    String result = await response.transform(const Utf8Decoder()).join();
-    dom.Document document = parser.parse(result);
-    dom.Element? element = document.querySelector('div[class="result-container"]');
-    debugPrint('翻译结果：${element?.text}');
+  void onVisibilityChanged() {
+    debugPrint('>>>[可见性][${notifier.value}]');
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      PeriodicScaleAnimationWidget(
-        detectorKey: const ValueKey<String>('周期性缩放动画'),
-        child: const Icon(Icons.diamond, size: 48),
-      ),
-      ShakeWidget(
-        detectorKey: const ValueKey<String>('旋转动画'),
-        child: const Icon(Icons.title, size: 48),
-      ),
-      ElevatedButton(
-        onPressed: translate,
-        child: const Text('请求谷歌翻译'),
-      ),
-    ]);
+    return VisibilityDetectorWidget(
+      detectorKey: ValueKey(runtimeType),
+      visibilityNotifier: notifier,
+      child: Column(children: [
+        PeriodicScaleAnimationWidget(
+          detectorKey: const ValueKey<String>('周期性缩放动画'),
+          child: const Icon(Icons.diamond, size: 48),
+        ),
+        ShakeWidget(
+          detectorKey: const ValueKey<String>('旋转动画'),
+          child: const Icon(Icons.title, size: 48),
+        ),
+      ]),
+    );
   }
-}
-
-final Pagination<void> pagination = SimpleIntPaginationController<void>(
-  paginationConfig: SimplePaginationConfig<int>(
-    startPageNum: 0,
-    getNextPageNum: (currentPageNum) => currentPageNum + 1,
-  ),
-  request: (pageNum, pageSize) async {
-    return <void>[];
-  },
-);
-
-final Refreshable<void> refreshable = SimpleRefreshableController<void>(
-  config: const RefreshableConfig(),
-  request: () async {
-    return <void>[];
-  },
-);
-
-class CustomPaginationController extends AbsPaginationController<int, IntWrapper, int> {
-  CustomPaginationController({required super.paginationConfig});
-
-  @override
-  Future<IntWrapper> loadMoreInternal() {
-    // TODO: implement loadMoreInternal
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<IntWrapper> refreshInternal() {
-    // TODO: implement refreshInternal
-    throw UnimplementedError();
-  }
-}
-
-class IntWrapper extends AbsPaginationDataWrapper<int> {
-  @override
-  // TODO: implement data
-  List<int> get data => throw UnimplementedError();
-
-  @override
-  // TODO: implement hasMore
-  bool get hasMore => throw UnimplementedError();
-
-  @override
-  // TODO: implement succeed
-  bool get succeed => throw UnimplementedError();
 }

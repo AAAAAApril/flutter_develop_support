@@ -1,4 +1,4 @@
-import 'package:april_flutter_utils/src/data/value_notifier/transformable_value_notifier.dart';
+import 'package:extended_value_notifier/extended_value_notifier.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -70,9 +70,14 @@ class VisibilityValue {
 
   @override
   int get hashCode => widgetVisible.hashCode ^ appVisible.hashCode;
+
+  @override
+  String toString() {
+    return 'VisibilityValue{appVisible: $appVisible, widgetVisible: $widgetVisible}';
+  }
 }
 
-class VisibilityValueNotifier extends ValueNotifier<VisibilityValue> with WidgetsBindingObserver {
+class VisibilityValueNotifier extends ValueNotifier<VisibilityValue> {
   ///只要 Widget 有一像素可见，则认定为 Widget 可见
   static bool _checkWidgetVisible(VisibilityInfo info) => info.visibleFraction != 0;
 
@@ -92,12 +97,34 @@ class VisibilityValueNotifier extends ValueNotifier<VisibilityValue> with Widget
       source: this,
       transformer: (sourceValue) => sourceValue.appVisible && sourceValue.widgetVisible,
     );
-    WidgetsBinding.instance.addObserver(this);
+    _lifecycleListener = AppLifecycleListener(
+      onShow: () {
+        value = value.copyWith(
+          appVisible: true,
+        );
+      },
+      onHide: () {
+        value = value.copyWith(
+          appVisible: false,
+        );
+      },
+      onResume: () {
+        value = value.copyWith(
+          appVisible: true,
+        );
+      },
+      onPause: () {
+        value = value.copyWith(
+          appVisible: false,
+        );
+      },
+    );
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
+    _dispose = true;
+    _lifecycleListener.dispose();
     _visible.dispose();
     super.dispose();
   }
@@ -107,35 +134,27 @@ class VisibilityValueNotifier extends ValueNotifier<VisibilityValue> with Widget
 
   ValueListenable<bool> get visible => _visible;
 
+  ///应用生命周期
+  late final AppLifecycleListener _lifecycleListener;
+
   ///判断 Widget 是否可见的回调
   final bool Function(VisibilityInfo info) isWidgetVisible;
+
+  bool _dispose = false;
+
+  @protected
+  @override
+  set value(VisibilityValue newValue) {
+    if (_dispose) {
+      return;
+    }
+    super.value = newValue;
+  }
 
   /// Widget 可见性变更
   void _onVisibilityChanged(VisibilityInfo info) {
     value = value.copyWith(
       widgetVisible: isWidgetVisible.call(info),
     );
-  }
-
-  /// App 可见性变更
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-    switch (state) {
-      case AppLifecycleState.resumed:
-        value = value.copyWith(
-          appVisible: true,
-        );
-        break;
-      case AppLifecycleState.inactive:
-        break;
-      case AppLifecycleState.paused:
-        value = value.copyWith(
-          appVisible: false,
-        );
-        break;
-      case AppLifecycleState.detached:
-        break;
-    }
   }
 }

@@ -1,5 +1,4 @@
-import 'package:april_flutter_utils/src/data/value_notifier/cacheable_value_listenable.dart';
-import 'package:april_flutter_utils/src/data/value_notifier/notifiable_value_notifier.dart';
+import 'package:extended_value_notifier/extended_value_notifier.dart';
 
 import 'package:flutter/foundation.dart';
 
@@ -16,7 +15,7 @@ part 'simple/simple_refreshable_controller.dart';
 ///可刷新功能超类
 abstract class Refreshable<T> {
   ///绑定的数据列
-  final NotifiableValueNotifier<List<T>> _data = NotifiableValueNotifier<List<T>>(<T>[]);
+  final OptionalValueNotifier<List<T>> _data = OptionalValueNotifier<List<T>>(<T>[]);
 
   ValueListenable<List<T>> get data {
     onGetDataListenable(_data.value);
@@ -48,7 +47,7 @@ abstract class Refreshable<T> {
 
   ///设置新数据，但是不通知更新
   void setDataWithoutNotify(List<T> newData) {
-    _data.setValueWithoutNotify(newData);
+    _data.silentValue = newData;
   }
 
   ///重置第一次刷新状态

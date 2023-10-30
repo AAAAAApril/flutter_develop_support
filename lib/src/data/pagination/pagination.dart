@@ -1,5 +1,5 @@
 import 'package:april_flutter_utils/src/data/refreshable/refreshable.dart';
-import 'package:april_flutter_utils/src/data/value_notifier/cacheable_value_listenable.dart';
+import 'package:extended_value_notifier/extended_value_notifier.dart';
 
 import 'package:flutter/foundation.dart';
 

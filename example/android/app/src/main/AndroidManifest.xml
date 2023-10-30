@@ -3,7 +3,6 @@
     package="com.april.april_example">
 
     <application
-        android:icon="@mipmap/ic_launcher"
         android:label="april_example">
         <activity
             android:name=".MainActivity"

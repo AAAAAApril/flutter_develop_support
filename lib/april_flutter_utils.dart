@@ -2,9 +2,6 @@ library april_flutter_utils;
 
 export 'src/data/pagination/pagination.dart';
 export 'src/data/refreshable/refreshable.dart';
-export 'src/data/value_notifier/cacheable_value_listenable.dart';
-export 'src/data/value_notifier/notifiable_value_notifier.dart';
-export 'src/data/value_notifier/transformable_value_notifier.dart';
 
 export 'src/method/app_package_info.dart';
 export 'src/method/april_android_method.dart';
@@ -34,6 +31,4 @@ export 'src/widgets/rotation_widget.dart';
 export 'src/widgets/shake_widget.dart';
 export 'src/widgets/slide_visible_widget.dart';
 export 'src/widgets/task_dialog.dart';
-export 'src/widgets/value_listenable_builder.dart';
-export 'src/widgets/transformable_listenable_builder.dart';
 export 'src/widgets/visibility_detector_widget.dart';

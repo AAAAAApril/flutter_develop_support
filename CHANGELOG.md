@@ -1,3 +1,8 @@
+## 0.2.0
+
+* Dart SDK version: `">=3.0.0 <4.0.0"`
+* Flutter SDK version: `">=3.13.0"`
+
 ## 0.1.3
 
 * Dart SDK version: `">=2.18.0 <4.0.0"`.
@@ -18,8 +23,6 @@
 
 ## 0.1.1
 
-* Add `updatedCount` field
-  for [`CacheableValueListenable`](./lib/src/data/value_notifier/cacheable_value_listenable.dart)
 * Default value of [`VisibilityValueNotifier`](./lib/src/widgets/visibility_detector_widget.dart)
   comes from value of current `AppLifecycleState`
 
@@ -28,10 +31,6 @@
 * Rename `april` to `april_flutter_utils`
 * Rename `AprilMethod.dart`
   to [`AprilAndroidMethod.dart`](./lib/src/method/april_android_method.dart)
-* Add [`CachedValueNotifier<T>`](./lib/src/data/value_notifier/cacheable_value_listenable.dart) who
-  can cache all values.
-* Optimize all codes
-  of file [`value_listenable_builder.dart`](./lib/src/widgets/value_listenable_builder.dart)
 
 ## 0.0.4
 
@@ -44,10 +43,6 @@
 ## 0.0.3
 
 * remove file `page_visibility.dart`、`notifier_mixin.dart`
-* rename file `SelectValueNotifierX`
-  to [`TransformableValueNotifierX`](./lib/src/data/value_notifier/transformable_value_notifier.dart)
-* rename file `SelectorListenableBuilderX`
-  to [`TransformableListenableBuilderX`](./lib/src/widgets/transformable_listenable_builder.dart)
 * rename file `widget_visibility.dart`
   to [`visibility_detector_widget.dart`](./lib/src/widgets/visibility_detector_widget.dart) and
   change the code, now you

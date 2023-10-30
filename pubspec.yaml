@@ -1,11 +1,11 @@
 name: april_flutter_utils
 description: A package for flutter APP development.
-version: 0.1.3
+version: 0.1.4
 homepage: "https://github.com/AAAAAApril/flutter_develop_support"
 
 environment:
-  sdk: ">=2.18.0 <4.0.0"
-  flutter: ">=3.3.0"
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.13.0"
 
 dependencies:
   flutter:
@@ -14,6 +14,7 @@ dependencies:
   crypto: ^3.0.2
   flutter_staggered_grid_view: ^0.6.2
   visibility_detector: ^0.4.0+2
+  extended_value_notifier: ^0.0.3
 
 dev_dependencies:
   flutter_test:
