@@ -1,3 +1,7 @@
+## 0.2.1
+
+* Add a tool `TextInputReceiver` used for listen text input when no `TextField` focused.
+
 ## 0.2.0
 
 * Dart SDK version: `">=3.0.0 <4.0.0"`
