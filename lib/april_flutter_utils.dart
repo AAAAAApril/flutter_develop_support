@@ -12,6 +12,7 @@ export 'src/utils/date_formatter.dart';
 export 'src/utils/extensions.dart';
 export 'src/utils/json.dart';
 export 'src/utils/task.dart';
+export 'src/utils/text_input_receiver.dart';
 export 'src/utils/utils.dart';
 
 export 'src/widgets/dashed_separator.dart';

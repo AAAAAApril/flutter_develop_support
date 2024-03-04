@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 ///能够监听 内部 Widget 可见性变化的组件
-class VisibilityDetectorWidget extends StatelessWidget {
+class VisibilityDetectorWidget extends StatefulWidget {
   const VisibilityDetectorWidget({
     Key? key,
     required this.detectorKey,
@@ -26,18 +26,31 @@ class VisibilityDetectorWidget extends StatelessWidget {
   final Widget child;
 
   @override
+  State<VisibilityDetectorWidget> createState() => _VisibilityDetectorWidgetState();
+}
+
+class _VisibilityDetectorWidgetState extends State<VisibilityDetectorWidget> {
+  @override
+  void didUpdateWidget(covariant VisibilityDetectorWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.detectorKey != oldWidget.detectorKey || widget.visibilityNotifier != oldWidget.visibilityNotifier) {
+      widget.visibilityNotifier.value = oldWidget.visibilityNotifier.value.copyWith();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (sliverWidget) {
+    if (widget.sliverWidget) {
       return SliverVisibilityDetector(
-        key: detectorKey,
-        onVisibilityChanged: visibilityNotifier._onVisibilityChanged,
-        sliver: child,
+        key: widget.detectorKey,
+        onVisibilityChanged: widget.visibilityNotifier.onVisibilityChanged,
+        sliver: widget.child,
       );
     }
     return VisibilityDetector(
-      key: detectorKey,
-      onVisibilityChanged: visibilityNotifier._onVisibilityChanged,
-      child: child,
+      key: widget.detectorKey,
+      onVisibilityChanged: widget.visibilityNotifier.onVisibilityChanged,
+      child: widget.child,
     );
   }
 }
@@ -78,13 +91,8 @@ class VisibilityValue {
 }
 
 class VisibilityValueNotifier extends ValueNotifier<VisibilityValue> {
-  ///只要 Widget 有一像素可见，则认定为 Widget 可见
-  static bool _checkWidgetVisible(VisibilityInfo info) => info.visibleFraction != 0;
-
-  VisibilityValueNotifier({
-    VisibilityValue? defaultValue,
-    this.isWidgetVisible = _checkWidgetVisible,
-  }) : super(
+  VisibilityValueNotifier({VisibilityValue? defaultValue})
+      : super(
           defaultValue ??
               VisibilityValue(
                 //获取当前 APP 是否可见
@@ -93,31 +101,11 @@ class VisibilityValueNotifier extends ValueNotifier<VisibilityValue> {
                 widgetVisible: false,
               ),
         ) {
-    _visible = TransformableValueNotifier<VisibilityValue, bool>(
-      source: this,
-      transformer: (sourceValue) => sourceValue.appVisible && sourceValue.widgetVisible,
-    );
     _lifecycleListener = AppLifecycleListener(
-      onShow: () {
-        value = value.copyWith(
-          appVisible: true,
-        );
-      },
-      onHide: () {
-        value = value.copyWith(
-          appVisible: false,
-        );
-      },
-      onResume: () {
-        value = value.copyWith(
-          appVisible: true,
-        );
-      },
-      onPause: () {
-        value = value.copyWith(
-          appVisible: false,
-        );
-      },
+      onShow: onAppShown,
+      onHide: onAppHidden,
+      onResume: onAppResumed,
+      onInactive: onAppInactive,
     );
   }
 
@@ -125,24 +113,25 @@ class VisibilityValueNotifier extends ValueNotifier<VisibilityValue> {
   void dispose() {
     _dispose = true;
     _lifecycleListener.dispose();
-    _visible.dispose();
+    _visible?.dispose();
     super.dispose();
   }
 
   ///综合 App 以及 Widget 是否可见
-  late final ValueNotifier<bool> _visible;
+  ValueNotifier<bool>? _visible;
 
-  ValueListenable<bool> get visible => _visible;
+  ValueListenable<bool> get visible {
+    return _visible ??= TransformableValueNotifier<VisibilityValue, bool>(
+      source: this,
+      transformer: (sourceValue) => sourceValue.appVisible && sourceValue.widgetVisible,
+    );
+  }
 
   ///应用生命周期
   late final AppLifecycleListener _lifecycleListener;
 
-  ///判断 Widget 是否可见的回调
-  final bool Function(VisibilityInfo info) isWidgetVisible;
-
   bool _dispose = false;
 
-  @protected
   @override
   set value(VisibilityValue newValue) {
     if (_dispose) {
@@ -151,8 +140,34 @@ class VisibilityValueNotifier extends ValueNotifier<VisibilityValue> {
     super.value = newValue;
   }
 
+  @protected
+  void onAppShown() {}
+
+  @protected
+  void onAppHidden() {}
+
+  @protected
+  void onAppResumed() {
+    value = value.copyWith(
+      appVisible: true,
+    );
+  }
+
+  @protected
+  void onAppInactive() {
+    value = value.copyWith(
+      appVisible: false,
+    );
+  }
+
+  ///判断 Widget 是否可见的回调
+  @protected
+  bool isWidgetVisible(VisibilityInfo info) {
+    return info.visibleFraction > 0;
+  }
+
   /// Widget 可见性变更
-  void _onVisibilityChanged(VisibilityInfo info) {
+  void onVisibilityChanged(VisibilityInfo info) {
     value = value.copyWith(
       widgetVisible: isWidgetVisible.call(info),
     );

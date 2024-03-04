@@ -1,3 +1,7 @@
+## 0.2.2
+
+* Optimize the code of `VisibilityDetectorWidget`.
+
 ## 0.2.1
 
 * Add a tool `TextInputReceiver` used for listen text input when no `TextField` focused.
