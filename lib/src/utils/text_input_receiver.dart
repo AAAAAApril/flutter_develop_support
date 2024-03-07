@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
@@ -7,13 +8,7 @@ import 'package:flutter/widgets.dart';
 class TextInputReceiver {
   static FocusNode createFocusNode() => TextFieldFocusNode();
 
-  static void addListener(bool Function(String inputText) listener) {
-    _InputClient.listeners.add(listener);
-  }
-
-  static void removeListener(bool Function(String inputText) listener) {
-    _InputClient.listeners.remove(listener);
-  }
+  static ValueListenable<TextEditingValue> get editingValue => _InputClient.instance.editingValue;
 
   static void start() {
     TextInputReceiver._instance._start();
@@ -69,7 +64,7 @@ class TextInputReceiver {
 
   void _delayed() {
     _fieldFocused = TextFieldFocusNode._fieldsNodes.any(
-      (element) => element.hasPrimaryFocus,
+      (element) => element.hasFocus,
     );
     if (!_fieldFocused && _enable) {
       if (!_hasConnection) {
@@ -105,20 +100,20 @@ class TextFieldFocusNode extends FocusNode {
   void dispose() {
     super.dispose();
     TextFieldFocusNode._fieldsNodes.remove(this);
+    TextInputReceiver._instance._onFocusNodeChanged.call();
   }
 }
 
 class _InputClient with TextInputClient {
   static final _InputClient instance = _InputClient._();
-  static final Set<bool Function(String text)> listeners = {};
 
   _InputClient._();
 
-  TextEditingValue _editingValue = TextEditingValue.empty;
+  final ValueNotifier<TextEditingValue> editingValue = ValueNotifier(TextEditingValue.empty);
 
   ///清空输入内容
   void clearValue() {
-    _editingValue = TextEditingValue.empty;
+    editingValue.value = TextEditingValue.empty;
   }
 
   @override
@@ -132,7 +127,7 @@ class _InputClient with TextInputClient {
   AutofillScope? get currentAutofillScope => null;
 
   @override
-  TextEditingValue get currentTextEditingValue => _editingValue;
+  TextEditingValue get currentTextEditingValue => editingValue.value;
 
   @override
   void performAction(TextInputAction action) {}
@@ -145,15 +140,7 @@ class _InputClient with TextInputClient {
 
   @override
   void updateEditingValue(TextEditingValue value) {
-    _editingValue = value;
-    if (value.composing.isValid) {
-      return;
-    }
-    for (var element in List.of(listeners).reversed) {
-      if (element.call(value.text)) {
-        return;
-      }
-    }
+    editingValue.value = value;
   }
 
   @override
