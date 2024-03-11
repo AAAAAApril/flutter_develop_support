@@ -64,7 +64,7 @@ class TextInputReceiver {
 
   void _delayed() {
     _fieldFocused = TextFieldFocusNode._fieldsNodes.any(
-      (element) => element.hasFocus,
+      (element) => element.hasPrimaryFocus,
     );
     if (!_fieldFocused && _enable) {
       if (!_hasConnection) {
@@ -72,7 +72,9 @@ class TextInputReceiver {
           _InputClient.instance,
           const TextInputConfiguration(inputAction: TextInputAction.none),
         );
-        _inputConnection?.show();
+        _inputConnection
+          ?..show()
+          ..requestAutofill();
       }
     } else {
       _inputConnection?.close();
@@ -100,7 +102,7 @@ class TextFieldFocusNode extends FocusNode {
   void dispose() {
     super.dispose();
     TextFieldFocusNode._fieldsNodes.remove(this);
-    TextInputReceiver._instance._onFocusNodeChanged.call();
+    TextInputReceiver._instance._onFocusNodeChanged();
   }
 }
 
