@@ -1,3 +1,7 @@
+## 0.2.3
+
+* Fix bug about `TextInputReceiver`.
+
 ## 0.2.2
 
 * Optimize the code of `VisibilityDetectorWidget`.
