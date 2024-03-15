@@ -1,3 +1,7 @@
+## 0.3.0
+
+* Optimize code of `TextInputReceiver`.
+
 ## 0.2.3
 
 * Fix bug about `TextInputReceiver`.
