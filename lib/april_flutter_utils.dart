@@ -7,6 +7,11 @@ export 'src/method/app_package_info.dart';
 export 'src/method/april_android_method.dart';
 export 'src/method/resolve_activity_info.dart';
 
+export 'src/shelf/inherited_shelf.dart';
+export 'src/shelf/lattice_builder.dart';
+export 'src/shelf/lattice_notifier.dart';
+export 'src/shelf/shelf.dart';
+
 export 'src/utils/april_system_method.dart';
 export 'src/utils/date_formatter.dart';
 export 'src/utils/extensions.dart';
