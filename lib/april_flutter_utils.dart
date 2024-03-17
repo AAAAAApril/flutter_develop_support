@@ -1,5 +1,7 @@
 library april_flutter_utils;
 
+export 'src/cat/light_and_cat.dart';
+
 export 'src/data/pagination/pagination.dart';
 export 'src/data/refreshable/refreshable.dart';
 

@@ -1,3 +1,7 @@
+## 0.3.2
+
+* Add `light_and_cat`.
+
 ## 0.3.1
 
 * Add `Shelf`.
