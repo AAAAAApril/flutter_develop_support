@@ -12,12 +12,14 @@ class LightRegion extends StatefulWidget {
     this.lightStyle = MouseCursor.defer,
     this.hitTestBehavior,
     this.opaque = true,
+    this.postLightPositionWhenPressed = true,
     required this.child,
   });
 
   final MouseCursor lightStyle;
   final HitTestBehavior? hitTestBehavior;
   final bool opaque;
+  final bool postLightPositionWhenPressed;
   final Widget child;
 
   @override
@@ -58,33 +60,36 @@ class _LightRegionState extends State<LightRegion> {
   Widget build(BuildContext context) {
     return InheritedLightRegion(
       tracker,
-      child: MouseRegion(
-        onEnter: (event) {
-          tracker
-            ..lightInside = true
-            ..lightPosition = event.position;
+      child: Listener(
+        onPointerMove: (event) {
+          if (widget.postLightPositionWhenPressed) {
+            tracker.lightPosition = event.position;
+          }
         },
-        onExit: (event) {
-          tracker
-            ..lightInside = false
-            ..lightPosition = event.position;
-        },
-        onHover: (event) {
-          tracker.lightPosition = event.position;
-        },
-        cursor: widget.lightStyle,
-        hitTestBehavior: widget.hitTestBehavior,
-        opaque: widget.opaque,
-        child: AfterLayoutWidget(
-          afterLayout: onRegionChanged,
-          overlay: ValueListenableBuilder<List<TrackingCat>>(
-            valueListenable: tracker.trackingCatsListenable,
-            builder: (context, value, child) => Stack(
-              fit: StackFit.expand,
-              children: value.map<Widget>((e) => e.build(context)).toList(growable: false),
+        child: MouseRegion(
+          onEnter: (event) {
+            tracker.lightPosition = event.position;
+          },
+          onExit: (event) {
+            tracker.lightPosition = event.position;
+          },
+          onHover: (event) {
+            tracker.lightPosition = event.position;
+          },
+          cursor: widget.lightStyle,
+          hitTestBehavior: widget.hitTestBehavior,
+          opaque: widget.opaque,
+          child: AfterLayoutWidget(
+            afterLayout: onRegionChanged,
+            overlay: ValueListenableBuilder<List<TrackingCat>>(
+              valueListenable: tracker.trackingCatsListenable,
+              builder: (context, value, child) => Stack(
+                fit: StackFit.expand,
+                children: value.map<Widget>((e) => e.build(context)).toList(growable: false),
+              ),
             ),
+            child: Builder(key: globalKey, builder: (context) => widget.child),
           ),
-          child: Builder(key: globalKey, builder: (context) => widget.child),
         ),
       ),
     );
@@ -104,6 +109,26 @@ class CatTerritory extends StatefulWidget {
 
 class _CatTerritoryState extends State<CatTerritory> {
   final GlobalKey globalKey = GlobalKey();
+
+  late ValueNotifier<Rect?> lightRegion;
+
+  @override
+  void initState() {
+    super.initState();
+    lightRegion = ValueSelector<LightTracker, Rect?>(
+      widget.cat.lightTracker,
+      selector: (notifier) => notifier.lightRegion,
+    )..addListener(() {
+        //由于在桌面端窗口变化时无法及时监听到，因此这里需要通过监听光照区域的变化手动查询领地的位置
+        onRegionChanged(Size.zero);
+      });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    lightRegion.dispose();
+  }
 
   Future<void> onRegionChanged(Size newSize) async {
     await Future.delayed(Duration.zero);
@@ -172,23 +197,19 @@ class LightTracker extends ChangeNotifier with LazyNotifier {
   Offset? get lightPosition => _lightPosition;
 
   ///光斑是否在范围内
-  bool _lightInside = false;
-
-  @protected
-  set lightInside(bool value) {
-    if (_lightInside == value) {
-      return;
+  bool get lightInside {
+    final Rect? region = lightRegion;
+    final Offset? position = lightPosition;
+    if (region == null || position == null) {
+      return false;
     }
-    _lightInside = value;
-    notifyListeners();
+    return region.contains(position);
   }
 
-  bool get lightInside => _lightInside;
-
   ///正在追光的猫
-  final List<TrackingCat> _cats = <TrackingCat>[];
+  List<TrackingCat> _cats = List<TrackingCat>.unmodifiable(<TrackingCat>[]);
 
-  List<TrackingCat> get trackingCats => List<TrackingCat>.unmodifiable(_cats);
+  List<TrackingCat> get trackingCats => _cats;
 
   ///追光的猫监听器
   ValueNotifier<List<TrackingCat>>? _trackingCatsNotifier;
@@ -197,27 +218,15 @@ class LightTracker extends ChangeNotifier with LazyNotifier {
       _trackingCatsNotifier ??= ValueSelector<LightTracker, List<TrackingCat>>(
         this,
         selector: (notifier) => notifier.trackingCats,
-        equals: (oldValue, newValue) {
-          if (oldValue.isEmpty && newValue.isEmpty) {
-            return true;
-          }
-          if (oldValue.length != newValue.length) {
-            return false;
-          }
-          for (int index = 0; index < oldValue.length; index++) {
-            if (oldValue[index] != newValue[index]) {
-              return false;
-            }
-          }
-          return true;
-        },
       );
 
   void addCat(TrackingCat cat) {
     if (_cats.contains(cat)) {
       return;
     }
-    _cats.add(cat);
+    _cats = List<TrackingCat>.unmodifiable(
+      List<TrackingCat>.of(_cats)..add(cat),
+    );
     notifyListeners();
   }
 
@@ -225,7 +234,9 @@ class LightTracker extends ChangeNotifier with LazyNotifier {
     if (!_cats.contains(cat)) {
       return;
     }
-    _cats.remove(cat);
+    _cats = List<TrackingCat>.unmodifiable(
+      List<TrackingCat>.of(_cats)..remove(cat),
+    );
     notifyListeners();
   }
 
@@ -293,11 +304,10 @@ abstract class TrackingCat extends ChangeNotifier with LazyNotifier {
   bool get lightInside {
     final Rect? trackRegion = this.trackRegion;
     final Offset? lightPosition = lightTracker.lightPosition;
-    if (trackRegion != null && lightPosition != null) {
-      return trackRegion.contains(lightPosition);
-    } else {
+    if (trackRegion == null || lightPosition == null) {
       return false;
     }
+    return trackRegion.contains(lightPosition);
   }
 
   ///能否看得见猫
@@ -325,11 +335,12 @@ abstract class TrackingCat extends ChangeNotifier with LazyNotifier {
       return null;
     }
     //将猫的身体左上角对齐到光斑位置
-    Offset point = Offset(lightPosition.dx, lightPosition.dy) - lightRegion.topLeft;
-    //以猫的身体中心为参照
-    point = point.translate(-catWidgetSize.width / 2, -catWidgetSize.height / 2);
-    //做附加偏移
-    point = translateCat(point, catWidgetSize, catTrackRegion, lightRegion);
+    final Offset point = translateCat(
+      Offset(lightPosition.dx, lightPosition.dy) - lightRegion.topLeft,
+      catWidgetSize,
+      catTrackRegion,
+      lightRegion,
+    );
     return Alignment(
       (point.dx / (lightRegion.width - catWidgetSize.width)) * 2 - 1,
       (point.dy / (lightRegion.height - catWidgetSize.height)) * 2 - 1,
@@ -356,13 +367,14 @@ abstract class TrackingCat extends ChangeNotifier with LazyNotifier {
   }
 
   ///给猫的位置做偏移
-  ///[catCenter] 猫的中心点（全局坐标）
+  ///[catTopLeft] 猫的左上角（全局坐标）
   ///[catSize] 猫的大小
   ///[catTrackRegion] 猫的领地矩形区（全局坐标）
   ///[lightRegion] 光斑的可移动区域（全局坐标）
   @protected
-  Offset translateCat(Offset catCenter, Size catSize, Rect catTrackRegion, Rect lightRegion) {
-    return catCenter;
+  Offset translateCat(Offset catTopLeft, Size catSize, Rect catTrackRegion, Rect lightRegion) {
+    //将猫的中心点对齐到光斑
+    return catTopLeft.translate(-catSize.width / 2, -catSize.height / 2);
   }
 
   ///创建猫
@@ -424,20 +436,23 @@ class InheritedLightRegion extends InheritedNotifier<LightTracker> {
 }
 
 mixin LazyNotifier on ChangeNotifier {
-  @override
-  void notifyListeners() {
-    _postDelay?.cancel();
-    _postDelay = Timer(Duration.zero, () {
-      if (disposed) return;
-      super.notifyListeners();
-    });
-  }
-
   bool _disposed = false;
 
   bool get disposed => _disposed;
 
   Timer? _postDelay;
+
+  @override
+  void notifyListeners() {
+    _postDelay?.cancel();
+    _postDelay = Timer(Duration.zero, notifyListenersAfterDelayed);
+  }
+
+  @protected
+  void notifyListenersAfterDelayed() {
+    if (disposed) return;
+    super.notifyListeners();
+  }
 
   @override
   void dispose() {
