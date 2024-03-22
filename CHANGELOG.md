@@ -1,3 +1,7 @@
+## 0.3.5
+
+* Optimize code of `light_and_cat`.
+
 ## 0.3.4
 
 * Optimize code of `light_and_cat` and `text_input_receiver`.

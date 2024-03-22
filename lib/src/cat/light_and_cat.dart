@@ -342,11 +342,11 @@ abstract class TrackingCat extends ChangeNotifier with LazyNotifier {
     final Offset? lightPosition = lightTracker.lightPosition;
     //领地范围（全局坐标）
     final Rect? catTrackRegion = trackRegion;
-    //猫的大小
-    final Size catWidgetSize = catSize;
     if (lightRegion == null || lightPosition == null || catTrackRegion == null) {
       return null;
     }
+    //猫的大小
+    final Size catWidgetSize = catSize;
     //将猫的身体左上角对齐到光斑位置
     final Offset point = translateCat(
       Offset(lightPosition.dx, lightPosition.dy) - lightRegion.topLeft,
@@ -354,9 +354,14 @@ abstract class TrackingCat extends ChangeNotifier with LazyNotifier {
       catTrackRegion,
       lightRegion,
     );
+    final double viewportWidth = lightRegion.width - catWidgetSize.width;
+    final double viewportHeight = lightRegion.height - catWidgetSize.height;
+    if (viewportWidth == 0 || viewportHeight == 0) {
+      return null;
+    }
     return Alignment(
-      (point.dx / (lightRegion.width - catWidgetSize.width)) * 2 - 1,
-      (point.dy / (lightRegion.height - catWidgetSize.height)) * 2 - 1,
+      (point.dx / viewportWidth) * 2 - 1,
+      (point.dy / viewportHeight) * 2 - 1,
     );
   }
 
