@@ -33,6 +33,13 @@ final class TextInputReceiver {
 
   TextInputConnection? _inputConnection;
 
+  TextInputConnection? get _connectionInternal {
+    if (_inputConnection?.attached == true) {
+      return _inputConnection;
+    }
+    return null;
+  }
+
   ///是否已连接
   bool get hasConnection => _inputConnection != null;
 
@@ -55,12 +62,12 @@ final class TextInputReceiver {
   ///清空输入内容
   void clearInputCache() {
     _editingValue.value = TextEditingValue.empty;
-    _inputConnection?.setEditingState(_editingValue.value);
+    _connectionInternal?.setEditingState(_editingValue.value);
   }
 
   ///显示输入法
   void showTextInput() {
-    _inputConnection?.show();
+    _connectionInternal?.show();
   }
 
   ///更新编辑区域大小
