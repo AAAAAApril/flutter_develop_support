@@ -255,7 +255,7 @@ class LightTracker extends ChangeNotifier with LazyNotifier {
     _cats = List<TrackingCat>.unmodifiable(
       List<TrackingCat>.of(_cats)..add(cat),
     );
-    notifyListeners();
+    notifyListenersDelayed();
   }
 
   void removeCat(TrackingCat cat) {
@@ -265,7 +265,7 @@ class LightTracker extends ChangeNotifier with LazyNotifier {
     _cats = List<TrackingCat>.unmodifiable(
       List<TrackingCat>.of(_cats)..remove(cat),
     );
-    notifyListeners();
+    notifyListenersDelayed();
   }
 
   @override
@@ -277,11 +277,7 @@ class LightTracker extends ChangeNotifier with LazyNotifier {
 
 ///追光斑的猫
 abstract class TrackingCat extends ChangeNotifier with LazyNotifier {
-  TrackingCat(this.lightTracker) {
-    lightTracker
-      ..addCat(this)
-      ..addListener(notifyListeners);
-  }
+  TrackingCat(this.lightTracker);
 
   ///追踪的光
   final LightTracker lightTracker;
@@ -301,32 +297,21 @@ abstract class TrackingCat extends ChangeNotifier with LazyNotifier {
   Rect? get trackRegion => _trackRegion;
 
   ///猫的大小
-  Size? _catSize;
+  Size _catSize = Size.zero;
 
   @protected
-  set catSize(Size? value) {
+  set catSize(Size value) {
     if (_catSize == value) {
       return;
     }
     _catSize = value;
-    notifyListeners();
+    notifyListenersDelayed();
   }
 
-  Size? get catSize => _catSize;
+  Size get catSize => _catSize;
 
-  ///是否正在追光
-  bool _tracking = false;
-
-  @protected
-  set tracking(bool value) {
-    if (_tracking == value) {
-      return;
-    }
-    _tracking = value;
-    notifyListeners();
-  }
-
-  bool get tracking => _tracking;
+  ///是否正在追踪
+  bool get tracking => lightTracker._cats.contains(this);
 
   ///光斑是否在猫的领地内
   bool get lightInside {
@@ -339,7 +324,7 @@ abstract class TrackingCat extends ChangeNotifier with LazyNotifier {
   }
 
   ///能否看得见猫
-  bool get isCatShowing => lightTracker.lightInside && lightInside && tracking;
+  bool get isCatShowing => lightTracker.lightInside && lightInside;
 
   ValueNotifier<bool>? _catShowingNotifier;
 
@@ -358,8 +343,8 @@ abstract class TrackingCat extends ChangeNotifier with LazyNotifier {
     //领地范围（全局坐标）
     final Rect? catTrackRegion = trackRegion;
     //猫的大小
-    final Size? catWidgetSize = catSize;
-    if (lightRegion == null || lightPosition == null || catTrackRegion == null || catWidgetSize == null) {
+    final Size catWidgetSize = catSize;
+    if (lightRegion == null || lightPosition == null || catTrackRegion == null) {
       return null;
     }
     //将猫的身体左上角对齐到光斑位置
@@ -386,12 +371,16 @@ abstract class TrackingCat extends ChangeNotifier with LazyNotifier {
 
   ///开始跟踪光斑
   void startTrack() {
-    tracking = true;
+    lightTracker
+      ..addCat(this)
+      ..addListener(notifyListenersDelayed);
   }
 
   ///停止跟踪光斑
   void stopTrack() {
-    tracking = false;
+    lightTracker
+      ..removeListener(notifyListenersDelayed)
+      ..removeCat(this);
   }
 
   ///给猫的位置做偏移
@@ -445,9 +434,7 @@ abstract class TrackingCat extends ChangeNotifier with LazyNotifier {
 
   @override
   void dispose() {
-    lightTracker
-      ..removeListener(notifyListeners)
-      ..removeCat(this);
+    stopTrack();
     super.dispose();
     _catAlignmentNotifier?.dispose();
     _catShowingNotifier?.dispose();
@@ -472,14 +459,14 @@ mixin LazyNotifier on ChangeNotifier {
 
   @override
   void notifyListeners() {
-    _postDelay?.cancel();
-    _postDelay = Timer(Duration.zero, notifyListenersAfterDelayed);
+    if (disposed) return;
+    super.notifyListeners();
   }
 
   @protected
-  void notifyListenersAfterDelayed() {
-    if (disposed) return;
-    super.notifyListeners();
+  void notifyListenersDelayed() {
+    _postDelay?.cancel();
+    _postDelay = Timer(Duration.zero, notifyListeners);
   }
 
   @override
