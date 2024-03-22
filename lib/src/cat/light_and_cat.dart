@@ -12,14 +12,14 @@ class LightRegion extends StatefulWidget {
     this.lightStyle = MouseCursor.defer,
     this.hitTestBehavior,
     this.opaque = true,
-    this.postLightPositionWhenPressed = true,
+    this.trackWhenDrag = true,
     required this.child,
   });
 
   final MouseCursor lightStyle;
   final HitTestBehavior? hitTestBehavior;
   final bool opaque;
-  final bool postLightPositionWhenPressed;
+  final bool trackWhenDrag;
   final Widget child;
 
   @override
@@ -81,7 +81,7 @@ class _LightRegionState extends State<LightRegion> {
       tracker,
       child: Listener(
         onPointerMove: (event) {
-          if (widget.postLightPositionWhenPressed) {
+          if (widget.trackWhenDrag) {
             tracker.lightPosition = event.position;
           }
         },
