@@ -31,6 +31,9 @@ class _LightRegionState extends State<LightRegion> {
 
   late LightTracker tracker;
 
+  Size? size;
+  Timer? timer;
+
   @override
   void initState() {
     super.initState();
@@ -38,12 +41,28 @@ class _LightRegionState extends State<LightRegion> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final newSize = MediaQuery.sizeOf(context);
+    if (size != null) {
+      if (newSize != size) {
+        timer?.cancel();
+        timer = Timer(const Duration(milliseconds: 15), () {
+          onRegionChanged();
+        });
+      }
+    }
+    size = newSize;
+  }
+
+  @override
   void dispose() {
     super.dispose();
+    timer?.cancel();
     tracker.dispose();
   }
 
-  Future<void> onRegionChanged(Size newSize) async {
+  Future<void> onRegionChanged() async {
     await Future.delayed(Duration.zero);
     if (!mounted) return;
     final RenderBox? box = globalKey.currentContext?.findRenderObject() as RenderBox?;
@@ -80,7 +99,7 @@ class _LightRegionState extends State<LightRegion> {
           hitTestBehavior: widget.hitTestBehavior,
           opaque: widget.opaque,
           child: AfterLayoutWidget(
-            afterLayout: onRegionChanged,
+            afterLayout: (value) => onRegionChanged(),
             overlay: ValueListenableBuilder<List<TrackingCat>>(
               valueListenable: tracker.trackingCatsListenable,
               builder: (context, value, child) => Stack(
@@ -110,27 +129,36 @@ class CatTerritory extends StatefulWidget {
 class _CatTerritoryState extends State<CatTerritory> {
   final GlobalKey globalKey = GlobalKey();
 
-  late ValueNotifier<Rect?> lightRegion;
+  Size? size;
+  Timer? timer;
 
   @override
   void initState() {
     super.initState();
-    lightRegion = ValueSelector<LightTracker, Rect?>(
-      widget.cat.lightTracker,
-      selector: (notifier) => notifier.lightRegion,
-    )..addListener(() {
-        //由于在桌面端窗口变化时无法及时监听到，因此这里需要通过监听光照区域的变化手动查询领地的位置
-        onRegionChanged(Size.zero);
-      });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final newSize = MediaQuery.sizeOf(context);
+    if (size != null) {
+      if (newSize != size) {
+        timer?.cancel();
+        timer = Timer(const Duration(milliseconds: 25), () {
+          onRegionChanged();
+        });
+      }
+    }
+    size = newSize;
   }
 
   @override
   void dispose() {
     super.dispose();
-    lightRegion.dispose();
+    timer?.cancel();
   }
 
-  Future<void> onRegionChanged(Size newSize) async {
+  Future<void> onRegionChanged() async {
     await Future.delayed(Duration.zero);
     if (!mounted) return;
     final RenderBox? box = globalKey.currentContext?.findRenderObject() as RenderBox?;
@@ -146,7 +174,7 @@ class _CatTerritoryState extends State<CatTerritory> {
   @override
   Widget build(BuildContext context) {
     return AfterLayoutWidget(
-      afterLayout: onRegionChanged,
+      afterLayout: (value) => onRegionChanged(),
       child: Builder(key: globalKey, builder: (context) => widget.child),
     );
   }
