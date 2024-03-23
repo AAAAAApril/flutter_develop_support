@@ -1,3 +1,7 @@
+## 0.3.6
+
+* Optimize code.
+
 ## 0.3.5
 
 * Optimize code of `light_and_cat`.
