@@ -17,9 +17,7 @@ class RotationWidget extends StatefulWidget {
     this.durations = const <Duration>[Duration(seconds: 2)],
     this.restDuration,
   })  : assert(
-          angleValues.length >= 2 &&
-              durations.length >= 1 &&
-              durations.length == angleValues.length - 1,
+          angleValues.length >= 2 && durations.length >= 1 && durations.length == angleValues.length - 1,
         ),
         super(key: key);
 
@@ -42,8 +40,7 @@ class RotationWidget extends StatefulWidget {
   State<RotationWidget> createState() => _RotationWidgetState();
 }
 
-class _RotationWidgetState extends State<RotationWidget>
-    with SingleTickerProviderStateMixin {
+class _RotationWidgetState extends State<RotationWidget> with SingleTickerProviderStateMixin {
   late AnimationController controller;
   late Animation<double> animation;
   Timer? waitTimer;
@@ -61,11 +58,14 @@ class _RotationWidgetState extends State<RotationWidget>
   ///初始化
   void init() {
     controller = AnimationController(
-      duration: widget.durations.total(),
+      duration: widget.durations.fold<Duration>(
+        Duration.zero,
+        (previousValue, element) => previousValue + element,
+      ),
       vsync: this,
     );
     animation = TweenSequence<double>(
-      widget.durations.weights().forIndexedEach<TweenSequenceItem<double>>(
+      widget.durations.weights().indexedMap<TweenSequenceItem<double>>(
         (element, index) {
           return TweenSequenceItem<double>(
             tween: Tween<double>(
@@ -83,8 +83,7 @@ class _RotationWidgetState extends State<RotationWidget>
 
   @override
   void didUpdateWidget(covariant RotationWidget oldWidget) {
-    if (oldWidget.angleValues != widget.angleValues ||
-        oldWidget.durations != widget.durations) {
+    if (oldWidget.angleValues != widget.angleValues || oldWidget.durations != widget.durations) {
       release();
       init();
     }

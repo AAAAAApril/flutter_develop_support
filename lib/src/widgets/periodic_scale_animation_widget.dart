@@ -70,7 +70,7 @@ class _ScaleAnimateWidgetState extends State<PeriodicScaleAnimationWidget>
       vsync: this,
     );
     animation = TweenSequence<double>(
-      widget.scales.forIndexedEach<TweenSequenceItem<double>>(
+      widget.scales.indexedMap<TweenSequenceItem<double>>(
         (element, index) {
           final double next;
           //当前是最后一个
