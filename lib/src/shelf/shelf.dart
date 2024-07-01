@@ -71,10 +71,6 @@ abstract class LatticeManager<T extends Lattice> extends ChangeNotifier {
   factory LatticeManager.lazy({required ValueGetter<T> creator, bool autoDisposable = true}) =>
       _LazyManager<T>(creator: creator, autoDisposable: autoDisposable);
 
-  factory LatticeManager.from(BuildContext context) => _ProxyManager<T>(
-        context.getInheritedWidgetOfExactType<InheritedShelf<T>>()!.manager,
-      );
-
   @protected
   LatticeManager.private();
 
@@ -95,7 +91,6 @@ abstract class LatticeManager<T extends Lattice> extends ChangeNotifier {
   @protected
   void postLatticeCreated(T lattice) {
     if (!lattice.created) {
-      lattice.addListener(notifyListeners);
       lattice.created = true;
       lattice.onCreated();
     }
@@ -106,7 +101,6 @@ abstract class LatticeManager<T extends Lattice> extends ChangeNotifier {
     if (lattice.created) {
       lattice.created = false;
       lattice.onDestroyed();
-      lattice.removeListener(notifyListeners);
     }
     if (!lattice.disposed) {
       lattice.disposed = true;
@@ -142,13 +136,7 @@ class _ShelfState extends State<Shelf> {
     managers = {};
     for (var element in widget.lattices) {
       final Type key = element.latticeType;
-      final LatticeManager? old = oldManagers[key];
-      if (old != null) {
-        managers[key] = old;
-        oldManagers.remove(key);
-      } else {
-        managers[key] = element;
-      }
+      managers[key] = oldManagers.remove(key) ?? element;
     }
     oldManagers.forEach((key, value) {
       value.autoDispose();
@@ -176,6 +164,7 @@ class _ShelfState extends State<Shelf> {
 
 class _InstanceManager<T extends Lattice> extends LatticeManager<T> {
   _InstanceManager(this.lattice, {required this.autoDisposable}) : super.private() {
+    lattice.addListener(notifyListeners);
     postLatticeCreated(lattice);
   }
 
@@ -186,9 +175,12 @@ class _InstanceManager<T extends Lattice> extends LatticeManager<T> {
   final bool autoDisposable;
 
   @override
-  void dispose() {
-    postLatticeDisposed(lattice);
-    super.dispose();
+  void autoDispose() {
+    lattice.removeListener(notifyListeners);
+    if (autoDisposable) {
+      postLatticeDisposed(lattice);
+    }
+    super.autoDispose();
   }
 }
 
@@ -203,6 +195,7 @@ class _LazyManager<T extends Lattice> extends LatticeManager<T> {
   T get lattice {
     if (_lattice == null) {
       _lattice = creator.call();
+      _lattice!.addListener(notifyListeners);
       postLatticeCreated(_lattice!);
     }
     return _lattice!;
@@ -212,30 +205,13 @@ class _LazyManager<T extends Lattice> extends LatticeManager<T> {
   final bool autoDisposable;
 
   @override
-  void dispose() {
-    if (_lattice != null) {
-      postLatticeDisposed(_lattice!);
-    }
-    super.dispose();
-  }
-}
-
-class _ProxyManager<T extends Lattice> extends LatticeManager<T> {
-  _ProxyManager(this.proxy) : super.private() {
-    proxy.addListener(notifyListeners);
-  }
-
-  @override
   void autoDispose() {
-    proxy.removeListener(notifyListeners);
+    _lattice?.removeListener(notifyListeners);
+    if (autoDisposable) {
+      if (_lattice != null) {
+        postLatticeDisposed(_lattice!);
+      }
+    }
     super.autoDispose();
   }
-
-  final LatticeManager<T> proxy;
-
-  @override
-  bool get autoDisposable => false;
-
-  @override
-  T get lattice => proxy.lattice;
 }

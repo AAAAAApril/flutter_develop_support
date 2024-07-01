@@ -1,3 +1,7 @@
+## 0.3.7
+
+* Fix bug in `Shelf`.
+
 ## 0.3.6
 
 * Optimize code.
