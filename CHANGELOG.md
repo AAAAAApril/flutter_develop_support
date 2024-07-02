@@ -1,3 +1,7 @@
+## 0.3.8
+
+* Add `destroy()` for `Lattice`.
+
 ## 0.3.7
 
 * Fix bug in `Shelf`.
