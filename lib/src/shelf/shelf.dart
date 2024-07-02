@@ -62,6 +62,28 @@ abstract class Lattice extends ChangeNotifier {
 
   @protected
   set disposed(bool value) => _disposed = value;
+
+  ///创建
+  @mustCallSuper
+  void create() {
+    if (!created) {
+      created = true;
+      onCreated();
+    }
+  }
+
+  ///销毁
+  @mustCallSuper
+  void destroy() {
+    if (created) {
+      created = false;
+      onDestroyed();
+    }
+    if (!disposed) {
+      disposed = true;
+      dispose();
+    }
+  }
 }
 
 abstract class LatticeManager<T extends Lattice> extends ChangeNotifier {
@@ -74,38 +96,21 @@ abstract class LatticeManager<T extends Lattice> extends ChangeNotifier {
   @protected
   LatticeManager.private();
 
-  Type get latticeType => T;
+  String get latticeType => T.toString();
 
   T get lattice;
 
   ///是否允许自动释放
   bool get autoDisposable;
 
-  ///自动释放
-  void autoDispose() {
-    if (autoDisposable) {
-      dispose();
-    }
-  }
-
   @protected
   void postLatticeCreated(T lattice) {
-    if (!lattice.created) {
-      lattice.created = true;
-      lattice.onCreated();
-    }
+    lattice.create();
   }
 
   @protected
   void postLatticeDisposed(T lattice) {
-    if (lattice.created) {
-      lattice.created = false;
-      lattice.onDestroyed();
-    }
-    if (!lattice.disposed) {
-      lattice.disposed = true;
-      lattice.dispose();
-    }
+    lattice.destroy();
   }
 
   @protected
@@ -119,7 +124,7 @@ abstract class LatticeManager<T extends Lattice> extends ChangeNotifier {
 }
 
 class _ShelfState extends State<Shelf> {
-  Map<Type, LatticeManager> managers = {};
+  Map<String, LatticeManager> managers = {};
 
   @override
   void initState() {
@@ -132,14 +137,14 @@ class _ShelfState extends State<Shelf> {
   @override
   void didUpdateWidget(covariant Shelf oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final Map<Type, LatticeManager> oldManagers = Map.of(managers);
+    final Map<String, LatticeManager> oldManagers = Map.of(managers);
     managers = {};
     for (var element in widget.lattices) {
-      final Type key = element.latticeType;
+      final String key = element.latticeType;
       managers[key] = oldManagers.remove(key) ?? element;
     }
     oldManagers.forEach((key, value) {
-      value.autoDispose();
+      value.dispose();
     });
   }
 
@@ -147,7 +152,7 @@ class _ShelfState extends State<Shelf> {
   void dispose() {
     super.dispose();
     managers.forEach((key, value) {
-      value.autoDispose();
+      value.dispose();
     });
     managers = {};
   }
@@ -163,24 +168,33 @@ class _ShelfState extends State<Shelf> {
 }
 
 class _InstanceManager<T extends Lattice> extends LatticeManager<T> {
-  _InstanceManager(this.lattice, {required this.autoDisposable}) : super.private() {
-    lattice.addListener(notifyListeners);
-    postLatticeCreated(lattice);
+  _InstanceManager(this._lattice, {required this.autoDisposable}) : super.private() {
+    _lattice.addListener(notifyListeners);
   }
 
+  final T _lattice;
+
+  bool _visit = false;
+
   @override
-  final T lattice;
+  T get lattice {
+    if (!_visit) {
+      _visit = true;
+      postLatticeCreated(_lattice);
+    }
+    return _lattice;
+  }
 
   @override
   final bool autoDisposable;
 
   @override
-  void autoDispose() {
-    lattice.removeListener(notifyListeners);
+  void dispose() {
+    _lattice.removeListener(notifyListeners);
     if (autoDisposable) {
-      postLatticeDisposed(lattice);
+      postLatticeDisposed(_lattice);
     }
-    super.autoDispose();
+    super.dispose();
   }
 }
 
@@ -205,13 +219,13 @@ class _LazyManager<T extends Lattice> extends LatticeManager<T> {
   final bool autoDisposable;
 
   @override
-  void autoDispose() {
+  void dispose() {
     _lattice?.removeListener(notifyListeners);
     if (autoDisposable) {
       if (_lattice != null) {
         postLatticeDisposed(_lattice!);
       }
     }
-    super.autoDispose();
+    super.dispose();
   }
 }
