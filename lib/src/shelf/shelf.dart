@@ -96,7 +96,7 @@ abstract class LatticeManager<T extends Lattice> extends ChangeNotifier {
   @protected
   LatticeManager.private();
 
-  String get latticeType => T.toString();
+  String get latticeId;
 
   T get lattice;
 
@@ -116,7 +116,7 @@ abstract class LatticeManager<T extends Lattice> extends ChangeNotifier {
   @protected
   Widget inheritedWidget(Widget child) {
     return InheritedShelf<T>(
-      key: ValueKey(latticeType),
+      key: ValueKey(latticeId),
       manager: this,
       child: child,
     );
@@ -130,7 +130,7 @@ class _ShelfState extends State<Shelf> {
   void initState() {
     super.initState();
     for (var element in widget.lattices) {
-      managers[element.latticeType] = element;
+      managers[element.latticeId] = element;
     }
   }
 
@@ -140,7 +140,7 @@ class _ShelfState extends State<Shelf> {
     final Map<String, LatticeManager> oldManagers = Map.of(managers);
     managers = {};
     for (var element in widget.lattices) {
-      final String key = element.latticeType;
+      final String key = element.latticeId;
       managers[key] = oldManagers.remove(key) ?? element;
     }
     oldManagers.forEach((key, value) {
@@ -174,6 +174,9 @@ class _InstanceManager<T extends Lattice> extends LatticeManager<T> {
 
   final T _lattice;
 
+  @override
+  String get latticeId => _lattice.runtimeType.toString();
+
   bool _visit = false;
 
   @override
@@ -202,6 +205,9 @@ class _LazyManager<T extends Lattice> extends LatticeManager<T> {
   _LazyManager({required this.creator, required this.autoDisposable}) : super.private();
 
   final ValueGetter<T> creator;
+
+  @override
+  String get latticeId => creator.runtimeType.toString();
 
   T? _lattice;
 
