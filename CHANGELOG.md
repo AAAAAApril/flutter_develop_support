@@ -1,3 +1,7 @@
+## 0.3.10
+
+* Optimize code of `lattice_builder`.
+
 ## 0.3.9
 
 * Optimize code of `lattice_builder` and `lattice_notifier`.
