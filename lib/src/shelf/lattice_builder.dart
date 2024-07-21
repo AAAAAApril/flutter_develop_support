@@ -5,7 +5,7 @@ class LatticeSelector<L extends Lattice, T> extends StatelessWidget {
   const LatticeSelector({
     super.key,
     required this.selector,
-    required this.shouldNotify,
+    this.shouldNotify,
     required this.builder,
     this.child,
   });
@@ -35,7 +35,7 @@ class Lattice2Selector<A extends Lattice, B extends Lattice, T> extends Stateles
   const Lattice2Selector({
     super.key,
     required this.selector,
-    required this.shouldNotify,
+    this.shouldNotify,
     required this.builder,
     this.child,
   });
@@ -66,7 +66,7 @@ class Lattice3Selector<A extends Lattice, B extends Lattice, C extends Lattice, 
   const Lattice3Selector({
     super.key,
     required this.selector,
-    required this.shouldNotify,
+    this.shouldNotify,
     required this.builder,
     this.child,
   });
